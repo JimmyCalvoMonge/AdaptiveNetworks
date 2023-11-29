@@ -25,613 +25,613 @@ ped = 0.05
 n_cores = min(multiprocessing.cpu_count() -1, 10)
 print('Number of cores to use: {}'.format(n_cores))
 
-# Get neighbors at levels (first, second, third level neighbors)
-def get_neighbors(ntw, node, levels):
-    if levels > 1:
-        subgraph = nx.ego_graph(ntw, node, radius=levels)
-        return list(subgraph.nodes())
-    else:
-        return list(ntw.neighbors(node))
+# # Get neighbors at levels (first, second, third level neighbors)
+# def get_neighbors(ntw, node, levels):
+#     if levels > 1:
+#         subgraph = nx.ego_graph(ntw, node, radius=levels)
+#         return list(subgraph.nodes())
+#     else:
+#         return list(ntw.neighbors(node))
 
 
-def infneighs(ntw, node, ns, ilist):
-    inf = [k for k in range(len(ilist)) if ilist[k] == 1]
-    neighlist = get_neighbors(ntw, node, ns)
-    infneigh = [neigh for neigh in neighlist if neigh in inf]
-    return [node, len(infneigh), infneigh]
+# def infneighs(ntw, node, ns, ilist):
+#     inf = [k for k in range(len(ilist)) if ilist[k] == 1]
+#     neighlist = get_neighbors(ntw, node, ns)
+#     infneigh = [neigh for neigh in neighlist if neigh in inf]
+#     return [node, len(infneigh), infneigh]
 
-# Single peak function
+# # Single peak function
 
-def fs(x,y,z):
-    return (x*z - z**2)**y
+# def fs(x,y,z):
+#     return (x*z - z**2)**y
 
-# The maxer code runs the optimization process for each vertex 
-def vertxmaxer(ntwk, nodeid, dispars, u, neis):
+# # The maxer code runs the optimization process for each vertex 
+# def vertxmaxer(ntwk, nodeid, dispars, u, neis):
 
-    ntw = ntwk # network used 
-    node = nodeid[0] # the node for which the maximizer is running and the information about inf neghbours
-    maxed = nodeid[1]
-    beta = dispars[0]
-    gamma = dispars[1]
-    nu = u[0] # utility parameters
-    T = u[1] # time horizon
-    ns = neis # Neighboorhood size to get the local prevalence
+#     ntw = ntwk # network used 
+#     node = nodeid[0] # the node for which the maximizer is running and the information about inf neghbours
+#     maxed = nodeid[1]
+#     beta = dispars[0]
+#     gamma = dispars[1]
+#     nu = u[0] # utility parameters
+#     T = u[1] # time horizon
+#     ns = neis # Neighboorhood size to get the local prevalence
 
-    b = 2*maxed # maximum possible # of edges for the utility function, the optimal utility is assumed at half of this
-    delta = 0.99986 # discount factor
+#     b = 2*maxed # maximum possible # of edges for the utility function, the optimal utility is assumed at half of this
+#     delta = 0.99986 # discount factor
 
-    # Vector storing the optimal s utility 
-    EUS = [0]*(T+1)
-    # The last step in s assumes to use all edges 
-    EUS[-1] = fs(b, nu, maxed)
+#     # Vector storing the optimal s utility 
+#     EUS = [0]*(T+1)
+#     # The last step in s assumes to use all edges 
+#     EUS[-1] = fs(b, nu, maxed)
 
-    # Vector storaging the optimal i utility 
-    EUI = [0]*(T+1)
+#     # Vector storaging the optimal i utility 
+#     EUI = [0]*(T+1)
 
-    # Vector storaging the optimal i utility 
-    EUR = [0]*(T+1)
+#     # Vector storaging the optimal i utility 
+#     EUR = [0]*(T+1)
 
-    # The last step in r assumes to use all edges 
-    # EUR[-1] = fs(b, nu, maxed)
+#     # The last step in r assumes to use all edges 
+#     # EUR[-1] = fs(b, nu, maxed)
 
-    # Vector storing the optimal # of edges for the susceptible node during the planning horizon 
-    nedgest = [0]*(T+1)
-    nedgest[-1] = maxed
+#     # Vector storing the optimal # of edges for the susceptible node during the planning horizon 
+#     nedgest = [0]*(T+1)
+#     nedgest[-1] = maxed
 
-    # Pt is the probability of disease transmission along an edge during a single time step
-    Pt = beta
-    Pir = gamma
+#     # Pt is the probability of disease transmission along an edge during a single time step
+#     Pt = beta
+#     Pir = gamma
     
-    for t in range(T-1, -1, -1):
+#     for t in range(T-1, -1, -1):
 
-        # individual's utility starts at zero
-        maxu = 0
+#         # individual's utility starts at zero
+#         maxu = 0
 
-        # Evaluating all the contact rates for susceptible individuals, all possible variable states
-        for edgesd in range(maxed, 0, -1):
+#         # Evaluating all the contact rates for susceptible individuals, all possible variable states
+#         for edgesd in range(maxed, 0, -1):
 
-            Psi = 1 - (1 - Pt)**edgesd
+#             Psi = 1 - (1 - Pt)**edgesd
 
-            # Evaluating the expected utilities
-            # Utility gained by being currently susceptible
-            EUS[t] = fs(b, nu, edgesd) + delta*( (1-Psi)*EUS[t+1] + Psi*EUI[t+1] )
+#             # Evaluating the expected utilities
+#             # Utility gained by being currently susceptible
+#             EUS[t] = fs(b, nu, edgesd) + delta*( (1-Psi)*EUS[t+1] + Psi*EUI[t+1] )
 
-            EUI[t] = fs(b, nu, maxed) + delta*( (1-Pir)*EUI[t+1] + Pir*EUR[t+1] )
+#             EUI[t] = fs(b, nu, maxed) + delta*( (1-Pir)*EUI[t+1] + Pir*EUR[t+1] )
 
-            EUR[t] = fs(b, nu, maxed) + delta*EUR[t+1]
+#             EUR[t] = fs(b, nu, maxed) + delta*EUR[t+1]
 
-            if EUS[t] > maxu:
-                nedgest[t] = edgesd
-                maxu = EUS[t]
+#             if EUS[t] > maxu:
+#                 nedgest[t] = edgesd
+#                 maxu = EUS[t]
 
-    return nedgest
+#     return nedgest
 
 
-def epidemic(index, net, it, pi, pr):
+# def epidemic(index, net, it, pi, pr):
 
-    epidemic_ = pd.DataFrame({})
+#     epidemic_ = pd.DataFrame({})
 
-    i0 = random.randint(0, n-1)
-    i = [1 if k == i0 else 0 for k in range(n)]
-    s = [1 - k for k in i]
-    r = [0]*n
+#     i0 = random.randint(0, n-1)
+#     i = [1 if k == i0 else 0 for k in range(n)]
+#     s = [1 - k for k in i]
+#     r = [0]*n
 
-    for t in range(it):
+#     for t in range(it):
 
-        A = nx.adjacency_matrix(net).todense()
-        infn = np.matmul(A, i)
-        infn = infn[0, :].tolist()[0]
-        ninfp = [1-(1-pi)**nodes for nodes in infn]
+#         A = nx.adjacency_matrix(net).todense()
+#         infn = np.matmul(A, i)
+#         infn = infn[0, :].tolist()[0]
+#         ninfp = [1-(1-pi)**nodes for nodes in infn]
 
-        # Newly infected nodes
-        x = [random.random() for _ in range(n)]
-        newinf = [x[k] <= ninfp[k] for k in range(n)]
-        upi = [1 if (s[k] == 1) and (newinf[k] == True) else 0 for k in range(n)]
+#         # Newly infected nodes
+#         x = [random.random() for _ in range(n)]
+#         newinf = [x[k] <= ninfp[k] for k in range(n)]
+#         upi = [1 if (s[k] == 1) and (newinf[k] == True) else 0 for k in range(n)]
 
-        # Update S and I vectors: after infections 
-        inew = [i[k] + upi[k] for k in range(n)]
-        snew = [s[k] - upi[k] for k in range(n)]
+#         # Update S and I vectors: after infections 
+#         inew = [i[k] + upi[k] for k in range(n)]
+#         snew = [s[k] - upi[k] for k in range(n)]
 
-        y = [random.random() for _ in range(n)]
-        newrec = [y[k] <= pr for k in range(n)]
+#         y = [random.random() for _ in range(n)]
+#         newrec = [y[k] <= pr for k in range(n)]
 
-        # Update I and R vectors: after recovery 
-        upr = [1 if (inew[k] == 1) and (newrec[k] == True) else 0 for k in range(n)]
-        rnew = [r[k] + upr[k] for k in range(n)]
-        inew = [inew[k] - upr[k] for k in range(n)]
+#         # Update I and R vectors: after recovery 
+#         upr = [1 if (inew[k] == 1) and (newrec[k] == True) else 0 for k in range(n)]
+#         rnew = [r[k] + upr[k] for k in range(n)]
+#         inew = [inew[k] - upr[k] for k in range(n)]
         
-        # Update variable vectors 
-        s = snew
-        i = inew
-        r = rnew
+#         # Update variable vectors 
+#         s = snew
+#         i = inew
+#         r = rnew
 
-        epidemic_ = pd.concat([epidemic_, pd.DataFrame({
-            'day': [t+1],
-            's': [sum(snew)],
-            'i': [sum(inew)],
-            'r': [sum(rnew)]
-        })])
+#         epidemic_ = pd.concat([epidemic_, pd.DataFrame({
+#             'day': [t+1],
+#             's': [sum(snew)],
+#             'i': [sum(inew)],
+#             'r': [sum(rnew)]
+#         })])
     
-    return epidemic_
+#     return epidemic_
 
 
-def episim(ntwk, epidemics, iterations, dispars):
+# def episim(ntwk, epidemics, iterations, dispars):
 
-    net = ntwk
-    epis = epidemics
-    it = iterations
-    pi = dispars[0]
-    pr = dispars[1] # disease parameters
+#     net = ntwk
+#     epis = epidemics
+#     it = iterations
+#     pi = dispars[0]
+#     pr = dispars[1] # disease parameters
 
-    pool = multiprocessing.Pool(n_cores)
-    epidist = pool.map(functools.partial(epidemic, net=net, it=it, pi=pi, pr=pr), range(epis))
-    epidist = pd.concat(epidist, ignore_index=True)
+#     pool = multiprocessing.Pool(n_cores)
+#     epidist = pool.map(functools.partial(epidemic, net=net, it=it, pi=pi, pr=pr), range(epis))
+#     epidist = pd.concat(epidist, ignore_index=True)
 
-    epidist = epidist.groupby(['day'], as_index=False).agg(
-                      {'s':['mean', 'max', 'min'],
-                       'i':['mean', 'max', 'min'],
-                       'r':['mean', 'max', 'min']})
+#     epidist = epidist.groupby(['day'], as_index=False).agg(
+#                       {'s':['mean', 'max', 'min'],
+#                        'i':['mean', 'max', 'min'],
+#                        'r':['mean', 'max', 'min']})
 
-    return epidist
+#     return epidist
 
 
-def bepidemic(index, net, it, pi, pr, v, T, ns):
+# def bepidemic(index, net, it, pi, pr, v, T, ns):
 
-    bepidemic_ = pd.DataFrame({})
+#     bepidemic_ = pd.DataFrame({})
 
-    i0 = random.randint(0, n-1)
-    i = [1 if k == i0 else 0 for k in range(n)]
-    s = [1 - k for k in i]
-    r = [0]*n
+#     i0 = random.randint(0, n-1)
+#     i = [1 if k == i0 else 0 for k in range(n)]
+#     s = [1 - k for k in i]
+#     r = [0]*n
 
-    rednet = net.copy()
+#     rednet = net.copy()
 
-    net_contact_dict = {
-        node: len([neig for neig in rednet.neighbors(node)]) for node in range(n)
-    }
+#     net_contact_dict = {
+#         node: len([neig for neig in rednet.neighbors(node)]) for node in range(n)
+#     }
 
-    if not isinstance(v, list):
-        v = [v]*n
+#     if not isinstance(v, list):
+#         v = [v]*n
 
-    if not isinstance(T, list):
-        T = [T]*n
+#     if not isinstance(T, list):
+#         T = [T]*n
 
-    for t in range(it):
+#     for t in range(it):
 
-        A = nx.adjacency_matrix(rednet).todense()
-        infn = np.matmul(A, i)
-        infn = infn[0, :].tolist()[0]
-        ninfp = [1-(1-pi)**nodes for nodes in infn]
+#         A = nx.adjacency_matrix(rednet).todense()
+#         infn = np.matmul(A, i)
+#         infn = infn[0, :].tolist()[0]
+#         ninfp = [1-(1-pi)**nodes for nodes in infn]
 
-        # Newly infected nodes
-        x = [random.random() for _ in range(n)]
-        newinf = [x[k] <= ninfp[k] for k in range(n)]
-        upi = [1 if (s[k] == 1) and (newinf[k] == True) else 0 for k in range(n)]
+#         # Newly infected nodes
+#         x = [random.random() for _ in range(n)]
+#         newinf = [x[k] <= ninfp[k] for k in range(n)]
+#         upi = [1 if (s[k] == 1) and (newinf[k] == True) else 0 for k in range(n)]
 
-        # Update S and I vectors: after infections 
-        inew = [i[k] + upi[k] for k in range(n)]
-        snew = [s[k] - upi[k] for k in range(n)]
+#         # Update S and I vectors: after infections 
+#         inew = [i[k] + upi[k] for k in range(n)]
+#         snew = [s[k] - upi[k] for k in range(n)]
 
-        y = [random.random() for _ in range(n)]
-        newrec = [y[k] <= pr for k in range(n)]
+#         y = [random.random() for _ in range(n)]
+#         newrec = [y[k] <= pr for k in range(n)]
 
-        # Update I and R vectors: after recovery 
-        upr = [1 if (inew[k] == 1) and (newrec[k] == True) else 0 for k in range(n)]
-        rnew = [r[k] + upr[k] for k in range(n)]
-        inew = [inew[k] - upr[k] for k in range(n)]
+#         # Update I and R vectors: after recovery 
+#         upr = [1 if (inew[k] == 1) and (newrec[k] == True) else 0 for k in range(n)]
+#         rnew = [r[k] + upr[k] for k in range(n)]
+#         inew = [inew[k] - upr[k] for k in range(n)]
         
-        # Update variable vectors 
-        s = snew
-        i = inew
-        r = rnew
+#         # Update variable vectors 
+#         s = snew
+#         i = inew
+#         r = rnew
 
-        # ===== The maximization process =====
-        rednet = net.copy() # Define a dummy network: this is the network to play with
+#         # ===== The maximization process =====
+#         rednet = net.copy() # Define a dummy network: this is the network to play with
 
-        # Get the info of all susceptible nodes at time t*)
-        # sus=Flatten@Position[s,1];
-        # infofsus=infneighs[net,#,ns,i]&/@sus;
-        sus = [k for k in range(n) if s[k] == 1]
-        infofsus = [infneighs(net, node, ns, i) for node in sus]
+#         # Get the info of all susceptible nodes at time t*)
+#         # sus=Flatten@Position[s,1];
+#         # infofsus=infneighs[net,#,ns,i]&/@sus;
+#         sus = [k for k in range(n) if s[k] == 1]
+#         infofsus = [infneighs(net, node, ns, i) for node in sus]
 
-        # (*Get only the info of susceptible with  infected neighbours*)
-        # susinfs=Table[If[infofsus[[k,2]]!=0,infofsus[[k]]],{k,1,Length@sus}]/.Null->Sequence[];
-        susinfs = [k for k in infofsus if k[1]!=0]
+#         # (*Get only the info of susceptible with  infected neighbours*)
+#         # susinfs=Table[If[infofsus[[k,2]]!=0,infofsus[[k]]],{k,1,Length@sus}]/.Null->Sequence[];
+#         susinfs = [k for k in infofsus if k[1]!=0]
 
-        # (* Use the maximizer to define how many edges to drop: it returns the number of edges to leave *)
-        # redneighs=Table[vertxmaxer[net,susinfs[[k]],{pi,pr},{vuse[[k]],Tuse[[k]]},ns][[1]],{k,1,Length[susinfs]}];
-        redneighs = [vertxmaxer(net, susinfs[k], [pi,pr], [v[susinfs[k][0]],T[susinfs[k][0]]], ns)[0]  for k in range(len(susinfs))]
+#         # (* Use the maximizer to define how many edges to drop: it returns the number of edges to leave *)
+#         # redneighs=Table[vertxmaxer[net,susinfs[[k]],{pi,pr},{vuse[[k]],Tuse[[k]]},ns][[1]],{k,1,Length[susinfs]}];
+#         redneighs = [vertxmaxer(net, susinfs[k], [pi,pr], [v[susinfs[k][0]],T[susinfs[k][0]]], ns)[0]  for k in range(len(susinfs))]
 
-        # (*Get the list of the form {susceptible  id,{list of infected neighbours to remove}}*)
-        # list=Table[{susinfs[[k,1]],RandomSample[susinfs[[k,3]],susinfs[[k,2]]-redneighs[[k]]]},{k,1,Length[redneighs]}];
-        list_ = [[susinfs[k][0], random.sample(susinfs[k][2], susinfs[k][1] - redneighs[k])] for k in range(len(redneighs))]
-
-
-        # (*Create the list of all the edges to remove at time t: of the form {s,i-rem}*)
-        # edgestorem=Flatten[
-        # Table[
-        # {list[[k,1]]\[UndirectedEdge]#}&/@list[[k,2]]
-        # ,{k,1,Length@redneighs}]];
-
-        for edges_list in list_:
-            flat_edges = [(edges_list[0], edges_list[1][k]) for k in range(len(edges_list[1]))]
-            try:
-                rednet.remove_edges_from(flat_edges)
-            except Exception:
-                print('Error!')
-                pass
-
-        # (*Drop edges from the network*)
-        # rednet = EdgeDelete[rednet,edgestorem];
-
-        # {Count[s,1],Count[i,1],Count[r,1],EdgeCount[rednet],
-        # N@Mean[Length[IncidenceList[rednet,#]]&/@sus]}
-
-        sus_contacts = {
-            node: len([neig for neig in rednet.neighbors(node)])/net_contact_dict[node] for node in sus
-        }
-        sus_contacts_ratios = np.nanmean(list(sus_contacts.values()))
-
-        bepidemic_ = pd.concat([bepidemic_, pd.DataFrame({
-            'day': [t+1],
-            's': [sum(snew)],
-            'i': [sum(inew)],
-            'r': [sum(rnew)],
-            'edgecount': [rednet.number_of_edges()],
-            'suscedgecount': sus_contacts_ratios
-        })])
-
-    return bepidemic_
+#         # (*Get the list of the form {susceptible  id,{list of infected neighbours to remove}}*)
+#         # list=Table[{susinfs[[k,1]],RandomSample[susinfs[[k,3]],susinfs[[k,2]]-redneighs[[k]]]},{k,1,Length[redneighs]}];
+#         list_ = [[susinfs[k][0], random.sample(susinfs[k][2], susinfs[k][1] - redneighs[k])] for k in range(len(redneighs))]
 
 
-def bepisim(ntwk, epidemics, iterations, dispars, u, neis):
+#         # (*Create the list of all the edges to remove at time t: of the form {s,i-rem}*)
+#         # edgestorem=Flatten[
+#         # Table[
+#         # {list[[k,1]]\[UndirectedEdge]#}&/@list[[k,2]]
+#         # ,{k,1,Length@redneighs}]];
+
+#         for edges_list in list_:
+#             flat_edges = [(edges_list[0], edges_list[1][k]) for k in range(len(edges_list[1]))]
+#             try:
+#                 rednet.remove_edges_from(flat_edges)
+#             except Exception:
+#                 print('Error!')
+#                 pass
+
+#         # (*Drop edges from the network*)
+#         # rednet = EdgeDelete[rednet,edgestorem];
+
+#         # {Count[s,1],Count[i,1],Count[r,1],EdgeCount[rednet],
+#         # N@Mean[Length[IncidenceList[rednet,#]]&/@sus]}
+
+#         sus_contacts = {
+#             node: len([neig for neig in rednet.neighbors(node)])/net_contact_dict[node] for node in sus
+#         }
+#         sus_contacts_ratios = np.nanmean(list(sus_contacts.values()))
+
+#         bepidemic_ = pd.concat([bepidemic_, pd.DataFrame({
+#             'day': [t+1],
+#             's': [sum(snew)],
+#             'i': [sum(inew)],
+#             'r': [sum(rnew)],
+#             'edgecount': [rednet.number_of_edges()],
+#             'suscedgecount': sus_contacts_ratios
+#         })])
+
+#     return bepidemic_
+
+
+# def bepisim(ntwk, epidemics, iterations, dispars, u, neis):
     
-    net = ntwk
-    bepis = epidemics
-    it = iterations
-    pi = dispars[0]
-    pr = dispars[1] # disease parameters
-    v = u[0] # utility parameters
-    T = u[1] # time horizon
-    ns = neis # Neighboorhood size to get the local prevalence
+#     net = ntwk
+#     bepis = epidemics
+#     it = iterations
+#     pi = dispars[0]
+#     pr = dispars[1] # disease parameters
+#     v = u[0] # utility parameters
+#     T = u[1] # time horizon
+#     ns = neis # Neighboorhood size to get the local prevalence
 
-    pool = multiprocessing.Pool(n_cores)
-    bepidist = pool.map(functools.partial(bepidemic, net=net, it=it,
-                                         pi=pi, pr=pr, v=v,
-                                         T=T, ns=ns), range(bepis))
-    bepidist = pd.concat(bepidist, ignore_index=True)
+#     pool = multiprocessing.Pool(n_cores)
+#     bepidist = pool.map(functools.partial(bepidemic, net=net, it=it,
+#                                          pi=pi, pr=pr, v=v,
+#                                          T=T, ns=ns), range(bepis))
+#     bepidist = pd.concat(bepidist, ignore_index=True)
 
-    bepidist['edgecount'] = bepidist['edgecount']/np.nanmax(bepidist['edgecount'])
-    bepidist['suscedgecount'] = bepidist['suscedgecount']/np.nanmax(bepidist['suscedgecount'])
+#     bepidist['edgecount'] = bepidist['edgecount']/np.nanmax(bepidist['edgecount'])
+#     bepidist['suscedgecount'] = bepidist['suscedgecount']/np.nanmax(bepidist['suscedgecount'])
 
-    bepidist = bepidist.groupby(['day'], as_index=False).agg(
-                      {'s':['mean', 'max', 'min'],
-                       'i':['mean', 'max', 'min'],
-                       'r':['mean', 'max', 'min'],
-                       'edgecount':['mean', 'max', 'min'],
-                       'suscedgecount':['mean', 'max', 'min']})
+#     bepidist = bepidist.groupby(['day'], as_index=False).agg(
+#                       {'s':['mean', 'max', 'min'],
+#                        'i':['mean', 'max', 'min'],
+#                        'r':['mean', 'max', 'min'],
+#                        'edgecount':['mean', 'max', 'min'],
+#                        'suscedgecount':['mean', 'max', 'min']})
 
-    return bepidist
+#     return bepidist
 
 
-def infected_comparison_fig(epidist, bepidist, fig, v, T, **kwargs):
+# def infected_comparison_fig(epidist, bepidist, fig, v, T, **kwargs):
 
-    mean = (epidist[('i', 'mean')]/n).tolist()
-    lower = (epidist[('i', 'min')]/n).tolist()
-    upper = (epidist[('i', 'max')]/n).tolist()
+#     mean = (epidist[('i', 'mean')]/n).tolist()
+#     lower = (epidist[('i', 'min')]/n).tolist()
+#     upper = (epidist[('i', 'max')]/n).tolist()
 
-    meanb = (bepidist[('i', 'mean')]/n).tolist()
-    lowerb = (bepidist[('i', 'min')]/n).tolist()
-    upperb = (bepidist[('i', 'max')]/n).tolist()
+#     meanb = (bepidist[('i', 'mean')]/n).tolist()
+#     lowerb = (bepidist[('i', 'min')]/n).tolist()
+#     upperb = (bepidist[('i', 'max')]/n).tolist()
 
-    axarr = fig.add_subplot(1,1,1)
+#     axarr = fig.add_subplot(1,1,1)
 
-    plt.plot(mean,'-b', label="Mean classic model")
-    # fill the area with black color, opacity 0.15
-    plt.fill_between(list(range(len(mean))), upper, lower, color="b", alpha=0.2)
+#     plt.plot(mean,'-b', label="Mean classic model")
+#     # fill the area with black color, opacity 0.15
+#     plt.fill_between(list(range(len(mean))), upper, lower, color="b", alpha=0.2)
 
-    plt.plot(meanb,'-r', label="Mean adaptive model")
-    # fill the area with black color, opacity 0.15
-    plt.fill_between(list(range(len(meanb))), upperb, lowerb, color="r", alpha=0.2)
+#     plt.plot(meanb,'-r', label="Mean adaptive model")
+#     # fill the area with black color, opacity 0.15
+#     plt.fill_between(list(range(len(meanb))), upperb, lowerb, color="r", alpha=0.2)
     
-    plt.title(f"Infected proportion comparison (v={v}, T={T})")
-    plt.legend(loc="upper right")
+#     plt.title(f"Infected proportion comparison (v={v}, T={T})")
+#     plt.legend(loc="upper right")
 
-    if 'save' in kwargs:
-        idx = kwargs.get('idx', 1)
-        plt.savefig(f'./Figures/infected_comparison_{idx}.png')
+#     if 'save' in kwargs:
+#         idx = kwargs.get('idx', 1)
+#         plt.savefig(f'./Figures/infected_comparison_{idx}.png')
 
-    return fig
-
-
-def edge_reduction_comparison_fig(bepidist, fig, v, T, **kwargs):
-
-    mean_all = bepidist[('edgecount', 'mean')].tolist()
-    lower_all = bepidist[('edgecount', 'min')].tolist()
-    upper_all = bepidist[('edgecount', 'max')].tolist()
-
-    mean_sus = bepidist[('suscedgecount', 'mean')].tolist()
-    lower_sus = bepidist[('suscedgecount', 'min')].tolist()
-    upper_sus = bepidist[('suscedgecount', 'max')].tolist()
-
-    axarr = fig.add_subplot(1,1,1)
-
-    plt.plot(mean_all[0:50],'-k', label="Network avg. edges reduction")
-    plt.fill_between(list(range(len(mean_all[0:50]))), upper_all[0:50], lower_all[0:50], color="k", alpha=0.2)
-    plt.plot(mean_sus[0:50], linestyle='--', color='b', label="Individuals avg. edges reduction")
-    plt.fill_between(list(range(len(mean_sus[0:50]))), upper_sus[0:50], lower_sus[0:50], color="b", alpha=0.2)
-    plt.title(f"Global and local behavioral responses (v={v}, T={T})")
-    plt.legend(loc="lower right")
-
-    if 'save' in kwargs:
-        idx = kwargs.get('idx', 1)
-        plt.savefig(f'./Figures/local_global_behavior_comparison_{idx}.png')
-
-    return fig
+#     return fig
 
 
-def infected_edge_reduction_fig(bepidist, fig, v, T, **kwargs):
+# def edge_reduction_comparison_fig(bepidist, fig, v, T, **kwargs):
 
-    meanb = (bepidist[('i', 'mean')]/n).tolist()
-    lowerb = (bepidist[('i', 'min')]/n).tolist()
-    upperb = (bepidist[('i', 'max')]/n).tolist()
+#     mean_all = bepidist[('edgecount', 'mean')].tolist()
+#     lower_all = bepidist[('edgecount', 'min')].tolist()
+#     upper_all = bepidist[('edgecount', 'max')].tolist()
 
-    meanbs = (bepidist[('s', 'mean')]/n).tolist()
-    lowerbs = (bepidist[('s', 'min')]/n).tolist()
-    upperbs = (bepidist[('s', 'max')]/n).tolist()
+#     mean_sus = bepidist[('suscedgecount', 'mean')].tolist()
+#     lower_sus = bepidist[('suscedgecount', 'min')].tolist()
+#     upper_sus = bepidist[('suscedgecount', 'max')].tolist()
 
-    mean_sus = bepidist[('suscedgecount', 'mean')].tolist()
-    lower_sus = bepidist[('suscedgecount', 'min')].tolist()
-    upper_sus = bepidist[('suscedgecount', 'max')].tolist()
+#     axarr = fig.add_subplot(1,1,1)
 
-    axarr = fig.add_subplot(1,1,1)
+#     plt.plot(mean_all[0:50],'-k', label="Network avg. edges reduction")
+#     plt.fill_between(list(range(len(mean_all[0:50]))), upper_all[0:50], lower_all[0:50], color="k", alpha=0.2)
+#     plt.plot(mean_sus[0:50], linestyle='--', color='b', label="Individuals avg. edges reduction")
+#     plt.fill_between(list(range(len(mean_sus[0:50]))), upper_sus[0:50], lower_sus[0:50], color="b", alpha=0.2)
+#     plt.title(f"Global and local behavioral responses (v={v}, T={T})")
+#     plt.legend(loc="lower right")
 
-    plt.plot(mean_sus, linestyle='--', color='b', label="Individuals avg. edges reduction")
-    plt.fill_between(list(range(len(mean_sus))), upper_sus, lower_sus, color="b", alpha=0.2)
+#     if 'save' in kwargs:
+#         idx = kwargs.get('idx', 1)
+#         plt.savefig(f'./Figures/local_global_behavior_comparison_{idx}.png')
+
+#     return fig
+
+
+# def infected_edge_reduction_fig(bepidist, fig, v, T, **kwargs):
+
+#     meanb = (bepidist[('i', 'mean')]/n).tolist()
+#     lowerb = (bepidist[('i', 'min')]/n).tolist()
+#     upperb = (bepidist[('i', 'max')]/n).tolist()
+
+#     meanbs = (bepidist[('s', 'mean')]/n).tolist()
+#     lowerbs = (bepidist[('s', 'min')]/n).tolist()
+#     upperbs = (bepidist[('s', 'max')]/n).tolist()
+
+#     mean_sus = bepidist[('suscedgecount', 'mean')].tolist()
+#     lower_sus = bepidist[('suscedgecount', 'min')].tolist()
+#     upper_sus = bepidist[('suscedgecount', 'max')].tolist()
+
+#     axarr = fig.add_subplot(1,1,1)
+
+#     plt.plot(mean_sus, linestyle='--', color='b', label="Individuals avg. edges reduction")
+#     plt.fill_between(list(range(len(mean_sus))), upper_sus, lower_sus, color="b", alpha=0.2)
     
-    plt.plot(meanb,'-r', label="Mean adaptive model (Infected)")
-    # fill the area with black color, opacity 0.15
-    plt.fill_between(list(range(len(meanb))), upperb, lowerb, color="r", alpha=0.2)
+#     plt.plot(meanb,'-r', label="Mean adaptive model (Infected)")
+#     # fill the area with black color, opacity 0.15
+#     plt.fill_between(list(range(len(meanb))), upperb, lowerb, color="r", alpha=0.2)
 
-    plt.plot(meanbs,'-g', label="Mean adaptive model")
-    # fill the area with black color, opacity 0.15
-    plt.fill_between(list(range(len(meanbs))), upperbs, lowerbs, color="g", alpha=0.2)
+#     plt.plot(meanbs,'-g', label="Mean adaptive model")
+#     # fill the area with black color, opacity 0.15
+#     plt.fill_between(list(range(len(meanbs))), upperbs, lowerbs, color="g", alpha=0.2)
 
-    plt.title(f"Susceptible/Infected proportions and individual effort (v={v}, T={T})")
-    plt.legend(loc="lower right")
+#     plt.title(f"Susceptible/Infected proportions and individual effort (v={v}, T={T})")
+#     plt.legend(loc="lower right")
 
-    if 'save' in kwargs:
-        idx = kwargs.get('idx', 1)
-        plt.savefig(f'./Figures/infected_and_effort_{idx}.png')
+#     if 'save' in kwargs:
+#         idx = kwargs.get('idx', 1)
+#         plt.savefig(f'./Figures/infected_and_effort_{idx}.png')
 
-    return fig
+#     return fig
 
 
-def get_heatmap_data():
+# def get_heatmap_data():
 
-    vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
-    Ts = list(range(7, 70, 7))
-    combs = list(itertools.product(vs, Ts))
+#     vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
+#     Ts = list(range(7, 70, 7))
+#     combs = list(itertools.product(vs, Ts))
 
-    epidist_all = pd.DataFrame({})
-    bepidist_all = pd.DataFrame({})
+#     epidist_all = pd.DataFrame({})
+#     bepidist_all = pd.DataFrame({})
 
-    for comb in combs:
+#     for comb in combs:
         
-        v = comb[0]
-        T = comb[1]
+#         v = comb[0]
+#         T = comb[1]
 
-        print(f"""
-        Simulation for ({v},{T}) started: ====================>
-        """)
+#         print(f"""
+#         Simulation for ({v},{T}) started: ====================>
+#         """)
 
-        try:
+#         try:
 
-            print("Started no behavior net")
-            net = nx.gnp_random_graph(n, ped)
-            epidist = episim(ntwk=net, epidemics=10, iterations=200, dispars=[0.05, 0.04])
-            epidist['V'] = v
-            epidist['T'] = T
+#             print("Started no behavior net")
+#             net = nx.gnp_random_graph(n, ped)
+#             epidist = episim(ntwk=net, epidemics=10, iterations=200, dispars=[0.05, 0.04])
+#             epidist['V'] = v
+#             epidist['T'] = T
 
-            print("Started behavior net")
-            net = nx.gnp_random_graph(n, ped)
-            bepidist = bepisim(ntwk=net, epidemics=10, iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=1)
-            bepidist['V'] = v
-            bepidist['T'] = T
+#             print("Started behavior net")
+#             net = nx.gnp_random_graph(n, ped)
+#             bepidist = bepisim(ntwk=net, epidemics=10, iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=1)
+#             bepidist['V'] = v
+#             bepidist['T'] = T
 
-            epidist_all = pd.concat([epidist_all, epidist], ignore_index=True)
-            bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+#             epidist_all = pd.concat([epidist_all, epidist], ignore_index=True)
+#             bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
 
-        except Exception as e:
-            print(f"Error with ({v},{T}): {e}")
+#         except Exception as e:
+#             print(f"Error with ({v},{T}): {e}")
 
-    epidist_all.to_csv(f'./Data/epidist.csv')
-    bepidist_all.to_csv(f'./Data/bepidist.csv')
-
-
-def get_all_figures():
-
-    vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
-    # Ts = list(range(7, 70, 7))
-
-    # Example with plots
-    T = 7
-    # v = 0.05
-    nei = 1
-
-    for idx, v in enumerate(vs):
-
-        print(v, T, nei, "------------>")
-
-        v_name = v
-        T_name = T
-
-        idx_use = f'{idx}_neigh_{nei}'
-
-        print("Started no behavior net")
-        net = nx.gnp_random_graph(n, ped)
-        epidist = episim(ntwk=net, epidemics=10,
-                         iterations=200, dispars=[0.05, 0.04])
-
-        print("Started behavior net")
-        net = nx.gnp_random_graph(n, ped)
-        bepidist = bepisim(ntwk=net, epidemics=10,
-                           iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=nei)
-
-        print("Figure 1 ----")
-
-        fig = plt.figure()
-        fig = infected_comparison_fig(epidist, bepidist,
-                                      fig, v_name, T_name, save=True, idx=idx_use)
-
-        print("Figure 2 ----")
-
-        fig = plt.figure()
-        fig = edge_reduction_comparison_fig(bepidist, fig,
-                                            v_name, T_name, save=True, idx=idx_use)
-        
-
-        print('Figure 3 ----')
-
-        fig = plt.figure()
-        fig = infected_edge_reduction_fig(bepidist, fig, 
-                                          v_name, T_name, save=True, idx=idx_use)
+#     epidist_all.to_csv(f'./Data/epidist.csv')
+#     bepidist_all.to_csv(f'./Data/bepidist.csv')
 
 
-def example_with_distributions():
+# def get_all_figures():
 
-    print('Example with distributions')
+#     vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
+#     # Ts = list(range(7, 70, 7))
 
-    x = [norm(7, 1), norm(16, 1)]
-    draw = np.random.choice([0, 1], n, p=[0.25, 0.75])
-    T = [int(x[i].rvs()) for i in draw]
+#     # Example with plots
+#     T = 7
+#     # v = 0.05
+#     nei = 1
 
-    v_dist = norm(0.05, 0.009)
-    v = [v_dist.rvs() for _ in range(n)]
+#     for idx, v in enumerate(vs):
 
-    distribution_df = pd.DataFrame({
-        'v': v,
-        'T': T
-    })
-    distribution_df.to_csv('distribution_example.csv')
+#         print(v, T, nei, "------------>")
 
-    # Plot the distributions:
-    plt.figure()
-    plt.hist(T)
-    plt.savefig(f'./Figures/T_dist_example_use.png')
+#         v_name = v
+#         T_name = T
 
-    plt.figure()
-    plt.hist(v)
-    plt.savefig(f'./Figures/v_dist_example_use.png')
+#         idx_use = f'{idx}_neigh_{nei}'
 
-    idx = 'Distribution'
-    v_name = 'norm(0.05, 0.01)'
-    T_name = 'norm(7,1) + norm(14,1)'
+#         print("Started no behavior net")
+#         net = nx.gnp_random_graph(n, ped)
+#         epidist = episim(ntwk=net, epidemics=10,
+#                          iterations=200, dispars=[0.05, 0.04])
 
-    print("Started no behavior net")
-    net = nx.gnp_random_graph(n, ped)
-    epidist = episim(ntwk=net, epidemics=50,
-                        iterations=200, dispars=[0.05, 0.04])
+#         print("Started behavior net")
+#         net = nx.gnp_random_graph(n, ped)
+#         bepidist = bepisim(ntwk=net, epidemics=10,
+#                            iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=nei)
 
-    print("Started behavior net")
-    net = nx.gnp_random_graph(n, ped)
-    bepidist = bepisim(ntwk=net, epidemics=50,
-                        iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=1)
-    
-    epidist.to_csv('./Data/Distribution_epidist.csv')
-    bepidist.to_csv('./Data/Distribution_bepidist.csv')
+#         print("Figure 1 ----")
 
-    print("Figure 1 ----")
+#         fig = plt.figure()
+#         fig = infected_comparison_fig(epidist, bepidist,
+#                                       fig, v_name, T_name, save=True, idx=idx_use)
 
-    fig = plt.figure()
-    fig = infected_comparison_fig(epidist, bepidist,
-                                    fig, 
-                                    v_name, T_name, save=True, idx=idx)
+#         print("Figure 2 ----")
 
-    print("Figure 2 ----")
-
-    fig = plt.figure()
-    fig = edge_reduction_comparison_fig(bepidist, fig,
-                                    v_name, T_name, save=True, idx=idx)
-    
-
-    print('Figure 3 ----')
-
-    fig = plt.figure()
-    fig = infected_edge_reduction_fig(bepidist, fig, 
-                                    v_name, T_name, save=True, idx=idx)
-
-
-def bifurcation_example():
-
-    pis = [round(pinf, 4) for pinf in np.linspace(0.00001, 0.1, 30)]
-    prs = [0.04] # [round(pinf, 4) for pinf in np.linspace(0.0001, 0.1, 20)]
-    combs = list(itertools.product(pis, prs))
-    v = 0.05
-    T = 7
-    nei = 1
-
-    epidist_all = pd.DataFrame({})
-    bepidist_all = pd.DataFrame({})
-
-    for idx, comb in enumerate(combs):
-
-        print(f' ---- {comb} ----')
-
-        print("Started no behavior net")
-        net = nx.gnp_random_graph(n, ped)
-        epidist = episim(ntwk=net, epidemics=10,
-                         iterations=200, dispars=[comb[0], comb[1]])
-
-        print("Started behavior net")
-        net = nx.gnp_random_graph(n, ped)
-        bepidist = bepisim(ntwk=net, epidemics=10,
-                           iterations=200, dispars=[comb[0], comb[1]], u=[v, T], neis=nei)
-        epidist['pi'] = comb[0]
-        bepidist['pi'] = comb[0]
-        epidist['pr'] = comb[1]
-        bepidist['pr'] = comb[1]
-        epidist_all = pd.concat([epidist_all, epidist], ignore_index=True)
-        bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+#         fig = plt.figure()
+#         fig = edge_reduction_comparison_fig(bepidist, fig,
+#                                             v_name, T_name, save=True, idx=idx_use)
         
 
-    epidist_all.to_csv(f'./Data/epidist_bifurcation.csv')
-    bepidist_all.to_csv(f'./Data/bepidist_bifurcation.csv')
+#         print('Figure 3 ----')
 
-# ----- Examples for appendix ----- #
-
-# 1. Vary the network type
-
-# 2. Vary the network connectivity
-def network_connectivity_experiment():
-    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 30)]
-    bepidist_all = pd.DataFrame({})
-    for conn in conns:
-        print(f' ---- Using ped == {conn} ----')
-        net = nx.gnp_random_graph(n, conn)
-        bepidist = bepisim(ntwk=net, epidemics=20,
-                           iterations=200,
-                           dispars=[0.05, 0.04],
-                           u=[0.05, 7],
-                           neis=1)
-        bepidist['ped'] = conn
-        bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
-    bepidist_all.to_csv(f'./Data/bepidist_ntwk_conn_erdos_renyi.csv')
-    print("Connectivity experiment done")
-
-# 3. Vary the time lag (Think about how to implement this)
-
-# 4. 
+#         fig = plt.figure()
+#         fig = infected_edge_reduction_fig(bepidist, fig, 
+#                                           v_name, T_name, save=True, idx=idx_use)
 
 
-if __name__ == '__main__':
+# def example_with_distributions():
 
-    # get_all_figures()
+#     print('Example with distributions')
 
-    # get_heatmap_data()
+#     x = [norm(7, 1), norm(16, 1)]
+#     draw = np.random.choice([0, 1], n, p=[0.25, 0.75])
+#     T = [int(x[i].rvs()) for i in draw]
 
-    # example_with_distributions()
+#     v_dist = norm(0.05, 0.009)
+#     v = [v_dist.rvs() for _ in range(n)]
 
-    # bifurcation_example()
+#     distribution_df = pd.DataFrame({
+#         'v': v,
+#         'T': T
+#     })
+#     distribution_df.to_csv('distribution_example.csv')
 
-    network_connectivity_experiment()
+#     # Plot the distributions:
+#     plt.figure()
+#     plt.hist(T)
+#     plt.savefig(f'./Figures/T_dist_example_use.png')
+
+#     plt.figure()
+#     plt.hist(v)
+#     plt.savefig(f'./Figures/v_dist_example_use.png')
+
+#     idx = 'Distribution'
+#     v_name = 'norm(0.05, 0.01)'
+#     T_name = 'norm(7,1) + norm(14,1)'
+
+#     print("Started no behavior net")
+#     net = nx.gnp_random_graph(n, ped)
+#     epidist = episim(ntwk=net, epidemics=50,
+#                         iterations=200, dispars=[0.05, 0.04])
+
+#     print("Started behavior net")
+#     net = nx.gnp_random_graph(n, ped)
+#     bepidist = bepisim(ntwk=net, epidemics=50,
+#                         iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=1)
+    
+#     epidist.to_csv('./Data/Distribution_epidist.csv')
+#     bepidist.to_csv('./Data/Distribution_bepidist.csv')
+
+#     print("Figure 1 ----")
+
+#     fig = plt.figure()
+#     fig = infected_comparison_fig(epidist, bepidist,
+#                                     fig, 
+#                                     v_name, T_name, save=True, idx=idx)
+
+#     print("Figure 2 ----")
+
+#     fig = plt.figure()
+#     fig = edge_reduction_comparison_fig(bepidist, fig,
+#                                     v_name, T_name, save=True, idx=idx)
+    
+
+#     print('Figure 3 ----')
+
+#     fig = plt.figure()
+#     fig = infected_edge_reduction_fig(bepidist, fig, 
+#                                     v_name, T_name, save=True, idx=idx)
+
+
+# def bifurcation_example():
+
+#     pis = [round(pinf, 4) for pinf in np.linspace(0.00001, 0.1, 30)]
+#     prs = [0.04] # [round(pinf, 4) for pinf in np.linspace(0.0001, 0.1, 20)]
+#     combs = list(itertools.product(pis, prs))
+#     v = 0.05
+#     T = 7
+#     nei = 1
+
+#     epidist_all = pd.DataFrame({})
+#     bepidist_all = pd.DataFrame({})
+
+#     for idx, comb in enumerate(combs):
+
+#         print(f' ---- {comb} ----')
+
+#         print("Started no behavior net")
+#         net = nx.gnp_random_graph(n, ped)
+#         epidist = episim(ntwk=net, epidemics=10,
+#                          iterations=200, dispars=[comb[0], comb[1]])
+
+#         print("Started behavior net")
+#         net = nx.gnp_random_graph(n, ped)
+#         bepidist = bepisim(ntwk=net, epidemics=10,
+#                            iterations=200, dispars=[comb[0], comb[1]], u=[v, T], neis=nei)
+#         epidist['pi'] = comb[0]
+#         bepidist['pi'] = comb[0]
+#         epidist['pr'] = comb[1]
+#         bepidist['pr'] = comb[1]
+#         epidist_all = pd.concat([epidist_all, epidist], ignore_index=True)
+#         bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+        
+
+#     epidist_all.to_csv(f'./Data/epidist_bifurcation.csv')
+#     bepidist_all.to_csv(f'./Data/bepidist_bifurcation.csv')
+
+# # ----- Examples for appendix ----- #
+
+# # 1. Vary the network type
+
+# # 2. Vary the network connectivity
+# def network_connectivity_experiment():
+#     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 30)]
+#     bepidist_all = pd.DataFrame({})
+#     for conn in conns:
+#         print(f' ---- Using ped == {conn} ----')
+#         net = nx.gnp_random_graph(n, conn)
+#         bepidist = bepisim(ntwk=net, epidemics=20,
+#                            iterations=200,
+#                            dispars=[0.05, 0.04],
+#                            u=[0.05, 7],
+#                            neis=1)
+#         bepidist['ped'] = conn
+#         bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+#     bepidist_all.to_csv(f'./Data/bepidist_ntwk_conn_erdos_renyi.csv')
+#     print("Connectivity experiment done")
+
+# # 3. Vary the time lag (Think about how to implement this)
+
+# # 4. 
+
+
+# if __name__ == '__main__':
+
+#     # get_all_figures()
+
+#     # get_heatmap_data()
+
+#     # example_with_distributions()
+
+#     # bifurcation_example()
+
+#     network_connectivity_experiment()
