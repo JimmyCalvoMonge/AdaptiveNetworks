@@ -22,6 +22,7 @@ from scipy.stats import norm
 
 n = 500
 ped = 0.05
+n_cores = 10
 
 # Get neighbors at levels (first, second, third level neighbors)
 def get_neighbors(ntw, node, levels):
@@ -161,7 +162,7 @@ def episim(ntwk, epidemics, iterations, dispars):
     pi = dispars[0]
     pr = dispars[1] # disease parameters
 
-    pool = multiprocessing.Pool(2)
+    pool = multiprocessing.Pool(n_cores)
     epidist = pool.map(functools.partial(epidemic, net=net, it=it, pi=pi, pr=pr), range(epis))
     epidist = pd.concat(epidist, ignore_index=True)
 
@@ -293,7 +294,7 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis):
     T = u[1] # time horizon
     ns = neis # Neighboorhood size to get the local prevalence
 
-    pool = multiprocessing.Pool(2)
+    pool = multiprocessing.Pool(n_cores)
     bepidist = pool.map(functools.partial(bepidemic, net=net, it=it,
                                          pi=pi, pr=pr, v=v,
                                          T=T, ns=ns), range(bepis))
@@ -528,16 +529,16 @@ def example_with_distributions():
 
     print("Started no behavior net")
     net = nx.gnp_random_graph(n, ped)
-    epidist = episim(ntwk=net, epidemics=20,
+    epidist = episim(ntwk=net, epidemics=50,
                         iterations=200, dispars=[0.05, 0.04])
 
     print("Started behavior net")
     net = nx.gnp_random_graph(n, ped)
-    bepidist = bepisim(ntwk=net, epidemics=20,
+    bepidist = bepisim(ntwk=net, epidemics=50,
                         iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=1)
     
-    epidist.to_csv('Distribution_epidist.csv')
-    bepidist.to_csv('Distribution_bepidist.csv')
+    epidist.to_csv('./Data/Distribution_epidist.csv')
+    bepidist.to_csv('./Data/Distribution_bepidist.csv')
 
     print("Figure 1 ----")
 
