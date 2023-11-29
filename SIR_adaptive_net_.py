@@ -22,7 +22,8 @@ from scipy.stats import norm
 
 n = 500
 ped = 0.05
-n_cores = 10
+n_cores = min(multiprocessing.cpu_count() -1, 10)
+print(f'Number of cores to use: {n_cores}')
 
 # Get neighbors at levels (first, second, third level neighbors)
 def get_neighbors(ntw, node, levels):
