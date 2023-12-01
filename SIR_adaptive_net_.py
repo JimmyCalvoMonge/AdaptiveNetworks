@@ -165,8 +165,10 @@ def episim(ntwk, epidemics, iterations, dispars):
 
     pool = multiprocessing.Pool(n_cores)
     epidist = pool.map(functools.partial(epidemic, net=net, it=it, pi=pi, pr=pr), range(epis))
+    pool.close()
+    pool.join()
+    
     epidist = pd.concat(epidist, ignore_index=True)
-
     epidist = epidist.groupby(['day'], as_index=False).agg(
                       {'s':['mean', 'max', 'min'],
                        'i':['mean', 'max', 'min'],
@@ -303,6 +305,8 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis):
     bepidist = pool.map(functools.partial(bepidemic, net=net, it=it,
                                          pi=pi, pr=pr, v=v,
                                          T=T, ns=ns), range(bepis))
+    pool.close()
+    pool.join()
     bepidist = pd.concat(bepidist, ignore_index=True)
 
     bepidist['edgecount'] = bepidist['edgecount']/np.nanmax(bepidist['edgecount'])
