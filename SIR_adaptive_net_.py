@@ -177,7 +177,7 @@ def episim(ntwk, epidemics, iterations, dispars):
     return epidist
 
 
-def bepidemic(index, net, it, pi, pr, v, T, ns):
+def bepidemic(index, net, it, pi, pr, v, T, ns, lag):
 
     bepidemic_ = pd.DataFrame({})
 
@@ -197,6 +197,8 @@ def bepidemic(index, net, it, pi, pr, v, T, ns):
 
     if not isinstance(T, list):
         T = [T]*n
+
+    i_history = []
 
     for t in range(it):
 
@@ -221,8 +223,15 @@ def bepidemic(index, net, it, pi, pr, v, T, ns):
         upr = [1 if (inew[k] == 1) and (newrec[k] == True) else 0 for k in range(n)]
         rnew = [r[k] + upr[k] for k in range(n)]
         inew = [inew[k] - upr[k] for k in range(n)]
+
+        i_history.append(inew)
+
+        if len(i_history) >= lag:
+            i_use = i_history[-lag]
+        else:
+            i_use = inew
         
-        # Update variable vectors 
+        # Update variable vectors
         s = snew
         i = inew
         r = rnew
@@ -234,7 +243,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns):
         # sus=Flatten@Position[s,1];
         # infofsus=infneighs[net,#,ns,i]&/@sus;
         sus = [k for k in range(n) if s[k] == 1]
-        infofsus = [infneighs(net, node, ns, i) for node in sus]
+        infofsus = [infneighs(net, node, ns, i_use) for node in sus]
 
         # (*Get only the info of susceptible with  infected neighbours*)
         # susinfs=Table[If[infofsus[[k,2]]!=0,infofsus[[k]]],{k,1,Length@sus}]/.Null->Sequence[];
@@ -247,7 +256,6 @@ def bepidemic(index, net, it, pi, pr, v, T, ns):
         # (*Get the list of the form {susceptible  id,{list of infected neighbours to remove}}*)
         # list=Table[{susinfs[[k,1]],RandomSample[susinfs[[k,3]],susinfs[[k,2]]-redneighs[[k]]]},{k,1,Length[redneighs]}];
         list_ = [[susinfs[k][0], random.sample(susinfs[k][2], susinfs[k][1] - redneighs[k])] for k in range(len(redneighs))]
-
 
         # (*Create the list of all the edges to remove at time t: of the form {s,i-rem}*)
         # edgestorem=Flatten[
@@ -290,7 +298,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns):
     return bepidemic_
 
 
-def bepisim(ntwk, epidemics, iterations, dispars, u, neis):
+def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
     
     net = ntwk
     bepis = epidemics
@@ -300,11 +308,12 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis):
     v = u[0] # utility parameters
     T = u[1] # time horizon
     ns = neis # Neighboorhood size to get the local prevalence
+    lag = kwargs.get('lag', 1)
 
     pool = multiprocessing.Pool(n_cores)
     bepidist = pool.map(functools.partial(bepidemic, net=net, it=it,
                                          pi=pi, pr=pr, v=v,
-                                         T=T, ns=ns), range(bepis))
+                                         T=T, ns=ns, lag=lag), range(bepis))
     pool.close()
     pool.join()
     bepidist = pd.concat(bepidist, ignore_index=True)
@@ -474,7 +483,7 @@ def get_all_figures():
         v_name = v
         T_name = T
 
-        idx_use = f'{idx}_neigh_{nei}'
+        idx_use = f'{idx}_neigh_{nei}_lag_7'
 
         print("Started no behavior net")
         net = nx.gnp_random_graph(n, ped)
@@ -484,7 +493,7 @@ def get_all_figures():
         print("Started behavior net")
         net = nx.gnp_random_graph(n, ped)
         bepidist = bepisim(ntwk=net, epidemics=10,
-                           iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=nei)
+                           iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=nei, lag=7)
 
         print("Figure 1 ----")
 
@@ -651,7 +660,7 @@ def small_world_network():
 
 # 2. Vary the network connectivity
 def network_connectivity_experiment():
-    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 30)]
+    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
     bepidist_all = pd.DataFrame({})
     for conn in conns:
         print(f' ---- Using ped == {conn} ----')
@@ -669,8 +678,6 @@ def network_connectivity_experiment():
 
 # 3. Vary the time lag (Think about how to implement this)
 
-# 4. 
-
 
 if __name__ == '__main__':
 
@@ -682,8 +689,8 @@ if __name__ == '__main__':
 
     # bifurcation_example()
 
-    # network_connectivity_experiment()
+    network_connectivity_experiment()
 
     # barabasi_albert_network_experiment()
 
-    small_world_network()
+    # small_world_network()
