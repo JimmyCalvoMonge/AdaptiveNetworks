@@ -295,11 +295,14 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, lag):
             'suscedgecount': sus_contacts_ratios
         })])
 
+    bepidemic_['edgecount'] = bepidemic_['edgecount']/np.nanmax(bepidemic_['edgecount'])
+    bepidemic_['suscedgecount'] = bepidemic_['suscedgecount']/np.nanmax(bepidemic_['suscedgecount'])
+
     return bepidemic_
 
 
 def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
-    
+
     net = ntwk
     bepis = epidemics
     it = iterations
@@ -317,9 +320,6 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
     pool.close()
     pool.join()
     bepidist = pd.concat(bepidist, ignore_index=True)
-
-    bepidist['edgecount'] = bepidist['edgecount']/np.nanmax(bepidist['edgecount'])
-    bepidist['suscedgecount'] = bepidist['suscedgecount']/np.nanmax(bepidist['suscedgecount'])
 
     bepidist = bepidist.groupby(['day'], as_index=False).agg(
                       {'s':['mean', 'max', 'min'],
@@ -660,19 +660,51 @@ def small_world_network():
 
 # 2. Vary the network connectivity
 def network_connectivity_experiment():
+    
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
     bepidist_all = pd.DataFrame({})
+    lag = 1
+
     for conn in conns:
+
         print(f' ---- Using ped == {conn} ----')
         net = nx.gnp_random_graph(n, conn)
-        bepidist = bepisim(ntwk=net,
-                           epidemics=20,
-                           iterations=200,
-                           dispars=[0.05, 0.04],
-                           u=[0.05, 7],
-                           neis=1)
-        bepidist['ped'] = conn
-        bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+        pool = multiprocessing.Pool(n_cores)
+        bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
+                                            pi=0.05, pr=0.04, v=0.05,
+                                            T=7, ns=1, lag=lag), range(20))
+        pool.close()
+        pool.join()
+        print('========================= ')
+
+        day_lags_ = []
+        for bepidist_ in bepidist:
+            try:
+                day_lags_.append(np.nanargmin(bepidist_['suscedgecount']) - np.nanargmin(bepidist_['edgecount']))
+            except Exception:
+                pass
+
+        day_lags_df_ = pd.DataFrame({
+            'day_lags': [day_lags_]
+        })
+        day_lags_df_['ped'] = conn
+        bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
+
+        # bepidist = bepidist.groupby(['day'], as_index=False).agg(
+        #               {'s':['mean', 'max', 'min'],
+        #                'i':['mean', 'max', 'min'],
+        #                'r':['mean', 'max', 'min'],
+        #                'edgecount':['mean', 'max', 'min'],
+        #                'suscedgecount':['mean', 'max', 'min']})
+
+        # bepidist = bepisim(ntwk=net,
+        #                    epidemics=20,
+        #                    iterations=200,
+        #                    dispars=[0.05, 0.04],
+        #                    u=[0.05, 7],
+        #                    neis=1)
+        # bepidist['ped'] = conn
+
     bepidist_all.to_csv('./Data/bepidist_ntwk_conn_erdos_renyi.csv')
     print("Connectivity experiment done")
 
