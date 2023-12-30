@@ -672,7 +672,7 @@ def network_connectivity_experiment():
         pool = multiprocessing.Pool(n_cores)
         bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
                                             pi=0.05, pr=0.04, v=0.05,
-                                            T=7, ns=1, lag=lag), range(20))
+                                            T=7, ns=1, lag=lag), range(200))
         pool.close()
         pool.join()
         print('========================= ')
@@ -685,7 +685,7 @@ def network_connectivity_experiment():
                 pass
 
         day_lags_df_ = pd.DataFrame({
-            'day_lags': [day_lags_]
+            'day_lags': day_lags_
         })
         day_lags_df_['ped'] = conn
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
