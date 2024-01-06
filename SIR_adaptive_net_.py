@@ -538,8 +538,8 @@ def example_with_distributions():
     pop2_T = [int(t) for t in pop2_T]
     T = pop1_T + pop2_T
 
-    pop1_v = list(np.random.normal(0.05, 0.002, pop1_n))
-    pop2_v = list(np.random.normal(0.08, 0.005, pop2_n))
+    pop1_v = list(np.random.normal(0.05, 0.0025, pop1_n))
+    pop2_v = list(np.random.normal(0.08, 0.006, pop2_n))
     v = pop1_v + pop2_v
 
     # We have two populations:
