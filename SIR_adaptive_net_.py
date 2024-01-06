@@ -538,13 +538,17 @@ def example_with_distributions():
     pop2_T = [int(t) for t in pop2_T]
     T = pop1_T + pop2_T
 
-    pop1_v = list(np.random.normal(0.05, 0.009, pop1_n))
-    pop2_v = list(np.random.normal(0.08, 0.009, pop2_n))
+    pop1_v = list(np.random.normal(0.05, 0.002, pop1_n))
+    pop2_v = list(np.random.normal(0.08, 0.005, pop2_n))
     v = pop1_v + pop2_v
 
     # We have two populations:
     # Pop 1: n = 200, centered arround 7 days horizon and 0.05 utility parameter (more risk averse)
     # Pop 2: n = 500, centered arround 16 days horizon and 0.08 utility parameter (less risk averse)
+
+    # Example semi-homogeneous:
+    # T = [7]*pop1_n + [16]*pop2_n
+    # v = [0.05]*pop1_n + [0.08]*pop2_n
 
     distribution_df = pd.DataFrame({
         'v': v,
