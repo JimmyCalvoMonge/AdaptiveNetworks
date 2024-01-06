@@ -285,7 +285,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns):
             'suscedgecount': sus_contacts_ratios
         })])
 
-        bepidemic_edge_count[f'day_{t}'] = [len(rednet.neighbors(node)) for node in range(n)]
+        bepidemic_edge_count[f'day_{t}'] = [len(list(rednet.neighbors(node))) for node in range(n)]
 
     bepidemic_['edgecount'] = bepidemic_['edgecount']/np.nanmax(bepidemic_['edgecount'])
     bepidemic_['suscedgecount'] = bepidemic_['suscedgecount']/np.nanmax(bepidemic_['suscedgecount'])
