@@ -171,6 +171,11 @@ def episim(ntwk, epidemics, iterations, dispars):
                       {'s':['mean', 'max', 'min', 'std'],
                        'i':['mean', 'max', 'min', 'std'],
                        'r':['mean', 'max', 'min', 'std']})
+    epidist.columns = epidist.columns.droplevel()
+    epidist.columns = ['day', 
+                       's_mean', 's_min', 's_max', 's_std',
+                       'i_mean', 'i_min', 'i_max', 'i_std',
+                       'r_mean', 'r_min', 'r_max', 'r_std']
 
     return epidist
 
@@ -338,13 +343,13 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
 
 def infected_comparison_fig(epidist, bepidist, fig, v, T, **kwargs):
 
-    mean = (epidist[('i', 'mean')]/n).tolist()
-    lower = (epidist[('i', 'min')]/n).tolist()
-    upper = (epidist[('i', 'max')]/n).tolist()
+    mean = (epidist['i_mean']/n).tolist()
+    lower = (epidist['i_min']/n).tolist()
+    upper = (epidist['i_max']/n).tolist()
 
-    meanb = (bepidist[('i', 'mean')]/n).tolist()
-    lowerb = (bepidist[('i', 'min')]/n).tolist()
-    upperb = (bepidist[('i', 'max')]/n).tolist()
+    meanb = (bepidist['i_mean']/n).tolist()
+    lowerb = (bepidist['i_min']/n).tolist()
+    upperb = (bepidist['i_max']/n).tolist()
 
     axarr = fig.add_subplot(1,1,1)
 
@@ -368,13 +373,13 @@ def infected_comparison_fig(epidist, bepidist, fig, v, T, **kwargs):
 
 def edge_reduction_comparison_fig(bepidist, fig, v, T, **kwargs):
 
-    mean_all = bepidist[('edgecount', 'mean')].tolist()
-    lower_all = bepidist[('edgecount', 'min')].tolist()
-    upper_all = bepidist[('edgecount', 'max')].tolist()
+    mean_all = bepidist['edgecount_mean'].tolist()
+    lower_all = bepidist['edgecount_min'].tolist()
+    upper_all = bepidist['edgecount_max'].tolist()
 
-    mean_sus = bepidist[('suscedgecount', 'mean')].tolist()
-    lower_sus = bepidist[('suscedgecount', 'min')].tolist()
-    upper_sus = bepidist[('suscedgecount', 'max')].tolist()
+    mean_sus = bepidist['suscedgecount_mean'].tolist()
+    lower_sus = bepidist['suscedgecount_min'].tolist()
+    upper_sus = bepidist['suscedgecount_max'].tolist()
 
     axarr = fig.add_subplot(1,1,1)
 
@@ -394,17 +399,17 @@ def edge_reduction_comparison_fig(bepidist, fig, v, T, **kwargs):
 
 def infected_edge_reduction_fig(bepidist, fig, v, T, **kwargs):
 
-    meanb = (bepidist[('i', 'mean')]/n).tolist()
-    lowerb = (bepidist[('i', 'min')]/n).tolist()
-    upperb = (bepidist[('i', 'max')]/n).tolist()
+    meanb = (bepidist['i_mean']/n).tolist()
+    lowerb = (bepidist['i_min']/n).tolist()
+    upperb = (bepidist['i_max']/n).tolist()
 
-    meanbs = (bepidist[('s', 'mean')]/n).tolist()
-    lowerbs = (bepidist[('s', 'min')]/n).tolist()
-    upperbs = (bepidist[('s', 'max')]/n).tolist()
+    meanbs = (bepidist['s_mean']/n).tolist()
+    lowerbs = (bepidist['s_min']/n).tolist()
+    upperbs = (bepidist['s_max']/n).tolist()
 
-    mean_sus = bepidist[('suscedgecount', 'mean')].tolist()
-    lower_sus = bepidist[('suscedgecount', 'min')].tolist()
-    upper_sus = bepidist[('suscedgecount', 'max')].tolist()
+    mean_sus = bepidist['suscedgecount_mean'].tolist()
+    lower_sus = bepidist['suscedgecount_min'].tolist()
+    upper_sus = bepidist['suscedgecount_max'].tolist()
 
     axarr = fig.add_subplot(1,1,1)
 
