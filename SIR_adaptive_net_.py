@@ -14,7 +14,6 @@ import pandas as pd
 import multiprocessing
 import functools
 from matplotlib import pyplot as plt
-import time
 import warnings
 warnings.filterwarnings("ignore")
 import itertools
@@ -41,7 +40,6 @@ def infneighs(ntw, node, ns, ilist):
     return [node, len(infneigh), infneigh]
 
 # Single peak function
-
 def fs(x,y,z):
     return (x*z - z**2)**y
 
@@ -170,16 +168,17 @@ def episim(ntwk, epidemics, iterations, dispars):
     
     epidist = pd.concat(epidist, ignore_index=True)
     epidist = epidist.groupby(['day'], as_index=False).agg(
-                      {'s':['mean', 'max', 'min'],
-                       'i':['mean', 'max', 'min'],
-                       'r':['mean', 'max', 'min']})
+                      {'s':['mean', 'max', 'min', 'std'],
+                       'i':['mean', 'max', 'min', 'std'],
+                       'r':['mean', 'max', 'min', 'std']})
 
     return epidist
 
 
-def bepidemic(index, net, it, pi, pr, v, T, ns, lag):
+def bepidemic(index, net, it, pi, pr, v, T, ns):
 
     bepidemic_ = pd.DataFrame({})
+    bepidemic_edge_count = pd.DataFrame({'index': [index]*n, 'node': list(range(n))})
 
     i0 = random.randint(0, n-1)
     i = [1 if k == i0 else 0 for k in range(n)]
@@ -197,8 +196,6 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, lag):
 
     if not isinstance(T, list):
         T = [T]*n
-
-    i_history = []
 
     for t in range(it):
 
@@ -223,13 +220,6 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, lag):
         upr = [1 if (inew[k] == 1) and (newrec[k] == True) else 0 for k in range(n)]
         rnew = [r[k] + upr[k] for k in range(n)]
         inew = [inew[k] - upr[k] for k in range(n)]
-
-        i_history.append(inew)
-
-        if len(i_history) >= lag:
-            i_use = i_history[-lag]
-        else:
-            i_use = inew
         
         # Update variable vectors
         s = snew
@@ -243,7 +233,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, lag):
         # sus=Flatten@Position[s,1];
         # infofsus=infneighs[net,#,ns,i]&/@sus;
         sus = [k for k in range(n) if s[k] == 1]
-        infofsus = [infneighs(net, node, ns, i_use) for node in sus]
+        infofsus = [infneighs(net, node, ns, inew) for node in sus]
 
         # (*Get only the info of susceptible with  infected neighbours*)
         # susinfs=Table[If[infofsus[[k,2]]!=0,infofsus[[k]]],{k,1,Length@sus}]/.Null->Sequence[];
@@ -295,10 +285,12 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, lag):
             'suscedgecount': sus_contacts_ratios
         })])
 
+        bepidemic_edge_count[f'day_{t}'] = [nx.ego_graph(rednet, node) for node in range(n)]
+
     bepidemic_['edgecount'] = bepidemic_['edgecount']/np.nanmax(bepidemic_['edgecount'])
     bepidemic_['suscedgecount'] = bepidemic_['suscedgecount']/np.nanmax(bepidemic_['suscedgecount'])
 
-    return bepidemic_
+    return [bepidemic_ , bepidemic_edge_count]
 
 
 def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
@@ -311,15 +303,14 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
     v = u[0] # utility parameters
     T = u[1] # time horizon
     ns = neis # Neighboorhood size to get the local prevalence
-    lag = kwargs.get('lag', 1)
 
     pool = multiprocessing.Pool(n_cores)
     bepidist = pool.map(functools.partial(bepidemic, net=net, it=it,
                                          pi=pi, pr=pr, v=v,
-                                         T=T, ns=ns, lag=lag), range(bepis))
+                                         T=T, ns=ns), range(bepis))
     pool.close()
     pool.join()
-    bepidist = pd.concat(bepidist, ignore_index=True)
+    bepidist = pd.concat([bep[0] for bep in bepidist], ignore_index=True)
 
     bepidist = bepidist.groupby(['day'], as_index=False).agg(
                       {'s':['mean', 'max', 'min'],
@@ -327,6 +318,12 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
                        'r':['mean', 'max', 'min'],
                        'edgecount':['mean', 'max', 'min'],
                        'suscedgecount':['mean', 'max', 'min']})
+
+    # Get contact information for each individual at each day. For all simulations.
+    get_susc_graph = kwargs.get('get_susc_graph', False)
+    if get_susc_graph:
+        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist], ignore_index=True)
+        return bepidist, bepidist_contacts_
 
     return bepidist
 
@@ -483,7 +480,7 @@ def get_all_figures():
         v_name = v
         T_name = T
 
-        idx_use = f'{idx}_neigh_{nei}_lag_7'
+        idx_use = f'{idx}_neigh_{nei}'
 
         print("Started no behavior net")
         net = nx.gnp_random_graph(n, ped)
@@ -493,7 +490,7 @@ def get_all_figures():
         print("Started behavior net")
         net = nx.gnp_random_graph(n, ped)
         bepidist = bepisim(ntwk=net, epidemics=10,
-                           iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=nei, lag=7)
+                           iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=nei)
 
         print("Figure 1 ----")
 
@@ -519,12 +516,22 @@ def example_with_distributions():
 
     print('Example with distributions')
 
-    x = [norm(7, 1), norm(16, 1)]
-    draw = np.random.choice([0, 1], n, p=[0.25, 0.75])
-    T = [int(x[i].rvs()) for i in draw]
+    pop1_n = 200
+    pop2_n = 300
 
-    v_dist = norm(0.05, 0.009)
-    v = [v_dist.rvs() for _ in range(n)]
+    pop1_T = list(np.random.normal(7, 1, pop1_n))
+    pop1_T = [int(t) for t in pop1_T]
+    pop2_T = list(np.random.normal(16, 1, pop2_n))
+    pop2_T = [int(t) for t in pop2_T]
+    T = pop1_T + pop2_T
+
+    pop1_v = list(np.random.normal(0.05, 0.009, pop1_n))
+    pop2_v = list(np.random.normal(0.08, 0.009, pop2_n))
+    v = pop1_v + pop2_v
+
+    # We have two populations:
+    # Pop 1: n = 200, centered arround 7 days horizon and 0.05 utility parameter (more risk averse)
+    # Pop 2: n = 500, centered arround 16 days horizon and 0.08 utility parameter (less risk averse)
 
     distribution_df = pd.DataFrame({
         'v': v,
@@ -541,9 +548,9 @@ def example_with_distributions():
     plt.hist(v)
     plt.savefig(f'./Figures/v_dist_example_use.png')
 
-    idx = 'Distribution'
+    idx = 'DistributionExample'
     v_name = 'norm(0.05, 0.01)'
-    T_name = 'norm(7,1) + norm(14,1)'
+    T_name = 'norm(7,1) + norm(16,1)'
 
     print("Started no behavior net")
     net = nx.gnp_random_graph(n, ped)
@@ -552,28 +559,28 @@ def example_with_distributions():
 
     print("Started behavior net")
     net = nx.gnp_random_graph(n, ped)
-    bepidist = bepisim(ntwk=net, epidemics=50,
-                        iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=1)
-    
+    bepidist, bepidist_contacts_ = bepisim(ntwk=net, epidemics=50,
+                       iterations=200,
+                       dispars=[0.05, 0.04],
+                       u=[v, T],
+                       neis=1, get_susc_graph=True)
+
     epidist.to_csv('./Data/Distribution_epidist.csv')
     bepidist.to_csv('./Data/Distribution_bepidist.csv')
+    bepidist_contacts_.to_csv('./Data/Distribution_bepidist_contacts.csv')
 
     print("Figure 1 ----")
-
     fig = plt.figure()
     fig = infected_comparison_fig(epidist, bepidist,
                                     fig, 
                                     v_name, T_name, save=True, idx=idx)
 
     print("Figure 2 ----")
-
     fig = plt.figure()
     fig = edge_reduction_comparison_fig(bepidist, fig,
                                     v_name, T_name, save=True, idx=idx)
-    
 
     print('Figure 3 ----')
-
     fig = plt.figure()
     fig = infected_edge_reduction_fig(bepidist, fig, 
                                     v_name, T_name, save=True, idx=idx)
@@ -603,7 +610,8 @@ def bifurcation_example():
         print("Started behavior net")
         net = nx.gnp_random_graph(n, ped)
         bepidist = bepisim(ntwk=net, epidemics=10,
-                           iterations=200, dispars=[comb[0], comb[1]], u=[v, T], neis=nei)
+                           iterations=200, dispars=[comb[0],
+                                                    comb[1]], u=[v, T], neis=nei)
         epidist['pi'] = comb[0]
         bepidist['pi'] = comb[0]
         epidist['pr'] = comb[1]
@@ -663,7 +671,6 @@ def network_connectivity_experiment():
     
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
     bepidist_all = pd.DataFrame({})
-    lag = 1
 
     for conn in conns:
 
@@ -672,7 +679,7 @@ def network_connectivity_experiment():
         pool = multiprocessing.Pool(n_cores)
         bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
                                             pi=0.05, pr=0.04, v=0.05,
-                                            T=7, ns=1, lag=lag), range(200))
+                                            T=7, ns=1), range(200))
         pool.close()
         pool.join()
         print('========================= ')
@@ -690,38 +697,23 @@ def network_connectivity_experiment():
         day_lags_df_['ped'] = conn
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
 
-        # bepidist = bepidist.groupby(['day'], as_index=False).agg(
-        #               {'s':['mean', 'max', 'min'],
-        #                'i':['mean', 'max', 'min'],
-        #                'r':['mean', 'max', 'min'],
-        #                'edgecount':['mean', 'max', 'min'],
-        #                'suscedgecount':['mean', 'max', 'min']})
-
-        # bepidist = bepisim(ntwk=net,
-        #                    epidemics=20,
-        #                    iterations=200,
-        #                    dispars=[0.05, 0.04],
-        #                    u=[0.05, 7],
-        #                    neis=1)
-        # bepidist['ped'] = conn
-
     bepidist_all.to_csv('./Data/bepidist_ntwk_conn_erdos_renyi.csv')
     print("Connectivity experiment done")
 
-# 3. Vary the time lag (Think about how to implement this)
-
 
 if __name__ == '__main__':
+
+    print("Starting Experiments ====>")
 
     # get_all_figures()
 
     # get_heatmap_data()
 
-    # example_with_distributions()
+    example_with_distributions()
 
     # bifurcation_example()
 
-    network_connectivity_experiment()
+    # network_connectivity_experiment()
 
     # barabasi_albert_network_experiment()
 
