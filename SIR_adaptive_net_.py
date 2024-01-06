@@ -547,8 +547,8 @@ def example_with_distributions():
     # Pop 2: n = 500, centered arround 16 days horizon and 0.08 utility parameter (less risk averse)
 
     # Example semi-homogeneous:
-    # T = [7]*pop1_n + [16]*pop2_n
-    # v = [0.05]*pop1_n + [0.08]*pop2_n
+    T = [7]*pop1_n + [16]*pop2_n
+    v = [0.05]*pop1_n + [0.08]*pop2_n
 
     distribution_df = pd.DataFrame({
         'v': v,
