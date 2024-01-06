@@ -313,11 +313,19 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
     bepidist = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
 
     bepidist = bepidist.groupby(['day'], as_index=False).agg(
-                      {'s':['mean', 'max', 'min'],
-                       'i':['mean', 'max', 'min'],
-                       'r':['mean', 'max', 'min'],
-                       'edgecount':['mean', 'max', 'min'],
-                       'suscedgecount':['mean', 'max', 'min']})
+                      {'s':['mean', 'max', 'min', 'std'],
+                       'i':['mean', 'max', 'min', 'std'],
+                       'r':['mean', 'max', 'min', 'std'],
+                       'edgecount':['mean', 'max', 'min', 'std'],
+                       'suscedgecount':['mean', 'max', 'min', 'std']})
+    
+    bepidist.columns = bepidist.columns.droplevel()
+    bepidist.columns = ['day', 
+                        's_mean', 's_min', 's_max', 's_std', 
+                        'i_mean', 'i_min', 'i_max', 'i_std', 
+                        'r_mean', 'r_min', 'r_max', 'r_std',
+                        'edgecount_mean', 'edgecount_min', 'edgecount_max', 'edgecount_std', 
+                        'suscedgecount_mean', 'suscedgecount_min', 'suscedgecount_max', 'suscedgecount_std']
 
     # Get contact information for each individual at each day. For all simulations.
     get_susc_graph = kwargs.get('get_susc_graph', False)
@@ -459,8 +467,8 @@ def get_heatmap_data():
         except Exception as e:
             print(f"Error with ({v},{T}): {e}")
 
-    epidist_all.to_csv(f'./Data/epidist.csv')
-    bepidist_all.to_csv(f'./Data/bepidist.csv')
+    epidist_all.to_csv(f'./Data/epidist.csv', index=False)
+    bepidist_all.to_csv(f'./Data/bepidist.csv', index=False)
 
 
 def get_all_figures():
@@ -537,7 +545,7 @@ def example_with_distributions():
         'v': v,
         'T': T
     })
-    distribution_df.to_csv('distribution_example.csv')
+    distribution_df.to_csv('distribution_example.csv', index=False)
 
     # Plot the distributions:
     plt.figure()
@@ -565,9 +573,9 @@ def example_with_distributions():
                        u=[v, T],
                        neis=1, get_susc_graph=True)
 
-    epidist.to_csv('./Data/Distribution_epidist.csv')
-    bepidist.to_csv('./Data/Distribution_bepidist.csv')
-    bepidist_contacts_.to_csv('./Data/Distribution_bepidist_contacts.csv')
+    epidist.to_csv('./Data/Distribution_epidist.csv', index=False)
+    bepidist.to_csv('./Data/Distribution_bepidist.csv', index=False)
+    bepidist_contacts_.to_csv('./Data/Distribution_bepidist_contacts.csv', index=False)
 
     print("Figure 1 ----")
     fig = plt.figure()
@@ -641,7 +649,7 @@ def barabasi_albert_network_experiment():
                            neis=1)
         bepidist['m'] = m
         bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
-    bepidist_all.to_csv('./Data/bepidist_ntwk_barabasi_albert.csv')
+    bepidist_all.to_csv('./Data/bepidist_ntwk_barabasi_albert.csv', index=False)
     print("Barabasi Albert experiment done")
 
 
@@ -662,7 +670,7 @@ def small_world_network():
         bepidist['m'] = comb[0]
         bepidist['ped'] = comb[1]
         bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
-    bepidist_all.to_csv('./Data/bepidist_ntwk_small_world.csv')
+    bepidist_all.to_csv('./Data/bepidist_ntwk_small_world.csv', index=False)
     print("Small World experiment done")
 
 
@@ -697,7 +705,7 @@ def network_connectivity_experiment():
         day_lags_df_['ped'] = conn
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
 
-    bepidist_all.to_csv('./Data/bepidist_ntwk_conn_erdos_renyi.csv')
+    bepidist_all.to_csv('./Data/bepidist_ntwk_conn_erdos_renyi.csv', index=False)
     print("Connectivity experiment done")
 
 
