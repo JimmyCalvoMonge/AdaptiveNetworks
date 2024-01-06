@@ -305,12 +305,12 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
     ns = neis # Neighboorhood size to get the local prevalence
 
     pool = multiprocessing.Pool(n_cores)
-    bepidist = pool.map(functools.partial(bepidemic, net=net, it=it,
+    bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
                                          pi=pi, pr=pr, v=v,
                                          T=T, ns=ns), range(bepis))
     pool.close()
     pool.join()
-    bepidist = pd.concat([bep[0] for bep in bepidist], ignore_index=True)
+    bepidist = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
 
     bepidist = bepidist.groupby(['day'], as_index=False).agg(
                       {'s':['mean', 'max', 'min'],
@@ -322,7 +322,7 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
     # Get contact information for each individual at each day. For all simulations.
     get_susc_graph = kwargs.get('get_susc_graph', False)
     if get_susc_graph:
-        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist], ignore_index=True)
+        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
         return bepidist, bepidist_contacts_
 
     return bepidist
