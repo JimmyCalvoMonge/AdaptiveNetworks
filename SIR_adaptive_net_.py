@@ -321,8 +321,9 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
         bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
                                             pi=pi, pr=pr, v=v,
                                             T=T, ns=ns), range(bepis))
-    pool.close()
-    pool.join()
+        pool.close()
+        pool.join()
+
     bepidist = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
 
     bepidist = bepidist.groupby(['day'], as_index=False).agg(
