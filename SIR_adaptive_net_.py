@@ -333,8 +333,8 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
                         'suscedgecount_mean', 'suscedgecount_min', 'suscedgecount_max', 'suscedgecount_std']
 
     # Get contact information for each individual at each day. For all simulations.
-    get_susc_graph = kwargs.get('get_susc_graph', False)
-    if get_susc_graph:
+    get_node_history = kwargs.get('get_node_history', False)
+    if get_node_history:
         bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
         return bepidist, bepidist_contacts_
 
@@ -580,7 +580,7 @@ def example_with_distributions():
                        iterations=200,
                        dispars=[0.05, 0.04],
                        u=[v, T],
-                       neis=1, get_susc_graph=True)
+                       neis=1, get_node_history=True)
 
     epidist.to_csv('./Data/Distribution_epidist.csv', index=False)
     bepidist.to_csv('./Data/Distribution_bepidist.csv', index=False)
@@ -641,8 +641,35 @@ def bifurcation_example():
     bepidist_all.to_csv(f'./Data/bepidist_bifurcation.csv')
 
 # ----- Examples for appendix ----- #
+    
+# ====== Adaptive SIR vs Network ====== #
 
-# 1. Vary the network type
+def example_network_and_nodes():
+
+    print('Example with network and nodes')
+
+    v = 0.05
+    T = 7
+
+    print("Started no behavior net")
+    net = nx.gnp_random_graph(n, ped)
+    epidist = episim(ntwk=net, epidemics=50,
+                        iterations=200, dispars=[0.05, 0.04])
+
+    print("Started behavior net")
+    net = nx.gnp_random_graph(n, ped)
+    bepidist, bepidist_contacts_ = bepisim(ntwk=net, epidemics=50,
+                       iterations=200,
+                       dispars=[0.05, 0.04],
+                       u=[v, T],
+                       neis=1, get_node_history=True)
+
+    epidist.to_csv('./Data/ExampleNetworkNodes_epidist.csv', index=False)
+    bepidist.to_csv('./Data/ExampleNetworkNodes_bepidist.csv', index=False)
+    bepidist_contacts_.to_csv('./Data/ExampleNetworkNodes_contacts.csv', index=False)
+
+
+# Vary the network type
 
 def barabasi_albert_network_experiment():
     mms = [10,20,30,40,50]
@@ -726,9 +753,11 @@ if __name__ == '__main__':
 
     # get_heatmap_data()
 
-    example_with_distributions()
+    # example_with_distributions()
 
     # bifurcation_example()
+
+    example_network_and_nodes()
 
     # network_connectivity_experiment()
 

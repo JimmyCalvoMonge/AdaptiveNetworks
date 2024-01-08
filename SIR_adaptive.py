@@ -50,7 +50,7 @@ def state_odes_system(x, t, Beta, Lambda, Mu, Gamma, cs, ci, cr):
     return [dsdt, didt, drdt]
 
 
-def SIRB(pops, poppars, dispars, cv, soltimes):
+def SIRB(pops, poppars, dispars, cv, soltimes, **kwargs):
 
     """
     SIRB[pops_, poppars_, dispars_, cv_, soltimes_] :=
@@ -105,9 +105,12 @@ def SIRB(pops, poppars, dispars, cv, soltimes):
     start = soltimes[0]
     end = soltimes[1]
 
-    steps = 100
+    steps = kwargs.get('steps', 100)
+    if steps:
+        t = np.linspace(start, end, (end-start)*steps)
+    else:
+        t = np.arange(start, end)
 
-    t = np.linspace(start, end, steps + 1)
     x = odeint(state_odes_system, [s0,i0,r0], t, args=(Beta, Lambda, Mu, Gamma, cs, ci, cr))
 
     s = x[:, 0]
