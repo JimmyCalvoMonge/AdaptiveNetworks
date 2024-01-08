@@ -309,10 +309,15 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
     T = u[1] # time horizon
     ns = neis # Neighboorhood size to get the local prevalence
 
-    pool = multiprocessing.Pool(n_cores)
-    bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
-                                         pi=pi, pr=pr, v=v,
-                                         T=T, ns=ns), range(bepis))
+    if bepis < n_cores:
+        bepidist0 = [bepidemic(i, net=net, it=it,
+                               pi=pi, pr=pr, v=v,
+                               T=T, ns=ns) for i in range(bepis)]
+    else:
+        pool = multiprocessing.Pool(n_cores)
+        bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
+                                            pi=pi, pr=pr, v=v,
+                                            T=T, ns=ns), range(bepis))
     pool.close()
     pool.join()
     bepidist = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
@@ -651,20 +656,14 @@ def example_network_and_nodes():
     v = 0.05
     T = 7
 
-    print("Started no behavior net")
-    net = nx.gnp_random_graph(n, ped)
-    epidist = episim(ntwk=net, epidemics=50,
-                        iterations=200, dispars=[0.05, 0.04])
-
     print("Started behavior net")
     net = nx.gnp_random_graph(n, ped)
-    bepidist, bepidist_contacts_ = bepisim(ntwk=net, epidemics=50,
+    bepidist, bepidist_contacts_ = bepisim(ntwk=net, epidemics=1,
                        iterations=200,
                        dispars=[0.05, 0.04],
                        u=[v, T],
                        neis=1, get_node_history=True)
 
-    epidist.to_csv('./Data/ExampleNetworkNodes_epidist.csv', index=False)
     bepidist.to_csv('./Data/ExampleNetworkNodes_bepidist.csv', index=False)
     bepidist_contacts_.to_csv('./Data/ExampleNetworkNodes_contacts.csv', index=False)
 
