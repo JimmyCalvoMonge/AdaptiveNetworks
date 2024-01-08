@@ -678,15 +678,17 @@ def example_network_and_nodes():
 
 def barabasi_albert_network_experiment():
     
+    print("Barabasi Albert experiment ===>")
     mms = range(5,51,5)
     bepidist_all = pd.DataFrame({})
+    bepidist_contacts_all = pd.DataFrame({})
 
     for m in mms:
 
         print(f' ---- Using m == {m} ----')
         net = nx.barabasi_albert_graph(n, m, seed=47)
         pool = multiprocessing.Pool(n_cores)
-        bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
+        bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
                                             pi=0.05, pr=0.04, v=0.05,
                                             T=7, ns=1), range(100))
         pool.close()
@@ -694,9 +696,9 @@ def barabasi_albert_network_experiment():
         print('========================= ')
 
         day_lags_ = []
-        for bepidist_ in bepidist:
+        for bep in bepidist0:
             try:
-                day_lags_.append(np.nanargmin(bepidist_['suscedgecount']) - np.nanargmin(bepidist_['edgecount']))
+                day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
             except Exception:
                 pass
 
@@ -706,16 +708,24 @@ def barabasi_albert_network_experiment():
         day_lags_df_['m'] = m
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
 
+        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
+        bepidist_contacts_['m'] = m
+        bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
+
     bepidist_all.to_csv('./Data/bepidist_ntwk_barabasi_albert.csv', index=False)
+    bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_barabasi_albert.csv', index=False)
     print("Barabasi Albert experiment done")
 
 
 def small_world_network():
     
+    print("Small World experiment ===>")
+
     mms = range(5,51,5)
     peds = [round(ped, 4) for ped in np.linspace(0.001, 0.1, 100)]
     combs = list(itertools.product(mms, peds))
     bepidist_all = pd.DataFrame({})
+    bepidist_contacts_all = pd.DataFrame({})
 
     for comb in combs:
 
@@ -723,7 +733,7 @@ def small_world_network():
         net = nx.watts_strogatz_graph(n = n, k = comb[0], p = comb[1])
 
         pool = multiprocessing.Pool(n_cores)
-        bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
+        bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
                                             pi=0.05, pr=0.04, v=0.05,
                                             T=7, ns=1), range(50))
         pool.close()
@@ -731,9 +741,9 @@ def small_world_network():
         print('========================= ')
 
         day_lags_ = []
-        for bepidist_ in bepidist:
+        for bep in bepidist0:
             try:
-                day_lags_.append(np.nanargmin(bepidist_['suscedgecount']) - np.nanargmin(bepidist_['edgecount']))
+                day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
             except Exception:
                 pass
 
@@ -744,16 +754,23 @@ def small_world_network():
         day_lags_df_['ped'] = comb[1]
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
 
+        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
+        bepidist_contacts_['m'] = comb[0]
+        bepidist_contacts_['ped'] = comb[1]
+        bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
+
     bepidist_all.to_csv('./Data/bepidist_ntwk_small_world.csv', index=False)
+    bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_small_world.csv', index=False)
     print("Small World experiment done")
 
 
 def network_connectivity_experiment():
 
-    print('Network Connectivity Experiment')
+    print('Network connectivity experiment ===>')
     
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
     bepidist_all = pd.DataFrame({})
+    bepidist_contacts_all = pd.DataFrame({})
 
     for conn in conns:
 
@@ -761,7 +778,7 @@ def network_connectivity_experiment():
         net = nx.gnp_random_graph(n, conn)
         
         pool = multiprocessing.Pool(n_cores)
-        bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
+        bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
                                             pi=0.05, pr=0.04, v=0.05,
                                             T=7, ns=1), range(50))
         pool.close()
@@ -769,9 +786,9 @@ def network_connectivity_experiment():
         print('========================= ')
 
         day_lags_ = []
-        for bepidist_ in bepidist:
+        for bep in bepidist0:
             try:
-                day_lags_.append(np.nanargmin(bepidist_['suscedgecount']) - np.nanargmin(bepidist_['edgecount']))
+                day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
             except Exception as e:
                 print(f'Error: {e}')
                 pass
@@ -781,10 +798,15 @@ def network_connectivity_experiment():
         })
         day_lags_df_['ped'] = conn
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
-        print(bepidist_all.shape)
+
+        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
+        bepidist_contacts_['ped'] = conn
+        bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
 
     bepidist_all.to_csv('./Data/bepidist_ntwk_conn_erdos_renyi.csv', index=False)
-    print("Connectivity experiment done")
+    bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_conn_erdos_renyi.csv', index=False)
+
+    print("Network connectivity experiment done")
 
 # ====== Simple Two Layers Example =========================================== #
 # TODO
