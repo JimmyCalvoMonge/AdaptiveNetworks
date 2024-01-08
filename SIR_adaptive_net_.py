@@ -349,6 +349,7 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, **kwargs):
 
     return bepidist
 
+# Figures 
 
 def infected_comparison_fig(epidist, bepidist, fig, v, T, **kwargs):
 
@@ -533,7 +534,8 @@ def get_all_figures():
         fig = infected_edge_reduction_fig(bepidist, fig, 
                                           v_name, T_name, save=True, idx=idx_use)
 
-
+# Article example with distributions and subpopulations
+        
 def example_with_distributions():
 
     print('Example with distributions')
@@ -611,6 +613,7 @@ def example_with_distributions():
     fig = infected_edge_reduction_fig(bepidist, fig, 
                                     v_name, T_name, save=True, idx=idx)
 
+# Bifurcation example, not needed ...
 
 def bifurcation_example():
 
@@ -649,9 +652,9 @@ def bifurcation_example():
     epidist_all.to_csv(f'./Data/epidist_bifurcation.csv')
     bepidist_all.to_csv(f'./Data/bepidist_bifurcation.csv')
 
-# ----- Examples for appendix ----- #
-    
-# ====== Adaptive SIR vs Network ====== #
+# ----- Examples for appendix ------------------------------------------------ #
+
+# ====== Adaptive SIR vs Network ============================================= #
 
 def example_network_and_nodes():
 
@@ -671,49 +674,80 @@ def example_network_and_nodes():
     bepidist.to_csv('./Data/ExampleNetworkNodes_bepidist.csv', index=False)
     bepidist_contacts_.to_csv('./Data/ExampleNetworkNodes_contacts.csv', index=False)
 
-
-# Vary the network type
+# ====== Vary the network type and network connectivity parameters =========== #
 
 def barabasi_albert_network_experiment():
-    mms = [10,20,30,40,50]
+    
+    mms = range(5,51)
     bepidist_all = pd.DataFrame({})
+
     for m in mms:
+
         print(f' ---- Using m == {m} ----')
         net = nx.barabasi_albert_graph(n, m, seed=47)
-        bepidist = bepisim(ntwk=net,
-                           epidemics=20,
-                           iterations=200,
-                           dispars=[0.05, 0.04],
-                           u=[0.05, 7],
-                           neis=1)
-        bepidist['m'] = m
-        bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+        pool = multiprocessing.Pool(n_cores)
+        bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
+                                            pi=0.05, pr=0.04, v=0.05,
+                                            T=7, ns=1), range(100))
+        pool.close()
+        pool.join()
+        print('========================= ')
+
+        day_lags_ = []
+        for bepidist_ in bepidist:
+            try:
+                day_lags_.append(np.nanargmin(bepidist_['suscedgecount']) - np.nanargmin(bepidist_['edgecount']))
+            except Exception:
+                pass
+
+        day_lags_df_ = pd.DataFrame({
+            'day_lags': day_lags_
+        })
+        day_lags_df_['m'] = m
+        bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
+
     bepidist_all.to_csv('./Data/bepidist_ntwk_barabasi_albert.csv', index=False)
     print("Barabasi Albert experiment done")
 
 
 def small_world_network():
-    mms = [10,20,30,40,50]
-    peds = [round(ped, 4) for ped in np.linspace(0.001, 0.5, 20)]
+    
+    mms = range(5,51)
+    peds = [round(ped, 4) for ped in np.linspace(0.001, 0.1, 100)]
     combs = list(itertools.product(mms, peds))
     bepidist_all = pd.DataFrame({})
+
     for comb in combs:
+
         print(f' ---- Using {comb} ----')
         net = nx.watts_strogatz_graph(n = n, k = comb[0], p = comb[1])
-        bepidist = bepisim(ntwk=net,
-                           epidemics=20,
-                           iterations=200,
-                           dispars=[0.05, 0.04],
-                           u=[0.05, 7],
-                           neis=1)
-        bepidist['m'] = comb[0]
-        bepidist['ped'] = comb[1]
-        bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+
+        pool = multiprocessing.Pool(n_cores)
+        bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
+                                            pi=0.05, pr=0.04, v=0.05,
+                                            T=7, ns=1), range(100))
+        pool.close()
+        pool.join()
+        print('========================= ')
+
+        day_lags_ = []
+        for bepidist_ in bepidist:
+            try:
+                day_lags_.append(np.nanargmin(bepidist_['suscedgecount']) - np.nanargmin(bepidist_['edgecount']))
+            except Exception:
+                pass
+
+        day_lags_df_ = pd.DataFrame({
+            'day_lags': day_lags_
+        })
+        day_lags_df_['m'] = comb[0]
+        day_lags_df_['ped'] = comb[1]
+        bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
+
     bepidist_all.to_csv('./Data/bepidist_ntwk_small_world.csv', index=False)
     print("Small World experiment done")
 
 
-# 2. Vary the network connectivity
 def network_connectivity_experiment():
     
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
@@ -723,10 +757,11 @@ def network_connectivity_experiment():
 
         print(f' ---- Using ped == {conn} ----')
         net = nx.gnp_random_graph(n, conn)
+        
         pool = multiprocessing.Pool(n_cores)
         bepidist = pool.map(functools.partial(bepidemic, net=net, it=200,
                                             pi=0.05, pr=0.04, v=0.05,
-                                            T=7, ns=1), range(200))
+                                            T=7, ns=1), range(100))
         pool.close()
         pool.join()
         print('========================= ')
@@ -747,6 +782,8 @@ def network_connectivity_experiment():
     bepidist_all.to_csv('./Data/bepidist_ntwk_conn_erdos_renyi.csv', index=False)
     print("Connectivity experiment done")
 
+# ====== Simple Two Layers Example =========================================== #
+# TODO
 
 if __name__ == '__main__':
 
@@ -760,10 +797,10 @@ if __name__ == '__main__':
 
     # bifurcation_example()
 
-    example_network_and_nodes()
+    # example_network_and_nodes()
 
-    # network_connectivity_experiment()
+    network_connectivity_experiment()
 
-    # barabasi_albert_network_experiment()
+    barabasi_albert_network_experiment()
 
-    # small_world_network()
+    small_world_network()
