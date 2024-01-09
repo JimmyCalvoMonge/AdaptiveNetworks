@@ -792,7 +792,6 @@ def network_connectivity_experiment():
             except Exception as e:
                 print(f'Error: {e}')
                 pass
-        print(day_lags_)
 
         day_lags_df_ = pd.DataFrame({
             'day_lags': day_lags_
@@ -828,6 +827,6 @@ if __name__ == '__main__':
 
     network_connectivity_experiment()
 
-    # barabasi_albert_network_experiment()
+    barabasi_albert_network_experiment()
 
-    # small_world_network()
+    small_world_network()
