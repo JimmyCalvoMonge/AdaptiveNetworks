@@ -21,7 +21,7 @@ from scipy.stats import norm
 
 n = 500
 ped = 0.05
-n_cores = min(multiprocessing.cpu_count() - 2, 20)
+n_cores = min(multiprocessing.cpu_count() - 2, 30)
 print(f'Using {n_cores} cores')
 
 # Get neighbors at levels (first, second, third level neighbors)
@@ -681,7 +681,7 @@ def barabasi_albert_network_experiment():
     print("Barabasi Albert experiment ===>")
     mms = range(5,51,5)
     bepidist_all = pd.DataFrame({})
-    bepidist_contacts_all = pd.DataFrame({})
+    # bepidist_contacts_all = pd.DataFrame({})
 
     for m in mms:
 
@@ -708,12 +708,12 @@ def barabasi_albert_network_experiment():
         day_lags_df_['m'] = m
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
 
-        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
-        bepidist_contacts_['m'] = m
-        bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
+        # bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
+        # bepidist_contacts_['m'] = m
+        # bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
 
     bepidist_all.to_csv('./Data/bepidist_ntwk_barabasi_albert.csv', index=False)
-    bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_barabasi_albert.csv', index=False)
+    # bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_barabasi_albert.csv', index=False)
     print("Barabasi Albert experiment done")
 
 
@@ -722,10 +722,10 @@ def small_world_network():
     print("Small World experiment ===>")
 
     mms = range(5,51,5)
-    peds = [round(ped, 4) for ped in np.linspace(0.001, 0.1, 100)]
+    peds = [round(ped, 4) for ped in np.linspace(0.001, 0.1, 30)]
     combs = list(itertools.product(mms, peds))
     bepidist_all = pd.DataFrame({})
-    bepidist_contacts_all = pd.DataFrame({})
+    # bepidist_contacts_all = pd.DataFrame({})
 
     for comb in combs:
 
@@ -754,13 +754,13 @@ def small_world_network():
         day_lags_df_['ped'] = comb[1]
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
 
-        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
-        bepidist_contacts_['m'] = comb[0]
-        bepidist_contacts_['ped'] = comb[1]
-        bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
+        # bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
+        # bepidist_contacts_['m'] = comb[0]
+        # bepidist_contacts_['ped'] = comb[1]
+        # bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
 
     bepidist_all.to_csv('./Data/bepidist_ntwk_small_world.csv', index=False)
-    bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_small_world.csv', index=False)
+    # bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_small_world.csv', index=False)
     print("Small World experiment done")
 
 
@@ -770,7 +770,7 @@ def network_connectivity_experiment():
     
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
     bepidist_all = pd.DataFrame({})
-    bepidist_contacts_all = pd.DataFrame({})
+    # bepidist_contacts_all = pd.DataFrame({})
 
     for conn in conns:
 
@@ -799,12 +799,12 @@ def network_connectivity_experiment():
         day_lags_df_['ped'] = conn
         bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
 
-        bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
-        bepidist_contacts_['ped'] = conn
-        bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
+        # bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
+        # bepidist_contacts_['ped'] = conn
+        # bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
 
     bepidist_all.to_csv('./Data/bepidist_ntwk_conn_erdos_renyi.csv', index=False)
-    bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_conn_erdos_renyi.csv', index=False)
+    # bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_conn_erdos_renyi.csv', index=False)
 
     print("Network connectivity experiment done")
 
