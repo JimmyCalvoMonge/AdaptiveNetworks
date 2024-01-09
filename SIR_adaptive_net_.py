@@ -679,7 +679,7 @@ def example_network_and_nodes():
 def barabasi_albert_network_experiment():
     
     print("Barabasi Albert experiment ===>")
-    mms = range(5,51,5)
+    mms = range(5,51)
     bepidist_all = pd.DataFrame({})
     # bepidist_contacts_all = pd.DataFrame({})
 
@@ -825,8 +825,8 @@ if __name__ == '__main__':
 
     # example_network_and_nodes()
 
-    network_connectivity_experiment()
+    # network_connectivity_experiment()
 
     barabasi_albert_network_experiment()
 
-    small_world_network()
+    # small_world_network()
