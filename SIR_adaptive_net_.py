@@ -825,8 +825,8 @@ if __name__ == '__main__':
 
     # example_network_and_nodes()
 
-    network_connectivity_experiment()
+    # network_connectivity_experiment()
 
-    barabasi_albert_network_experiment()
+    # barabasi_albert_network_experiment()
 
     small_world_network()
