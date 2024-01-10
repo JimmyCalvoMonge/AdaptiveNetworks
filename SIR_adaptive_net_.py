@@ -767,44 +767,48 @@ def small_world_network():
 def network_connectivity_experiment():
 
     print('Network connectivity experiment ===>')
-    
+
+    nns = [500, 1000]
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
-    bepidist_all = pd.DataFrame({})
-    # bepidist_contacts_all = pd.DataFrame({})
 
-    for conn in conns:
+    for n in nns:
 
-        print(f' ---- Using ped == {conn} ----')
-        net = nx.gnp_random_graph(n, conn)
-        
-        pool = multiprocessing.Pool(n_cores)
-        bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
-                                            pi=0.05, pr=0.04, v=0.05,
-                                            T=7, ns=1), range(50))
-        pool.close()
-        pool.join()
-        print('========================= ')
+        print(f'Using n = {n} ======================================>')
+    
+        conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
+        day_lags_df_all = pd.DataFrame({})
 
-        day_lags_ = []
-        for bep in bepidist0:
-            try:
-                day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
-            except Exception as e:
-                print(f'Error: {e}')
-                pass
+        for conn in conns:
 
-        day_lags_df_ = pd.DataFrame({
-            'day_lags': day_lags_
-        })
-        day_lags_df_['ped'] = conn
-        bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
+            print(f' ---- Using ped == {conn} ----')
+            net = nx.gnp_random_graph(n, conn)
+            
+            pool = multiprocessing.Pool(n_cores)
+            bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
+                                                pi=0.05, pr=0.04, v=0.05,
+                                                T=7, ns=1), range(50))
+            pool.close()
+            pool.join()
+            print('========================= ')
 
-        # bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
-        # bepidist_contacts_['ped'] = conn
-        # bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
+            day_lags_ = []
+            for bep in bepidist0:
+                try:
+                    day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
+                except Exception as e:
+                    print(f'Error: {e}')
+                    pass
 
-    bepidist_all.to_csv('./Data/bepidist_ntwk_conn_erdos_renyi.csv', index=False)
-    # bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_conn_erdos_renyi.csv', index=False)
+            day_lags_df_ = pd.DataFrame({
+                'day_lags': day_lags_
+            })
+            day_lags_df_['ped'] = conn
+            day_lags_df_all = pd.concat([day_lags_df_all, day_lags_df_], ignore_index=True)
+    
+            bepidist_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
+            bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_conn_erdos_renyi_{n}_{conn}.csv', index=False)
+
+        day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_conn_erdos_renyi_{n}.csv', index=False)
 
     print("Network connectivity experiment done")
 
@@ -825,8 +829,8 @@ if __name__ == '__main__':
 
     # example_network_and_nodes()
 
-    # network_connectivity_experiment()
+    network_connectivity_experiment()
 
-    barabasi_albert_network_experiment()
+    # barabasi_albert_network_experiment()
 
     # small_world_network()
