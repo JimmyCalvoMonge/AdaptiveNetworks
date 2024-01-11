@@ -766,8 +766,9 @@ def network_connectivity_experiment():
 
     print('Network connectivity experiment ===>')
 
-    nns = [500, 1000]
+    nns = [500, 1000, 5000]
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
+    sample_conns = [conn[i] for i in range(0,len(conns),10)]
 
     for n in nns:
 
@@ -803,8 +804,9 @@ def network_connectivity_experiment():
             day_lags_df_['ped'] = conn
             day_lags_df_all = pd.concat([day_lags_df_all, day_lags_df_], ignore_index=True)
 
-            # bepidist_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
-            # bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_conn_erdos_renyi_{n}_{conn}.csv', index=False)
+            if conn in sample_conns:
+                bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
+                bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_conn_erdos_renyi_{n}_{conn}.csv', index=False)
 
         day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_conn_erdos_renyi_{n}.csv', index=False)
 
