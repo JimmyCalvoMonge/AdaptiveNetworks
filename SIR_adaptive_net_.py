@@ -743,7 +743,7 @@ def small_world_network():
 
 
     print(f"""
-    m = {mms}
+    m = {list(mms)}
     peds = {peds}
     sample_mms = {sample_mms}
     sample_peds = {sample_peds}
