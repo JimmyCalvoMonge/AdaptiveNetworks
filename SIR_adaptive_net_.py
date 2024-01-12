@@ -725,7 +725,7 @@ def barabasi_albert_network_experiment():
     print("Barabasi Albert experiment done")
 
 
-def small_world_network(n):
+def small_world_network():
     
     print("Small World experiment ===>")
 
