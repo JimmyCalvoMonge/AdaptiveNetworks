@@ -674,44 +674,54 @@ def example_network_and_nodes(n,ped):
 
 # ====== Vary the network type and network connectivity parameters =========== #
 
-def barabasi_albert_network_experiment(n):
+def barabasi_albert_network_experiment():
     
     print("Barabasi Albert experiment ===>")
     mms = range(5,51)
-    bepidist_all = pd.DataFrame({})
-    # bepidist_contacts_all = pd.DataFrame({})
 
-    for m in mms:
+    nns = [500, 1000]
+    mms = range(5,51)
+    sample_mms = [mms[i] for i in range(0,len(mms),10)]
 
-        print(f' ---- Using m == {m} ----')
-        net = nx.barabasi_albert_graph(n, m, seed=47)
-        pool = multiprocessing.Pool(n_cores)
-        bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
-                                            pi=0.05, pr=0.04, v=0.05,
-                                            T=7, ns=1, n=n), range(100))
-        pool.close()
-        pool.join()
-        print('========================= ')
+    for n in nns:
 
-        day_lags_ = []
-        for bep in bepidist0:
-            try:
-                day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
-            except Exception:
-                pass
+        print(f'Using n = {n} ======================================>')
 
-        day_lags_df_ = pd.DataFrame({
-            'day_lags': day_lags_
-        })
-        day_lags_df_['m'] = m
-        bepidist_all = pd.concat([bepidist_all, day_lags_df_], ignore_index=True)
+        day_lags_df_all = pd.DataFrame({})
 
-        # bepidist_contacts_ = pd.concat([bep[1] for bep in bepidist0], ignore_index=True)
-        # bepidist_contacts_['m'] = m
-        # bepidist_contacts_all = pd.concat([bepidist_contacts_all, bepidist_contacts_], ignore_index=True)
+        for m in mms:
 
-    bepidist_all.to_csv('./Data/bepidist_ntwk_barabasi_albert.csv', index=False)
-    # bepidist_contacts_all.to_csv('./Data/bepidist_contacts_ntwk_barabasi_albert.csv', index=False)
+            print(f' ---- Using m == {m} ----')
+            net = nx.barabasi_albert_graph(n, m)
+            
+            pool = multiprocessing.Pool(n_cores)
+            bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
+                                                pi=0.05, pr=0.04, v=0.05,
+                                                T=7, ns=1, n=n), range(50))
+            pool.close()
+            pool.join()
+            print('========================= ')
+
+            day_lags_ = []
+            for bep in bepidist0:
+                try:
+                    day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
+                except Exception as e:
+                    print(f'Error: {e}')
+                    pass
+
+            day_lags_df_ = pd.DataFrame({
+                'day_lags': day_lags_
+            })
+            day_lags_df_['m'] = m
+            day_lags_df_all = pd.concat([day_lags_df_all, day_lags_df_], ignore_index=True)
+
+            if m in sample_mms:
+                bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
+                bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_barabasi_albert_{n}_{m}.csv', index=False)
+
+        day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_barabasi_albert_{n}.csv', index=False)
+
     print("Barabasi Albert experiment done")
 
 
@@ -766,8 +776,7 @@ def network_connectivity_experiment():
 
     print('Network connectivity experiment ===>')
 
-    # nns = [500, 1000, 5000]
-    nns = [2000]
+    nns = [500, 1000]
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
     sample_conns = [conns[i] for i in range(0,len(conns),10)]
 
@@ -829,8 +838,8 @@ if __name__ == '__main__':
 
     # example_network_and_nodes(500, 0.05)
 
-    network_connectivity_experiment()
+    # network_connectivity_experiment()
 
-    # barabasi_albert_network_experiment(n=500)
+    barabasi_albert_network_experiment()
 
     # small_world_network(n=500)
