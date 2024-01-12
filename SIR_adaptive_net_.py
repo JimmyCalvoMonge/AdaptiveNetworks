@@ -733,7 +733,7 @@ def small_world_network():
     peds = [round(ped, 4) for ped in np.linspace(0.001, 0.1, 10)]
     combs = list(itertools.product(mms, peds))
 
-    sample_mms = [mms[i] for i in range(0,len(mms),10)]
+    sample_mms = [5, 15, 25, 35, 45]
     sample_peds = [peds[i] for i in range(0, len(peds),5)]
 
     sample_combs = list(itertools.product(sample_mms, sample_peds))
