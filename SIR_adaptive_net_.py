@@ -738,7 +738,7 @@ def small_world_network():
 
     sample_combs = list(itertools.product(sample_mms, sample_peds))
 
-    mms = [35, 45]
+    # mms = [35, 45]
     nns = [500, 1000]
 
     for n in nns:
