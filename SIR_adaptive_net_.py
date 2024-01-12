@@ -741,6 +741,14 @@ def small_world_network():
     # mms = [35, 45]
     nns = [500, 1000]
 
+
+    print(f"""
+    m = {mms}
+    peds = {peds}
+    sample_mms = {sample_mms}
+    sample_peds = {sample_peds}
+    """)
+
     for n in nns:
 
         print(f'Using n = {n} ======================================>')
