@@ -766,15 +766,18 @@ def network_connectivity_experiment():
 
     print('Network connectivity experiment ===>')
 
-    nns = [500, 1000, 5000]
+    # nns = [500, 1000, 5000]
+    nns = [5000]
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
     sample_conns = [conns[i] for i in range(0,len(conns),10)]
 
     for n in nns:
 
         print(f'Using n = {n} ======================================>')
-    
-        conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
+
+        if n == 5000:
+            conns = conns[0:40]
+
         day_lags_df_all = pd.DataFrame({})
 
         for conn in conns:
