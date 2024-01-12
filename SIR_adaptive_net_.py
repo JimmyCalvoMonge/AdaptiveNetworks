@@ -729,8 +729,8 @@ def small_world_network():
     
     print("Small World experiment ===>")
 
-    mms = range(5,51,5)
-    peds = [round(ped, 4) for ped in np.linspace(0.001, 0.1, 30)]
+    mms = range(5, 51, 10)
+    peds = [round(ped, 4) for ped in np.linspace(0.001, 0.1, 10)]
     combs = list(itertools.product(mms, peds))
 
     sample_mms = [mms[i] for i in range(0,len(mms),10)]
