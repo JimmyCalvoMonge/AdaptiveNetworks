@@ -254,7 +254,7 @@ def sporadicExperiment():
     max_layer_2 = 20
 
     pool = multiprocessing.Pool(n_cores)
-    bepidist0 = pool.map(functools.partial(sporadicRun, T=T, v=v, 
+    bepidist0 = pool.map(functools.partial(sporadicRun, n=n, T=T, v=v, 
                                            T2=T2, v2=v2, 
                                            pi=pi, pr=pr, 
                                            ns=ns, net=net, 
