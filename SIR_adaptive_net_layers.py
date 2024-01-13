@@ -48,6 +48,10 @@ def sporadicRun(idx, n, T, v, T2, v2, pi, pr, ns, net, max_layer_2, it):
     rednet = net.copy()
     # print(f'Edges initial: {rednet.number_of_edges()}')
 
+    net_contact_dict0 = {
+        node: len([neig for neig in rednet.neighbors(node)]) for node in range(n)
+    }
+
     IDtoSecondLayer = [[node, 
                         random.sample(
                             [k for k in range(n) if k not in list(rednet.neighbors(node))],
@@ -190,8 +194,7 @@ def sporadicRun(idx, n, T, v, T2, v2, pi, pr, ns, net, max_layer_2, it):
         sus_contacts = {}
         for node in sus:
             if net_contact_dict[node] != 0:
-                sus_contacts[node] = len([neig for neig in rednet.neighbors(node) 
-                                          if neig not in IDtoSecondLayer[node][1]])/net_contact_dict[node]
+                sus_contacts[node] = len(list(rednet.neighbors(node)))/net_contact_dict[node]
             else:
                 sus_contacts[node] = 0 
 
@@ -208,9 +211,9 @@ def sporadicRun(idx, n, T, v, T2, v2, pi, pr, ns, net, max_layer_2, it):
 
         contacts_df_day = pd.DataFrame({
             'node': list(range(n)),
-            'L2_contacts': [len(nd[1]) for nd in IDtoSecondLayer],
+            'L2_contacts': [len(nd[1])/(int(max_layer_2/2)) for nd in IDtoSecondLayer],
             'L1_contacts': [len([ng for ng in list(rednet.neighbors(node)) 
-                                            if ng not in IDtoSecondLayer[node][1]]) 
+                                            if ng not in IDtoSecondLayer[node][1]])/net_contact_dict0[node]
                                             for node in range(n)]
         })
         contacts_df_day['day'] = t
