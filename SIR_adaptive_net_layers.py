@@ -52,8 +52,6 @@ def sporadicRun(idx, n, T, v, T2, v2, pi, pr, ns, net, max_layer_2, it):
             for new_conn in node[1]:
                 rednet.add_edge(node[0], new_conn)
 
-    print(sum([len(node[1]) for node in IDtoSecondLayer if s[node[0]] == 1]))
-
     if not isinstance(v, list):
         v = [v]*n
 
