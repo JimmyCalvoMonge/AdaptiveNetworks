@@ -12,17 +12,12 @@ n_cores = min(multiprocessing.cpu_count() - 2, 30)
 print(f'Using {n_cores} cores')
 
 
-def infneighsLayer1(ntw, node, ns, ilist, IDtoSecondLayer):
-    inf = [k for k in range(len(ilist)) if ilist[k] == 1]
-    neighlist = get_neighbors(ntw, node, ns)
-    infneigh = [neigh for neigh in neighlist if neigh in inf and neigh not in IDtoSecondLayer[node]]
-    return [node, len(infneigh), infneigh]
-
-
 def infneighsLayer2(node, ilist, IDtoSecondLayer):
+    
     inf = [k for k in range(len(ilist)) if ilist[k] == 1]
     neighlist = IDtoSecondLayer[node][1]
     infneigh = [neigh for neigh in neighlist if neigh in inf]
+
     return [node, len(infneigh), infneigh]
 
 
@@ -139,7 +134,7 @@ def sporadicRun(idx, n, T, v, T2, v2, pi, pr, ns, net, max_layer_2, it):
         # 2.2 List of infected layer 2 contacts for each susceptible node
         infofsus2 = [infneighsLayer2(node, inew, IDtoSecondLayer) for node in sus]
 
-        # 2.3 Filter only those that are in the second layer
+        # 2.3 Filter only those that have infected 2nd layer neighbors
         susinfs2 = [k for k in infofsus2 if k[1]!=0]
 
         # 2.4 Create the list of all new edges to add for sporadic layer at time t
@@ -499,7 +494,7 @@ if __name__ == '__main__':
 
     print("Start")
 
-    sporadicExperiment()
+    # sporadicExperiment()
     
     # twoNetworksExperiment()
 
