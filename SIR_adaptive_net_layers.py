@@ -138,7 +138,7 @@ def sporadicRun(idx, n, T, v, T2, v2, pi, pr, ns, net, max_layer_2, it):
         susinfs2 = [k for k in infofsus2 if k[1]!=0]
 
         # 2.4 Create the list of all new edges to add for sporadic layer at time t
-        redneighslay2 = [vertxmaxer(net, [susinfs2[k][0], int((sum(inew)/n)*(max_layer_2/2))],  #int(max_layer_2/2) - susinfs2[k][1]],
+        redneighslay2 = [vertxmaxer(net, [susinfs2[k][0], int(max_layer_2/2) - susinfs2[k][1]],
                                     [pi,pr], [v2[susinfs2[k][0]], T2[susinfs2[k][0]]], ns)[0] for k in range(len(susinfs2))]
 
         # For each susceptible node, if node is affected by adaptive scenario, then down resample Layer 2 contacts.
@@ -285,7 +285,7 @@ def sporadicExperiment():
                         'edgecount2_mean', 'edgecount2_max', 'edgecount2_min', 'edgecount2_std', 
                         'suscedgecount2_mean', 'suscedgecount2_max', 'suscedgecount2_min', 'suscedgecount2_std']
     
-    bepidist_.to_csv('./Data/sporadicexperiment2.csv', index=False)
+    bepidist_.to_csv('./Data/sporadicexperiment.csv', index=False)
     print("Sporadic contacts experiment done! :)")
 
 
@@ -494,7 +494,7 @@ if __name__ == '__main__':
 
     print("Start")
 
-    sporadicExperiment()
+    # sporadicExperiment()
     
     # twoNetworksExperiment()
 
@@ -508,7 +508,7 @@ if __name__ == '__main__':
     # v2 = 0.025 # Risk perception Layer 2
 
     # pi = 0.02 # Probability of infection
-    # pr = 0.05 # Probability of recovery
+    # pr = 0.03 # Probability of recovery
     # ns = 1
     # net = nx.gnp_random_graph(n, 0.025) # Underlying network
 
