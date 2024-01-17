@@ -677,17 +677,16 @@ def example_network_and_nodes(n,ped):
 def barabasi_albert_network_experiment():
     
     print("Barabasi Albert experiment ===>")
-    mms = range(5,51)
-
-    nns = [500, 1000]
-    mms = range(5,51)
-    sample_mms = [mms[i] for i in range(0,len(mms),10)]
+    mms = range(5,61)
+    nns = [500] #, 1000]
+    # sample_mms = [mms[i] for i in range(0,len(mms),10)]
 
     for n in nns:
 
         print(f'Using n = {n} ======================================>')
 
-        day_lags_df_all = pd.DataFrame({})
+        # day_lags_df_all = pd.DataFrame({})
+        p_min_df = pd.DataFrame({})
 
         for m in mms:
 
@@ -702,25 +701,43 @@ def barabasi_albert_network_experiment():
             pool.join()
             print('========================= ')
 
-            day_lags_ = []
-            for bep in bepidist0:
-                try:
-                    day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
-                except Exception as e:
-                    print(f'Error: {e}')
-                    pass
+            bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
+            dat_ = bepidist_.groupby(['index'], as_index=False).agg({'edgecount': ['min']})
+            dat_.columns = dat_.columns.droplevel()
+            dat_.columns = ['index', 'edgecount_mins']
+            
+            mean_min_effort_global = np.nanmean(dat_['edgecount_mins'])
+            min_min_effort_global = np.nanmin(dat_['edgecount_mins'])
+            max_min_effort_global = np.nanmax(dat_['edgecount_mins'])
+            std_min_effort_global = np.std(dat_['edgecount_mins'])
 
-            day_lags_df_ = pd.DataFrame({
-                'day_lags': day_lags_
-            })
-            day_lags_df_['m'] = m
-            day_lags_df_all = pd.concat([day_lags_df_all, day_lags_df_], ignore_index=True)
+            p_min_df = pd.concat([p_min_df, pd.DataFrame({'m': [m], 
+                                                          'mean_effort': [mean_min_effort_global],
+                                                          'min_effort': [min_min_effort_global],
+                                                          'max_effort': [max_min_effort_global],
+                                                          'std_effort': [std_min_effort_global],
+                                                          })], ignore_index=True)
 
-            if m in sample_mms:
-                bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
-                bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_barabasi_albert_{n}_{m}.csv', index=False)
+            # day_lags_ = []
+            # for bep in bepidist0:
+            #     try:
+            #         day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
+            #     except Exception as e:
+            #         print(f'Error: {e}')
+            #         pass
 
-        day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_barabasi_albert_{n}.csv', index=False)
+            # day_lags_df_ = pd.DataFrame({
+            #     'day_lags': day_lags_
+            # })
+            # day_lags_df_['m'] = m
+            # day_lags_df_all = pd.concat([day_lags_df_all, day_lags_df_], ignore_index=True)
+
+            # if m in sample_mms:
+            #     bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
+            #     bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_barabasi_albert_{n}_{m}.csv', index=False)
+
+        p_min_df.to_csv(f'./Data/bepidist_barabasi_albert_{n}_min_mean_effort.csv', index=False)
+        # day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_barabasi_albert_{n}.csv', index=False)
 
     print("Barabasi Albert experiment done")
 
@@ -797,15 +814,16 @@ def network_connectivity_experiment():
 
     print('Network connectivity experiment ===>')
 
-    nns = [500, 1000]
-    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.1, 100)]
-    sample_conns = [conns[i] for i in range(0,len(conns),10)]
+    nns = [500] #, 1000]
+    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.2, 200)]
+    # sample_conns = [conns[i] for i in range(0,len(conns),10)]
 
     for n in nns:
 
         print(f'Using n = {n} ======================================>')
 
-        day_lags_df_all = pd.DataFrame({})
+        # day_lags_df_all = pd.DataFrame({})
+        p_min_df = pd.DataFrame({})
 
         for conn in conns:
 
@@ -820,25 +838,44 @@ def network_connectivity_experiment():
             pool.join()
             print('========================= ')
 
-            day_lags_ = []
-            for bep in bepidist0:
-                try:
-                    day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
-                except Exception as e:
-                    print(f'Error: {e}')
-                    pass
+            # Day lags computation
+            # day_lags_ = []
+            # for bep in bepidist0:
+            #     try:
+            #         day_lags_.append(np.nanargmin(bep[0]['suscedgecount']) - np.nanargmin(bep[0]['edgecount']))
+            #     except Exception as e:
+            #         print(f'Error: {e}')
+            #         pass
 
-            day_lags_df_ = pd.DataFrame({
-                'day_lags': day_lags_
-            })
-            day_lags_df_['ped'] = conn
-            day_lags_df_all = pd.concat([day_lags_df_all, day_lags_df_], ignore_index=True)
+            # day_lags_df_ = pd.DataFrame({
+            #     'day_lags': day_lags_
+            # })
+            # day_lags_df_['ped'] = conn
+            # day_lags_df_all = pd.concat([day_lags_df_all, day_lags_df_], ignore_index=True)
 
-            if conn in sample_conns:
-                bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
-                bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_conn_erdos_renyi_{n}_{conn}.csv', index=False)
+            # if conn in sample_conns:
+            #     bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
+            #     bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_conn_erdos_renyi_{n}_{conn}.csv', index=False)
 
-        day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_conn_erdos_renyi_{n}.csv', index=False)
+            bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
+            dat_ = bepidist_.groupby(['index'], as_index=False).agg({'edgecount': ['min']})
+            dat_.columns = dat_.columns.droplevel()
+            dat_.columns = ['index', 'edgecount_mins']
+            
+            mean_min_effort_global = np.nanmean(dat_['edgecount_mins'])
+            min_min_effort_global = np.nanmin(dat_['edgecount_mins'])
+            max_min_effort_global = np.nanmax(dat_['edgecount_mins'])
+            std_min_effort_global = np.std(dat_['edgecount_mins'])
+
+            p_min_df = pd.concat([p_min_df, pd.DataFrame({'ped': [conn], 
+                                                          'mean_effort': [mean_min_effort_global],
+                                                          'min_effort': [min_min_effort_global],
+                                                          'max_effort': [max_min_effort_global],
+                                                          'std_effort': [std_min_effort_global],
+                                                          })], ignore_index=True)
+
+        p_min_df.to_csv(f'./Data/bepidist_erdos_renyi_{n}_min_mean_effort.csv', index=False)
+        # day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_conn_erdos_renyi_{n}.csv', index=False)
 
     print("Network connectivity experiment done")
 
@@ -859,8 +896,8 @@ if __name__ == '__main__':
 
     # example_network_and_nodes(500, 0.05)
 
-    # network_connectivity_experiment()
+    network_connectivity_experiment()
 
     # barabasi_albert_network_experiment()
 
-    small_world_network()
+    # small_world_network()
