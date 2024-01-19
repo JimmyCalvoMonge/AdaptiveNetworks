@@ -692,7 +692,7 @@ def barabasi_albert_network_experiment():
 
         for m in mms:
 
-            print(f' ---- Using m == {m} ----')
+            print(f' ---- Using m == {m} ---->')
             net = nx.barabasi_albert_graph(n, m)
             
             pool = multiprocessing.Pool(n_cores)
@@ -712,6 +712,9 @@ def barabasi_albert_network_experiment():
 
             q_low = dat_["edgecount_mins"].quantile(0.05)
             q_hi = dat_["edgecount_mins"].quantile(0.95)
+
+            print(q_hi,q_low)
+
             dat_ = dat_[(dat_["edgecount_mins"] < q_hi) & (dat_["edgecount_mins"] > q_low)]
 
             print(dat_.shape)
