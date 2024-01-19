@@ -678,10 +678,10 @@ def example_network_and_nodes(n,ped):
 def barabasi_albert_network_experiment():
     
     print("Barabasi Albert experiment ===>")
-    mms = range(5,61)
+    mms = range(2, 61)
     nns = [500] #, 1000]
     # sample_mms = [mms[i] for i in range(0,len(mms),10)]
-    itts = 50
+    itts = 70
 
     for n in nns:
 
@@ -707,7 +707,11 @@ def barabasi_albert_network_experiment():
             dat_ = bepidist_.groupby(['index'], as_index=False).agg({'edgecount': ['min']})
             dat_.columns = dat_.columns.droplevel()
             dat_.columns = ['index', 'edgecount_mins']
-            
+
+            q_low = dat_["edgecount_mins"].quantile(0.1)
+            q_hi = dat_["edgecount_mins"].quantile(0.9)
+            dat_ = dat_[(dat_["edgecount_mins"] < q_hi) & (dat_["edgecount_mins"] > q_low)]
+
             mean_min_effort_global = np.nanmean(dat_['edgecount_mins'])
             min_min_effort_global = np.nanmin(dat_['edgecount_mins'])
             max_min_effort_global = np.nanmax(dat_['edgecount_mins'])
@@ -819,7 +823,7 @@ def network_connectivity_experiment():
     nns = [500] #, 1000]
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.2, 100)]
     # sample_conns = [conns[i] for i in range(0,len(conns),10)]
-    itts = 50
+    itts = 70
 
     for n in nns:
 
@@ -864,6 +868,10 @@ def network_connectivity_experiment():
             dat_ = bepidist_.groupby(['index'], as_index=False).agg({'edgecount': ['min']})
             dat_.columns = dat_.columns.droplevel()
             dat_.columns = ['index', 'edgecount_mins']
+
+            q_low = dat_["edgecount_mins"].quantile(0.1)
+            q_hi = dat_["edgecount_mins"].quantile(0.9)
+            dat_ = dat_[(dat_["edgecount_mins"] < q_hi) & (dat_["edgecount_mins"] > q_low)]
             
             mean_min_effort_global = np.nanmean(dat_['edgecount_mins'])
             min_min_effort_global = np.nanmin(dat_['edgecount_mins'])
