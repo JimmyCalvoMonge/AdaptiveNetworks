@@ -295,6 +295,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n):
 
     bepidemic_['edgecount'] = bepidemic_['edgecount']/np.nanmax(bepidemic_['edgecount'])
     bepidemic_['suscedgecount'] = bepidemic_['suscedgecount']/np.nanmax(bepidemic_['suscedgecount'])
+    bepidemic_['index'] = index
 
     return [bepidemic_ , bepidemic_edge_count]
 
@@ -815,8 +816,9 @@ def network_connectivity_experiment():
     print('Network connectivity experiment ===>')
 
     nns = [500] #, 1000]
-    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.2, 200)]
+    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.2, 100)]
     # sample_conns = [conns[i] for i in range(0,len(conns),10)]
+    itts = 20
 
     for n in nns:
 
@@ -833,7 +835,7 @@ def network_connectivity_experiment():
             pool = multiprocessing.Pool(n_cores)
             bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
                                                 pi=0.05, pr=0.04, v=0.05,
-                                                T=7, ns=1, n=n), range(50))
+                                                T=7, ns=1, n=n), range(itts))
             pool.close()
             pool.join()
             print('========================= ')
