@@ -681,6 +681,7 @@ def barabasi_albert_network_experiment():
     mms = range(5,61)
     nns = [500] #, 1000]
     # sample_mms = [mms[i] for i in range(0,len(mms),10)]
+    itts = 50
 
     for n in nns:
 
@@ -697,7 +698,7 @@ def barabasi_albert_network_experiment():
             pool = multiprocessing.Pool(n_cores)
             bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=200,
                                                 pi=0.05, pr=0.04, v=0.05,
-                                                T=7, ns=1, n=n), range(50))
+                                                T=7, ns=1, n=n), range(itts))
             pool.close()
             pool.join()
             print('========================= ')
@@ -818,7 +819,7 @@ def network_connectivity_experiment():
     nns = [500] #, 1000]
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.2, 100)]
     # sample_conns = [conns[i] for i in range(0,len(conns),10)]
-    itts = 20
+    itts = 50
 
     for n in nns:
 
@@ -900,6 +901,6 @@ if __name__ == '__main__':
 
     network_connectivity_experiment()
 
-    # barabasi_albert_network_experiment()
+    barabasi_albert_network_experiment()
 
     # small_world_network()
