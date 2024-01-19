@@ -708,8 +708,8 @@ def barabasi_albert_network_experiment():
             dat_.columns = dat_.columns.droplevel()
             dat_.columns = ['index', 'edgecount_mins']
 
-            q_low = dat_["edgecount_mins"].quantile(0.1)
-            q_hi = dat_["edgecount_mins"].quantile(0.9)
+            q_low = dat_["edgecount_mins"].quantile(0.05)
+            q_hi = dat_["edgecount_mins"].quantile(0.95)
             dat_ = dat_[(dat_["edgecount_mins"] < q_hi) & (dat_["edgecount_mins"] > q_low)]
 
             mean_min_effort_global = np.nanmean(dat_['edgecount_mins'])
