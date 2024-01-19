@@ -708,16 +708,12 @@ def barabasi_albert_network_experiment():
             dat_.columns = dat_.columns.droplevel()
             dat_.columns = ['index', 'edgecount_mins']
 
-            print(dat_.shape)
-
             q_low = dat_["edgecount_mins"].quantile(0.05)
             q_hi = dat_["edgecount_mins"].quantile(0.95)
-
-            print(q_hi,q_low)
-
-            dat_ = dat_[(dat_["edgecount_mins"] < q_hi) & (dat_["edgecount_mins"] > q_low)]
-
-            print(dat_.shape)
+            
+            new_data = dat_[(dat_["edgecount_mins"] < q_hi) & (dat_["edgecount_mins"] > q_low)]
+            if new_data.shape[0]>0:
+                dat_ = new_data
 
             mean_min_effort_global = np.nanmean(dat_['edgecount_mins'])
             min_min_effort_global = np.nanmin(dat_['edgecount_mins'])
@@ -876,14 +872,12 @@ def network_connectivity_experiment():
             dat_.columns = dat_.columns.droplevel()
             dat_.columns = ['index', 'edgecount_mins']
 
-            print(dat_.shape)
-
             q_low = dat_["edgecount_mins"].quantile(0.05)
             q_hi = dat_["edgecount_mins"].quantile(0.95)
-
-            print(q_hi,q_low)
-
-            dat_ = dat_[(dat_["edgecount_mins"] < q_hi) & (dat_["edgecount_mins"] > q_low)]
+            
+            new_data = dat_[(dat_["edgecount_mins"] < q_hi) & (dat_["edgecount_mins"] > q_low)]
+            if new_data.shape[0]>0:
+                dat_ = new_data
             
             mean_min_effort_global = np.nanmean(dat_['edgecount_mins'])
             min_min_effort_global = np.nanmin(dat_['edgecount_mins'])
