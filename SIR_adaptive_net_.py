@@ -921,7 +921,7 @@ if __name__ == '__main__':
     from datetime import date
 
     today = date.today()
-    file1 = open("./myfile.txt", "w")
+    file1 = open("/home/jcalvom/adaptive_networks/myfile.txt", "w")
     file1.write("Hello \n")
     file1.wirte(str(today))
     file1.write("Good Bye \n")
