@@ -679,7 +679,7 @@ def barabasi_albert_network_experiment():
     
     print("Barabasi Albert experiment ===>")
     mms = range(2, 61)
-    nns = [500] #, 1000]
+    nns = [500, 1000]
     # sample_mms = [mms[i] for i in range(0,len(mms),10)]
     itts = 70
 
@@ -823,7 +823,7 @@ def network_connectivity_experiment():
 
     print('Network connectivity experiment ===>')
 
-    nns = [500] #, 1000]
+    nns = [500, 1000]
     conns = [round(conn, 4) for conn in np.linspace(0.001, 0.2, 100)]
     # sample_conns = [conns[i] for i in range(0,len(conns),10)]
     itts = 70
@@ -913,16 +913,16 @@ if __name__ == '__main__':
 
     # example_network_and_nodes(500, 0.05)
 
-    # network_connectivity_experiment()
+    barabasi_albert_network_experiment()
 
-    # barabasi_albert_network_experiment()
+    network_connectivity_experiment()
 
     # small_world_network()
-    from datetime import date
 
-    today = date.today()
-    file1 = open("/home/jcalvom/adaptive_networks/myfile.txt", "w")
-    file1.write("Hello \n")
-    file1.write(str(today))
-    file1.write("Good Bye \n")
-    file1.close()
+    # from datetime import date
+    # today = date.today()
+    # file1 = open("/home/jcalvom/adaptive_networks/myfile.txt", "w")
+    # file1.write("Hello \n")
+    # file1.write(str(today))
+    # file1.write("Good Bye \n")
+    # file1.close()
