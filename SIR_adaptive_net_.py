@@ -678,8 +678,8 @@ def example_network_and_nodes(n,ped):
 def barabasi_albert_network_experiment():
     
     print("Barabasi Albert experiment ===>")
-    mms = range(2, 61)
-    nns = [500, 1000]
+    mms = range(2, 71)
+    nns = [500]
     # sample_mms = [mms[i] for i in range(0,len(mms),10)]
     itts = 70
 
@@ -745,7 +745,7 @@ def barabasi_albert_network_experiment():
             #     bepidist_ = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
             #     bepidist_.to_csv(f'./Data/bepidist_contacts_ntwk_barabasi_albert_{n}_{m}.csv', index=False)
 
-        p_min_df.to_csv(f'./Data/bepidist_barabasi_albert_{n}_min_mean_effort.csv', index=False)
+        p_min_df.to_csv(f'/home/jcalvom/adaptive_networks/Data/bepidist_barabasi_albert_{n}_min_mean_effort.csv', index=False)
         # day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_barabasi_albert_{n}.csv', index=False)
 
     print("Barabasi Albert experiment done")
@@ -823,8 +823,8 @@ def network_connectivity_experiment():
 
     print('Network connectivity experiment ===>')
 
-    nns = [500, 1000]
-    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.2, 100)]
+    nns = [500]
+    conns = [round(conn, 4) for conn in np.linspace(0.001, 0.3, 100)]
     # sample_conns = [conns[i] for i in range(0,len(conns),10)]
     itts = 70
 
@@ -891,7 +891,7 @@ def network_connectivity_experiment():
                                                           'std_effort': [std_min_effort_global],
                                                           })], ignore_index=True)
 
-        p_min_df.to_csv(f'./Data/bepidist_erdos_renyi_{n}_min_mean_effort.csv', index=False)
+        p_min_df.to_csv(f'/home/jcalvom/adaptive_networks/Data/bepidist_erdos_renyi_{n}_min_mean_effort.csv', index=False)
         # day_lags_df_all.to_csv(f'./Data/bepidist_ntwk_conn_erdos_renyi_{n}.csv', index=False)
 
     print("Network connectivity experiment done")
@@ -913,9 +913,9 @@ if __name__ == '__main__':
 
     # example_network_and_nodes(500, 0.05)
 
-    barabasi_albert_network_experiment()
-
     network_connectivity_experiment()
+
+    barabasi_albert_network_experiment()
 
     # small_world_network()
 
