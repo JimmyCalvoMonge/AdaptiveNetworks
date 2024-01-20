@@ -913,8 +913,16 @@ if __name__ == '__main__':
 
     # example_network_and_nodes(500, 0.05)
 
-    network_connectivity_experiment()
+    # network_connectivity_experiment()
 
-    barabasi_albert_network_experiment()
+    # barabasi_albert_network_experiment()
 
     # small_world_network()
+    from datetime import date
+
+    today = date.today()
+    file1 = open("./myfile.txt", "w")
+    file1.write("Hello \n")
+    file1.wirte(str(today))
+    file1.write("Good Bye \n")
+    file1.close()
