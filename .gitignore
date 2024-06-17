@@ -52,4 +52,5 @@ docs/_build/
 target/
 .ipynb_checkpoints
 
-tests/*
+Figures/check_data/*
+Figures/initial_experiments/*
