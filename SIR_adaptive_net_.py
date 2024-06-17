@@ -116,7 +116,8 @@ def epidemic(index, net, it, pi, pr, n):
 
         A = nx.adjacency_matrix(net).todense()
         infn = np.matmul(A, i)
-        infn = infn[0, :].tolist()[0]
+        # infn = infn[0, :].tolist()[0]
+        infn = infn.tolist()
         ninfp = [1-(1-pi)**nodes for nodes in infn]
 
         # Newly infected nodes
@@ -160,7 +161,12 @@ def episim(ntwk, epidemics, iterations, dispars, n):
     pr = dispars[1] # disease parameters
 
     pool = multiprocessing.Pool(n_cores)
-    epidist = pool.map(functools.partial(epidemic, net=net, it=it, pi=pi, pr=pr,n=n), range(epis))
+    epidist = pool.map(functools.partial(epidemic,
+                                         net=net,
+                                         it=it,
+                                         pi=pi,
+                                         pr=pr,
+                                         n=n), range(epis))
     pool.close()
     pool.join()
     
@@ -204,7 +210,8 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n):
 
         A = nx.adjacency_matrix(rednet).todense()
         infn = np.matmul(A, i)
-        infn = infn[0, :].tolist()[0]
+        # infn = infn[0, :].tolist()[0]
+        infn = infn.tolist()
         ninfp = [1-(1-pi)**nodes for nodes in infn]
 
         # Newly infected nodes
@@ -319,7 +326,7 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
         pool = multiprocessing.Pool(n_cores)
         bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
                                             pi=pi, pr=pr, v=v,
-                                            T=T, ns=ns), range(bepis))
+                                            T=T, ns=ns, n=n), range(bepis))
         pool.close()
         pool.join()
 
@@ -446,7 +453,7 @@ def infected_edge_reduction_fig(bepidist, fig, v, T, n,**kwargs):
 def get_heatmap_data(n, ped):
 
     vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
-    Ts = list(range(7, 70, 7))
+    Ts = list(range(5, 40, 5))
     combs = list(itertools.product(vs, Ts))
 
     epidist_all = pd.DataFrame({})
@@ -465,13 +472,20 @@ def get_heatmap_data(n, ped):
 
             print("Started no behavior net")
             net = nx.gnp_random_graph(n, ped)
-            epidist = episim(ntwk=net, epidemics=10, iterations=200, dispars=[0.05, 0.04])
+            epidist = episim(ntwk=net,
+                             epidemics=100,
+                             iterations=200,
+                             dispars=[0.05, 0.04], n=n)
             epidist['V'] = v
             epidist['T'] = T
 
             print("Started behavior net")
             net = nx.gnp_random_graph(n, ped)
-            bepidist = bepisim(ntwk=net, epidemics=10, iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=1)
+            bepidist = bepisim(ntwk=net,
+                               epidemics=100,
+                               iterations=200,
+                               dispars=[0.05, 0.04],
+                               u=[v, T], neis=1, n=n)
             bepidist['V'] = v
             bepidist['T'] = T
 
@@ -481,8 +495,8 @@ def get_heatmap_data(n, ped):
         except Exception as e:
             print(f"Error with ({v},{T}): {e}")
 
-    epidist_all.to_csv(f'./Data/epidist.csv', index=False)
-    bepidist_all.to_csv(f'./Data/bepidist.csv', index=False)
+    epidist_all.to_csv(f'./Data/epidist_new.csv', index=False)
+    bepidist_all.to_csv(f'./Data/bepidist_new.csv', index=False)
 
 
 def get_all_figures(n, ped):
@@ -534,7 +548,7 @@ def get_all_figures(n, ped):
                                           v_name, T_name, n, save=True, idx=idx_use)
 
 # Article example with distributions and subpopulations
-        
+
 def example_with_distributions(n, ped):
 
     print('Example with distributions')
@@ -896,6 +910,55 @@ def network_connectivity_experiment():
 
     print("Network connectivity experiment done")
 
+
+def inspect_heatmap_experiment():
+    n = 500
+    ped = 0.05
+
+    vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
+    Ts = list(range(5, 40, 5))
+    combs = list(itertools.product(vs, Ts))
+    print(len(combs))
+    nn = 200
+    epidemics = 50
+    iterations = 200
+
+    bepidist_all = pd.DataFrame({})
+
+    for comb in combs: 
+        v = comb[0]
+        T = comb[1]
+        
+        print(f"""
+        Simulation for ({v},{T}) started: ====================>
+        """)
+        try:
+            net = nx.gnp_random_graph(n, ped)
+            bepidist = bepisim(ntwk=net,
+                            epidemics=epidemics,
+                            iterations=iterations,
+                            dispars=[0.05, 0.04],
+                            u=[v, T], neis=1, n=n)
+            bepidist['V'] = v
+            bepidist['T'] = T
+            bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+            
+            plt.figure()
+            plt.plot(bepidist['edgecount_mean'][0:nn],'-k', label="Network avg. edges reduction")
+            plt.fill_between(range(nn), bepidist['edgecount_min'][0:nn], bepidist['edgecount_max'][0:nn], color="k", alpha=0.2)
+            plt.plot(bepidist['suscedgecount_mean'][0:nn], linestyle='--', color='b', label="Individuals avg. edges reduction")
+            # plt.fill_between(range(50), upper_sus[0:50], lower_sus[0:50], color="b", alpha=0.2)
+            plt.title(f"Global and local behavioral responses (v={v}, T={T})")
+            plt.legend(loc="lower right")
+            plt.savefig(f'./Figures/check_data/fig_{v}_{T}.png')
+        
+            print('=========================================')
+        
+        except Exception as e:
+            print(f"Error with ({v},{T}): {e}")
+
+    bepidist_all.to_csv(f'./Data/bepidist_check.csv', index=False)
+
 # ====== Simple Two Layers Example =========================================== #
 # TODO
 
@@ -913,16 +976,10 @@ if __name__ == '__main__':
 
     # example_network_and_nodes(500, 0.05)
 
-    network_connectivity_experiment()
+    # network_connectivity_experiment()
 
-    barabasi_albert_network_experiment()
+    # barabasi_albert_network_experiment()
 
     # small_world_network()
 
-    # from datetime import date
-    # today = date.today()
-    # file1 = open("/home/jcalvom/adaptive_networks/myfile.txt", "w")
-    # file1.write("Hello \n")
-    # file1.write(str(today))
-    # file1.write("Good Bye \n")
-    # file1.close()
+    inspect_heatmap_experiment()
