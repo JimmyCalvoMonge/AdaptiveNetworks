@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    367992,       6776]
-NotebookOptionsPosition[    365948,       6731]
-NotebookOutlinePosition[    366373,       6748]
-CellTagsIndexPosition[    366330,       6745]
+NotebookDataLength[    370389,       6834]
+NotebookOptionsPosition[    367904,       6783]
+NotebookOutlinePosition[    368341,       6800]
+CellTagsIndexPosition[    368298,       6797]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -2731,8 +2731,9 @@ Cell[BoxData[
    3.856131140267206*^9, 3.856131365833769*^9}, {3.856131402679805*^9, 
    3.8561315381792603`*^9}, {3.856133045638997*^9, 3.8561330456822147`*^9}, {
    3.85613308975839*^9, 3.856133134218543*^9}, 3.893700347133995*^9, {
-   3.913460548184136*^9, 3.913460583302989*^9}},
- CellLabel->"In[7]:=",ExpressionUUID->"66c66673-4f23-441e-8eae-d0c7f26e4068"]
+   3.913460548184136*^9, 3.913460583302989*^9}, {3.9293036596966376`*^9, 
+   3.92930369172458*^9}, 3.929303760759804*^9},
+ CellLabel->"In[47]:=",ExpressionUUID->"66c66673-4f23-441e-8eae-d0c7f26e4068"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2742,6 +2743,8 @@ Cell["System solver", "Subsubsection",
   3.7603913018137503`*^9, 
   3.76039130487262*^9}},ExpressionUUID->"7b6d7b2f-3e74-4cb0-be7a-\
 9c9ab81fd53c"],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{
@@ -3172,7 +3175,56 @@ Cell[BoxData[
    3.85613624062327*^9, 3.856136277704862*^9}, {3.893700374894574*^9, 
    3.893700398686184*^9}, {3.9134604883405037`*^9, 3.913460504494742*^9}, {
    3.9134606383955383`*^9, 3.913460643673758*^9}},
- CellLabel->"In[9]:=",ExpressionUUID->"7d3544de-0974-40de-99cb-04df0fdede7d"]
+ CellLabel->"In[49]:=",ExpressionUUID->"7d3544de-0974-40de-99cb-04df0fdede7d"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "ReplaceAll", "reps", 
+   "\"\\!\\(\\*RowBox[{\\\"{\\\", \\\"solb\\\", \\\"}\\\"}]\\) is neither a \
+list of replacement rules nor a valid dispatch table, and so cannot be used \
+for replacing.\"", 2, 69, 9, 27402205092628608177, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.9293037663391247`*^9},
+ CellLabel->
+  "During evaluation of \
+In[49]:=",ExpressionUUID->"61d7fdd4-0138-4ecd-a504-9ef7b65c2b11"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "ReplaceAll", "reps", 
+   "\"\\!\\(\\*RowBox[{\\\"{\\\", \\\"solb\\\", \\\"}\\\"}]\\) is neither a \
+list of replacement rules nor a valid dispatch table, and so cannot be used \
+for replacing.\"", 2, 69, 10, 27402205092628608177, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.929303766348749*^9},
+ CellLabel->
+  "During evaluation of \
+In[49]:=",ExpressionUUID->"73425ad6-1f8d-44d5-8956-67c64ec0b510"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "ReplaceAll", "reps", 
+   "\"\\!\\(\\*RowBox[{\\\"{\\\", \\\"solb\\\", \\\"}\\\"}]\\) is neither a \
+list of replacement rules nor a valid dispatch table, and so cannot be used \
+for replacing.\"", 2, 69, 11, 27402205092628608177, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.9293037663568354`*^9},
+ CellLabel->
+  "During evaluation of \
+In[49]:=",ExpressionUUID->"7a28e4ee-ee67-4096-92d7-c7a1fec0b543"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "General", "stop", 
+   "\"Further output of \\!\\(\\*StyleBox[RowBox[{\\\"ReplaceAll\\\", \
+\\\"::\\\", \\\"reps\\\"}], \\\"MessageName\\\"]\\) will be suppressed during \
+this calculation.\"", 2, 69, 12, 27402205092628608177, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.929303766365814*^9},
+ CellLabel->
+  "During evaluation of \
+In[49]:=",ExpressionUUID->"bec68926-c59b-49a2-aa27-353294c24f84"]
+}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -6729,10 +6781,10 @@ bHI8/w8MbrDDPRzwAOtZdQcb3GCHezjgAdZz9IcNbrDDPRzwAOsF+v/3H3fB
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{1139, 1005},
-WindowMargins->{{151, Automatic}, {Automatic, 0}},
+WindowSize->{1440, 741.75},
+WindowMargins->{{1018.5, Automatic}, {Automatic, -6}},
 Magnification:>1.25 Inherited,
-FrontEndVersion->"13.3 for Mac OS X ARM (64-bit) (June 3, 2023)",
+FrontEndVersion->"13.3 for Microsoft Windows (64-bit) (July 24, 2023)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"f2e0f3c5-5ed0-4759-b459-701432e5c1f3"
 ]
@@ -6765,17 +6817,23 @@ Cell[12404, 314, 116565, 1984, 285, "Output",ExpressionUUID->"69ea0512-f764-47f6
 }, Closed]],
 Cell[CellGroupData[{
 Cell[129018, 2304, 162, 3, 45, "Subsubsection",ExpressionUUID->"594d6b42-e476-4bac-9907-54db5ee3a3fe"],
-Cell[129183, 2309, 20219, 425, 2198, "Input",ExpressionUUID->"66c66673-4f23-441e-8eae-d0c7f26e4068"]
+Cell[129183, 2309, 20293, 426, 1910, "Input",ExpressionUUID->"66c66673-4f23-441e-8eae-d0c7f26e4068"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[149439, 2739, 216, 4, 56, "Subsubsection",ExpressionUUID->"7b6d7b2f-3e74-4cb0-be7a-9c9ab81fd53c"],
-Cell[149658, 2745, 22749, 429, 1650, "Input",ExpressionUUID->"7d3544de-0974-40de-99cb-04df0fdede7d"]
+Cell[149513, 2740, 216, 4, 56, "Subsubsection",ExpressionUUID->"7b6d7b2f-3e74-4cb0-be7a-9c9ab81fd53c"],
+Cell[CellGroupData[{
+Cell[149754, 2748, 22750, 429, 1510, "Input",ExpressionUUID->"7d3544de-0974-40de-99cb-04df0fdede7d"],
+Cell[172507, 3179, 460, 10, 35, "Message",ExpressionUUID->"61d7fdd4-0138-4ecd-a504-9ef7b65c2b11"],
+Cell[172970, 3191, 459, 10, 35, "Message",ExpressionUUID->"73425ad6-1f8d-44d5-8956-67c64ec0b510"],
+Cell[173432, 3203, 461, 10, 35, "Message",ExpressionUUID->"7a28e4ee-ee67-4096-92d7-c7a1fec0b543"],
+Cell[173896, 3215, 455, 10, 35, "Message",ExpressionUUID->"bec68926-c59b-49a2-aa27-353294c24f84"]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[172444, 3179, 171, 3, 56, "Subsubsection",ExpressionUUID->"3e6dc229-6b42-4875-bbfe-f9f794f80501"],
+Cell[174400, 3231, 171, 3, 56, "Subsubsection",ExpressionUUID->"3e6dc229-6b42-4875-bbfe-f9f794f80501"],
 Cell[CellGroupData[{
-Cell[172640, 3186, 7661, 197, 584, "Input",ExpressionUUID->"2e6aa9f5-3c26-482e-b653-310e0db27b6d"],
-Cell[180304, 3385, 185616, 3342, 408, "Output",ExpressionUUID->"f8a4c525-4446-4eb8-a7b7-e67271e0f79f"]
+Cell[174596, 3238, 7661, 197, 464, "Input",ExpressionUUID->"2e6aa9f5-3c26-482e-b653-310e0db27b6d"],
+Cell[182260, 3437, 185616, 3342, 407, "Output",ExpressionUUID->"f8a4c525-4446-4eb8-a7b7-e67271e0f79f"]
 }, Open  ]]
 }, Open  ]]
 }

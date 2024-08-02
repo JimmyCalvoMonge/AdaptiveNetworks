@@ -355,7 +355,9 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
 
     return bepidist
 
-# Figures 
+# ------------------------------------------------------------------------------- #
+# --------------- Figures and experiments --------------------------------------- #
+# ------------------------------------------------------------------------------- # 
 
 def infected_comparison_fig(epidist, bepidist, fig, v, T, n, **kwargs):
 
@@ -982,4 +984,4 @@ if __name__ == '__main__':
 
     # small_world_network()
 
-    inspect_heatmap_experiment()
+    # inspect_heatmap_experiment()
