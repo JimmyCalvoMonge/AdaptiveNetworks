@@ -17,7 +17,6 @@ from matplotlib import pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
 import itertools
-from scipy.stats import norm
 
 n_cores = min(multiprocessing.cpu_count() - 10, 30)
 print(f'Using {n_cores} cores')
