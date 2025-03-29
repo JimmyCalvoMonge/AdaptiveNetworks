@@ -1031,11 +1031,11 @@ def cluster_vs_infected():
     ax2.plot(meanc,'-g', label=f"Clustering Coefficient")
     ax2.fill_between(list(range(len(meanc))), upperc, lowerc, color="g", alpha=0.2)
 
-    ax3.plot(meanc,'-g', label=f"Average Degree Centrality")
-    ax3.fill_between(list(range(len(meance))), upperce, lowerce, color="r", alpha=0.2)
+    ax3.plot(meanc,'-c', label=f"Average Degree Centrality")
+    ax3.fill_between(list(range(len(meance))), upperce, lowerce, color="c", alpha=0.2)
 
-    ax4.plot(meanc,'-g', label=f"Node Connectivity")
-    ax4.fill_between(list(range(len(meanconn))), upperconn, lowerconn, color="v", alpha=0.2)
+    ax4.plot(meanc,'-m', label=f"Node Connectivity")
+    ax4.fill_between(list(range(len(meanconn))), upperconn, lowerconn, color="m", alpha=0.2)
 
     # plt.title(f"Avg clustering coefficient at underlying ntwk (Random Graph Model n={n}, p={ped})")
     ax1.legend(loc="lower right")
