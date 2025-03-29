@@ -323,17 +323,17 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
     T = u[1] # time horizon
     ns = neis # Neighboorhood size to get the local prevalence
 
-    if bepis < n_cores:
-        bepidist0 = [bepidemic(i, net=net, it=it,
-                               pi=pi, pr=pr, v=v,
-                               T=T, ns=ns, n=n) for i in range(bepis)]
-    else:
-        pool = multiprocessing.Pool(n_cores)
-        bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
-                                            pi=pi, pr=pr, v=v,
-                                            T=T, ns=ns, n=n), range(bepis))
-        pool.close()
-        pool.join()
+    # if bepis < n_cores:
+    #     bepidist0 = [bepidemic(i, net=net, it=it,
+    #                            pi=pi, pr=pr, v=v,
+    #                            T=T, ns=ns, n=n) for i in range(bepis)]
+    # else:
+    pool = multiprocessing.Pool(n_cores)
+    bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
+                                        pi=pi, pr=pr, v=v,
+                                        T=T, ns=ns, n=n), range(bepis))
+    pool.close()
+    pool.join()
 
     bepidist = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
 
