@@ -193,6 +193,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n):
     i = [1 if k == i0 else 0 for k in range(n)]
     s = [1 - k for k in i]
     r = [0]*n
+    clust_coeff = []
 
     rednet = net.copy()
 
@@ -286,13 +287,18 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n):
 
         sus_contacts_ratios = np.nanmean(list(sus_contacts.values()))
 
+        degree_centrality = nx.degree_centrality(rednet)
+
         bepidemic_ = pd.concat([bepidemic_, pd.DataFrame({
             'day': [t+1],
             's': [sum(snew)],
             'i': [sum(inew)],
             'r': [sum(rnew)],
             'edgecount': [rednet.number_of_edges()],
-            'suscedgecount': sus_contacts_ratios
+            'suscedgecount': sus_contacts_ratios,
+            'cluster':[nx.average_clustering(rednet)],
+            'centrality': [sum(degree_centrality.values())/len(degree_centrality)],
+            'connectivity': [nx.node_connectivity(rednet)]
         })])
 
         bepidemic_edge_count[f'day_{t}'] = [len(list(rednet.neighbors(node))) for node in range(n)]
@@ -337,7 +343,12 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
                        'i':['mean', 'max', 'min', 'std'],
                        'r':['mean', 'max', 'min', 'std'],
                        'edgecount':['mean', 'max', 'min', 'std'],
-                       'suscedgecount':['mean', 'max', 'min', 'std']})
+                       'suscedgecount':['mean', 'max', 'min', 'std'],
+
+                       # Network measures
+                       'cluster': ['mean', 'max', 'min', 'std'],
+                       'centrality':['mean', 'max', 'min', 'std'],
+                       'connectivity':['mean', 'max', 'min', 'std']})
     
     bepidist.columns = bepidist.columns.droplevel()
     bepidist.columns = ['day', 
@@ -345,7 +356,13 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
                         'i_mean', 'i_min', 'i_max', 'i_std', 
                         'r_mean', 'r_min', 'r_max', 'r_std',
                         'edgecount_mean', 'edgecount_min', 'edgecount_max', 'edgecount_std', 
-                        'suscedgecount_mean', 'suscedgecount_min', 'suscedgecount_max', 'suscedgecount_std']
+                        'suscedgecount_mean', 'suscedgecount_min', 'suscedgecount_max', 'suscedgecount_std',
+
+                        # Network measures
+                        'cluster_mean', 'cluster_min', 'cluster_max', 'cluster_std',
+                        'centrality_mean', 'centrality_min', 'centrality_max', 'centrality_std',
+                        'connectivity_mean', 'connectivity_min', 'connectivity_max', 'connectivity_std'
+                        ]
 
     # Get contact information for each individual at each day. For all simulations.
     get_node_history = kwargs.get('get_node_history', False)
@@ -961,8 +978,73 @@ def inspect_heatmap_experiment():
 
     bepidist_all.to_csv(f'./Data/bepidist_check.csv', index=False)
 
-# ====== Simple Two Layers Example =========================================== #
-# TODO
+
+def cluster_vs_infected():
+
+    T = 7
+    v = 0.05
+    nei = 1
+    n = 500
+    ped = 0.05
+
+    print("Started behavior net")
+    net = nx.gnp_random_graph(n, ped)
+    bepidist = bepisim(ntwk=net, epidemics=10,
+                        iterations=50, dispars=[0.05, 0.04], u=[v, T], neis=nei, n=n)
+
+    meanb = (bepidist['i_mean']/n).tolist()
+    lowerb = (bepidist['i_min']/n).tolist()
+    upperb = (bepidist['i_max']/n).tolist()
+
+    mean_all = bepidist['edgecount_mean'].tolist()
+    lower_all = bepidist['edgecount_min'].tolist()
+    upper_all = bepidist['edgecount_max'].tolist()
+
+    mean_sus = bepidist['suscedgecount_mean'].tolist()
+    lower_sus = bepidist['suscedgecount_min'].tolist()
+    upper_sus = bepidist['suscedgecount_max'].tolist()
+
+    meanc = (bepidist['cluster_mean']).tolist()
+    lowerc = (bepidist['cluster_min']).tolist()
+    upperc = (bepidist['cluster_max']).tolist()
+
+    meance = (bepidist['centrality_mean']).tolist()
+    lowerce = (bepidist['centrality_min']).tolist()
+    upperce = (bepidist['centrality_max']).tolist()
+
+    meanconn = (bepidist['connectivity_mean']).tolist()
+    lowerconn = (bepidist['connectivity_min']).tolist()
+    upperconn = (bepidist['connectivity_max']).tolist()
+
+    # fig = plt.figure()
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4)
+    # fig.suptitle('Vertically stacked subplots')
+
+    ax1.plot(mean_all,'-k', label="Network avg. edges reduction")
+    ax1.fill_between(list(range(len(mean_all))), upper_all, lower_all, color="k", alpha=0.2)
+
+    ax1.plot(mean_sus, linestyle='--', color='b', label="Individuals avg. edges reduction")
+    ax1.fill_between(list(range(len(mean_sus))), upper_sus, lower_sus, color="b", alpha=0.2)
+    
+    ax1.plot(meanb,'-r', label="Mean adaptive model (Infected)")
+    ax1.fill_between(list(range(len(meanb))), upperb, lowerb, color="r", alpha=0.2)
+
+    ax2.plot(meanc,'-g', label=f"Clustering Coefficient")
+    ax2.fill_between(list(range(len(meanc))), upperc, lowerc, color="g", alpha=0.2)
+
+    ax3.plot(meanc,'-g', label=f"Average Degree Centrality")
+    ax3.fill_between(list(range(len(meance))), upperce, lowerce, color="r", alpha=0.2)
+
+    ax4.plot(meanc,'-g', label=f"Node Connectivity")
+    ax4.fill_between(list(range(len(meanconn))), upperconn, lowerconn, color="v", alpha=0.2)
+
+    # plt.title(f"Avg clustering coefficient at underlying ntwk (Random Graph Model n={n}, p={ped})")
+    ax1.legend(loc="lower right")
+    ax2.legend(loc="lower right")
+    plt.savefig(f'./Figures/cluster_coeff.png')
+
+    return fig
+
 
 if __name__ == '__main__':
 
@@ -985,3 +1067,5 @@ if __name__ == '__main__':
     # small_world_network()
 
     # inspect_heatmap_experiment()
+
+    cluster_vs_infected()
