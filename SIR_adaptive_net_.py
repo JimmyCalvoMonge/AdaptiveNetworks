@@ -338,16 +338,16 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
     bepidist = pd.concat([bep[0] for bep in bepidist0], ignore_index=True)
 
     bepidist = bepidist.groupby(['day'], as_index=False).agg(
-                      {'s':['mean', 'max', 'min', 'std'],
-                       'i':['mean', 'max', 'min', 'std'],
-                       'r':['mean', 'max', 'min', 'std'],
-                       'edgecount':['mean', 'max', 'min', 'std'],
-                       'suscedgecount':['mean', 'max', 'min', 'std'],
+                      {'s':['mean', 'min', 'max', 'std'],
+                       'i':['mean', 'min', 'max', 'std'],
+                       'r':['mean', 'min', 'max', 'std'],
+                       'edgecount':['mean', 'min', 'max', 'std'],
+                       'suscedgecount':['mean', 'min', 'max', 'std'],
 
                        # Network measures
-                       'cluster': ['mean', 'max', 'min', 'std'],
-                       'centrality':['mean', 'max', 'min', 'std'],
-                       'connectivity':['mean', 'max', 'min', 'std']})
+                       'cluster': ['mean', 'min', 'max', 'std'],
+                       'centrality':['mean', 'min', 'max', 'std'],
+                       'connectivity':['mean', 'min', 'max', 'std']})
     
     bepidist.columns = bepidist.columns.droplevel()
     bepidist.columns = ['day', 
@@ -989,7 +989,10 @@ def cluster_vs_infected():
     print("Started behavior net")
     net = nx.gnp_random_graph(n, ped)
     bepidist = bepisim(ntwk=net, epidemics=10,
-                        iterations=50, dispars=[0.05, 0.04], u=[v, T], neis=nei, n=n)
+                        iterations=50, dispars=[0.05, 0.04],
+                        u=[v, T], neis=nei, n=n)
+    bepidist.to_csv('./Data/network_parameters_experiment.csv')
+    # bepidist = pd.read_csv('./Data/network_parameters_experiment.csv')
 
     meanb = (bepidist['i_mean']/n).tolist()
     lowerb = (bepidist['i_min']/n).tolist()
@@ -1016,7 +1019,7 @@ def cluster_vs_infected():
     upperconn = (bepidist['connectivity_max']).tolist()
 
     # fig = plt.figure()
-    fig, axs = plt.subplots(2,2)
+    fig, axs = plt.subplots(2,2, figsize=(10, 7))
     # fig.suptitle('')
 
     axs[0,0].plot(mean_all,'-k', label="Network avg. edges reduction")
@@ -1031,17 +1034,21 @@ def cluster_vs_infected():
     axs[0,1].plot(meanc,'-g', label=f"Clustering Coefficient")
     axs[0,1].fill_between(list(range(len(meanc))), upperc, lowerc, color="g", alpha=0.2)
 
-    axs[1,0].plot(meanc,'-c', label=f"Average Degree Centrality")
+    axs[1,0].plot(meance,'-c', label=f"Average Degree Centrality")
     axs[1,0].fill_between(list(range(len(meance))), upperce, lowerce, color="c", alpha=0.2)
 
-    axs[1,1].plot(meanc,'-m', label=f"Node Connectivity")
+    axs[1,1].plot(meanconn,'-m', label=f"Node Connectivity")
     axs[1,1].fill_between(list(range(len(meanconn))), upperconn, lowerconn, color="m", alpha=0.2)
 
     # plt.title(f"Avg clustering coefficient at underlying ntwk (Random Graph Model n={n}, p={ped})")
     axs[0,0].legend(loc="lower right")
+    axs[0,0].set_xlabel("Time")
     axs[0,1].legend(loc="lower right")
+    axs[0,1].set_xlabel("Time")
     axs[1,0].legend(loc="lower right")
+    axs[1,0].set_xlabel("Time")
     axs[1,1].legend(loc="lower right")
+    axs[1,1].set_xlabel("Time")
     plt.savefig(f'./Figures/cluster_coeff.png')
 
     return fig
