@@ -1038,8 +1038,10 @@ def cluster_vs_infected():
     axs[1,1].fill_between(list(range(len(meanconn))), upperconn, lowerconn, color="m", alpha=0.2)
 
     # plt.title(f"Avg clustering coefficient at underlying ntwk (Random Graph Model n={n}, p={ped})")
-    for ax in axs:
-        ax.legend(loc="lower right")
+    axs[0,0].legend(loc="lower right")
+    axs[0,1].legend(loc="lower right")
+    axs[1,0].legend(loc="lower right")
+    axs[1,1].legend(loc="lower right")
     plt.savefig(f'./Figures/cluster_coeff.png')
 
     return fig
