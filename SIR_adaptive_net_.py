@@ -1016,30 +1016,30 @@ def cluster_vs_infected():
     upperconn = (bepidist['connectivity_max']).tolist()
 
     # fig = plt.figure()
-    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4)
-    # fig.suptitle('Vertically stacked subplots')
+    fig, axs = plt.subplots(2,2)
+    # fig.suptitle('')
 
-    ax1.plot(mean_all,'-k', label="Network avg. edges reduction")
-    ax1.fill_between(list(range(len(mean_all))), upper_all, lower_all, color="k", alpha=0.2)
+    axs[0,0].plot(mean_all,'-k', label="Network avg. edges reduction")
+    axs[0,0].fill_between(list(range(len(mean_all))), upper_all, lower_all, color="k", alpha=0.2)
 
-    ax1.plot(mean_sus, linestyle='--', color='b', label="Individuals avg. edges reduction")
-    ax1.fill_between(list(range(len(mean_sus))), upper_sus, lower_sus, color="b", alpha=0.2)
+    axs[0,0].plot(mean_sus, linestyle='--', color='b', label="Individuals avg. edges reduction")
+    axs[0,0].fill_between(list(range(len(mean_sus))), upper_sus, lower_sus, color="b", alpha=0.2)
     
-    ax1.plot(meanb,'-r', label="Mean adaptive model (Infected)")
-    ax1.fill_between(list(range(len(meanb))), upperb, lowerb, color="r", alpha=0.2)
+    axs[0,0].plot(meanb,'-r', label="Mean adaptive model (Infected)")
+    axs[0,0].fill_between(list(range(len(meanb))), upperb, lowerb, color="r", alpha=0.2)
 
-    ax2.plot(meanc,'-g', label=f"Clustering Coefficient")
-    ax2.fill_between(list(range(len(meanc))), upperc, lowerc, color="g", alpha=0.2)
+    axs[0,1].plot(meanc,'-g', label=f"Clustering Coefficient")
+    axs[0,1].fill_between(list(range(len(meanc))), upperc, lowerc, color="g", alpha=0.2)
 
-    ax3.plot(meanc,'-c', label=f"Average Degree Centrality")
-    ax3.fill_between(list(range(len(meance))), upperce, lowerce, color="c", alpha=0.2)
+    axs[1,0].plot(meanc,'-c', label=f"Average Degree Centrality")
+    axs[1,0].fill_between(list(range(len(meance))), upperce, lowerce, color="c", alpha=0.2)
 
-    ax4.plot(meanc,'-m', label=f"Node Connectivity")
-    ax4.fill_between(list(range(len(meanconn))), upperconn, lowerconn, color="m", alpha=0.2)
+    axs[1,1].plot(meanc,'-m', label=f"Node Connectivity")
+    axs[1,1].fill_between(list(range(len(meanconn))), upperconn, lowerconn, color="m", alpha=0.2)
 
     # plt.title(f"Avg clustering coefficient at underlying ntwk (Random Graph Model n={n}, p={ped})")
-    ax1.legend(loc="lower right")
-    ax2.legend(loc="lower right")
+    for ax in axs:
+        ax.legend(loc="lower right")
     plt.savefig(f'./Figures/cluster_coeff.png')
 
     return fig
