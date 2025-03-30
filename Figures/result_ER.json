@@ -1,1 +1,5 @@
-{"Average clustering coefficient": 0.05010920913569009, "Average degree centrality": 0.05011543086172343, "Average closeness centrality": 0.4508020720593775, "Node connectivity": 11.55}
+{
+    "Average clustering coefficient": 0.05010920913569009, 
+    "Average degree centrality": 0.05011543086172343, 
+    "Average closeness centrality": 0.4508020720593775, 
+    "Node connectivity": 11.55}

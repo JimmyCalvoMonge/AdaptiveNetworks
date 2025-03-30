@@ -61,7 +61,7 @@ def get_parameters(n, sims, mode, **kwargs):
 if __name__ == '__main__':
 
     n = 500
-    sims = 20
+    sims = 100
     p = 0.05
     m = 20
     k = 15
