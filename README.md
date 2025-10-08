@@ -11,6 +11,7 @@ We let the population-level epidemic and behavior dynamics emerge from individua
 
 Authors: Baltazar Espinoza (1), Fabio Sánchez (2,3), Jimmy Calvo-Monge (2), Madhav Marathe (1)
 
+
 (1) Biocomplexity Institute and Initiative, Network Systems Science and Advanced Computing Division, University of Virginia, Virginia, USA.
 
 (2) Escuela de Matemática, Universidad de Costa Rica, Ciudad Universitaria Rodrigo Facio, San José, 11501, Costa Rica
