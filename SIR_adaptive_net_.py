@@ -16,10 +16,10 @@ import functools
 from matplotlib import pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
-import itertools
+import itertools 
 from datetime import datetime
 
-n_cores = min(multiprocessing.cpu_count() - 10, 30)
+n_cores = min(multiprocessing.cpu_count() - 2, 30)
 print(f'Using {n_cores} cores')
 
 # Get neighbors at levels (first, second, third level neighbors)
@@ -32,7 +32,6 @@ def get_neighbors(ntw, node, levels):
                 new_neighs += list(ntw.neighbors(node))
             neighs += new_neighs
             neighs = list(set(neighs))
-        neighs.remove(node)
         return neighs
     else:
         return list(ntw.neighbors(node))
@@ -197,6 +196,8 @@ def episim(ntwk, epidemics, iterations, dispars, n):
 
 def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
 
+    print(f"Network simulation {index}")
+
     bepidemic_ = pd.DataFrame({})
     bepidemic_edge_count = pd.DataFrame({'index': [index]*n, 'node': list(range(n))})
 
@@ -295,15 +296,14 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
             try:
                 infs = [k for k in range(n) if i[k] == 1] # Infected nodes
                 infofinfs = [infneighs(net, node, ns, inew, all_nodes=True) for node in infs] # Neighbors of infected nodes
-                infs_ = [k for k in infoinfs if k[1]!=0] # Infected nodes (and their neighbors), when they have neighbors.
+                infs_ = [k for k in infofinfs if k[1]!=0] # Infected nodes (and their neighbors), when they have neighbors.
 
                 # random sample the infected.
                 infs_sampled = random.sample(infs_, int(len(infs_)*0.33))
                 nodes_to_drop = []
                 # For each of the sampled infected nodes. Sample their neighbors to get edges to drop.
                 for k in infs_sampled:
-                    nodes_to_drop *= [(k[0], y) for y in random.sample(k[2], int(len(k[2]*0.5)))]
-
+                    nodes_to_drop += [(k[0], y) for y in random.sample(k[2], int(len(k[2])*0.5))]
                 rednet.remove_edges_from(nodes_to_drop)
             except Exception as e:
                 print(f'Error removing edges randomly for infected: {e}')
@@ -432,13 +432,13 @@ def infected_comparison_fig(epidist, bepidist, fig, v, T, n, **kwargs):
     if 'save' in kwargs:
         idx = kwargs.get('idx', 1)
         current_date = datetime.now()
-        formatted_date = current_date.strftime("%Y%m%d")
+        formatted_date = current_date.strftime("%Y%m%d%H%M%S")
         plt.savefig(f'./Figures/{formatted_date}_infected_comparison_{idx}.png')
 
     return fig
 
 
-def edge_reduction_comparison_fig(bepidist, fig, v, T, **kwargs):
+def edge_reduction_comparison_fig(bepidist, fig, v, T, n, **kwargs):
 
     mean_all = bepidist['edgecount_mean'].tolist()
     lower_all = bepidist['edgecount_min'].tolist()
@@ -449,18 +449,19 @@ def edge_reduction_comparison_fig(bepidist, fig, v, T, **kwargs):
     upper_sus = bepidist['suscedgecount_max'].tolist()
 
     axarr = fig.add_subplot(1,1,1)
+    max_day = 100
 
-    plt.plot(mean_all[0:50],'-k', label="Network avg. edges reduction")
-    plt.fill_between(list(range(len(mean_all[0:50]))), upper_all[0:50], lower_all[0:50], color="k", alpha=0.2)
-    plt.plot(mean_sus[0:50], linestyle='--', color='b', label="Individuals avg. edges reduction")
-    plt.fill_between(list(range(len(mean_sus[0:50]))), upper_sus[0:50], lower_sus[0:50], color="b", alpha=0.2)
+    plt.plot(mean_all[0:max_day],'-k', label="Network avg. edges reduction")
+    plt.fill_between(list(range(len(mean_all[0:max_day]))), upper_all[0:max_day], lower_all[0:max_day], color="k", alpha=0.2)
+    plt.plot(mean_sus[0:max_day], linestyle='--', color='b', label="Individuals avg. edges reduction")
+    plt.fill_between(list(range(len(mean_sus[0:max_day]))), upper_sus[0:max_day], lower_sus[0:max_day], color="b", alpha=0.2)
     plt.title(f"Global and local behavioral responses (v={v}, T={T})")
     plt.legend(loc="lower right")
 
     if 'save' in kwargs:
         idx = kwargs.get('idx', 1)
         current_date = datetime.now()
-        formatted_date = current_date.strftime("%Y%m%d")
+        formatted_date = current_date.strftime("%Y%m%d%H%M%S")
         plt.savefig(f'./Figures/{formatted_date}_local_global_behavior_comparison_{idx}.png')
 
     return fig
@@ -499,7 +500,7 @@ def infected_edge_reduction_fig(bepidist, fig, v, T, n,**kwargs):
     if 'save' in kwargs:
         idx = kwargs.get('idx', 1)
         current_date = datetime.now()
-        formatted_date = current_date.strftime("%Y%m%d")
+        formatted_date = current_date.strftime("%Y%m%d%H%M%S")
         plt.savefig(f'./Figures/{formatted_date}_infected_and_effort_{idx}.png')
 
     return fig
@@ -563,7 +564,8 @@ def get_all_figures(n, ped, **kwargs):
     T = 7
     # v = 0.05
     vs = [0.05]
-    nei = 1
+    nei = kwargs.get('nei', 1)
+    val = kwargs.get('val', '')
 
     for idx, v in enumerate(vs):
 
@@ -572,7 +574,7 @@ def get_all_figures(n, ped, **kwargs):
         v_name = v
         T_name = T
 
-        idx_use = f'{idx}_neigh_{nei}'
+        idx_use = f'{idx}_neigh_{nei}_{val}'
 
         print("Started no behavior net")
         net = nx.gnp_random_graph(n, ped)
@@ -1003,7 +1005,6 @@ def inspect_heatmap_experiment():
             plt.plot(bepidist['edgecount_mean'][0:nn],'-k', label="Network avg. edges reduction")
             plt.fill_between(range(nn), bepidist['edgecount_min'][0:nn], bepidist['edgecount_max'][0:nn], color="k", alpha=0.2)
             plt.plot(bepidist['suscedgecount_mean'][0:nn], linestyle='--', color='b', label="Individuals avg. edges reduction")
-            # plt.fill_between(range(50), upper_sus[0:50], lower_sus[0:50], color="b", alpha=0.2)
             plt.title(f"Global and local behavioral responses (v={v}, T={T})")
             plt.legend(loc="lower right")
             plt.savefig(f'./Figures/check_data/fig_{v}_{T}.png')
@@ -1125,5 +1126,8 @@ if __name__ == '__main__':
 
     # 1.
     # Check what happens in this case:
-    get_all_figures(500, 0.05, infected_drop_contacts=False)
-    get_all_figures(500, 0.05, infected_drop_contacts=True)
+    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=3)
+    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=4)
+    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=5)
+    #get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop')
+    #get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_drop')
