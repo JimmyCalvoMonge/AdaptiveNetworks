@@ -509,7 +509,7 @@ def infected_edge_reduction_fig(bepidist, fig, v, T, n,**kwargs):
 def get_heatmap_data(n, ped):
 
     vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
-    Ts = list(range(5, 40, 5))
+    Ts = list(range(4, 20, 2))
     combs = list(itertools.product(vs, Ts))
 
     epidist_all = pd.DataFrame({})
@@ -551,8 +551,10 @@ def get_heatmap_data(n, ped):
         except Exception as e:
             print(f"Error with ({v},{T}): {e}")
 
-    epidist_all.to_csv(f'./Data/epidist_new.csv', index=False)
-    bepidist_all.to_csv(f'./Data/bepidist_new.csv', index=False)
+    current_date = datetime.now()
+    formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+    epidist_all.to_csv(f'./Data/{formatted_date}_epidist_heatmap_data.csv', index=False)
+    bepidist_all.to_csv(f'./Data/{formatted_date}_bepidist_heatmap_data.csv', index=False)
 
 
 def get_all_figures(n, ped, **kwargs):
@@ -1099,7 +1101,7 @@ if __name__ == '__main__':
 
     # get_all_figures(500, 0.05)
 
-    # get_heatmap_data(500, 0.05)
+    get_heatmap_data(500, 0.05)
 
     # example_with_distributions(500, 0.05)
 
@@ -1126,8 +1128,8 @@ if __name__ == '__main__':
 
     # 1.
     # Check what happens in this case:
-    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=3)
-    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=4)
-    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=5)
+    # get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=3)
+    # get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=4)
+    # get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=5)
     #get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop')
     #get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_drop')
