@@ -18,6 +18,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import itertools 
 from datetime import datetime
+import time
 
 n_cores = min(multiprocessing.cpu_count() - 2, 30)
 print(f'Using {n_cores} cores')
@@ -197,6 +198,7 @@ def episim(ntwk, epidemics, iterations, dispars, n):
 def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
 
     print(f"Network simulation {index}")
+    start = time.time()
 
     bepidemic_ = pd.DataFrame({})
     bepidemic_edge_count = pd.DataFrame({'index': [index]*n, 'node': list(range(n))})
@@ -340,6 +342,9 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
     bepidemic_['suscedgecount'] = bepidemic_['suscedgecount']/np.nanmax(bepidemic_['suscedgecount'])
     bepidemic_['index'] = index
 
+    end = time.time()
+    print(f"Network simulation {index} took {(end-start)/60} minutes")
+
     return [bepidemic_ , bepidemic_edge_count]
 
 
@@ -362,7 +367,7 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
     pool = multiprocessing.Pool(n_cores)
     bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
                                         pi=pi, pr=pr, v=v,
-                                        T=T, ns=ns, n=n, **kwargs), range(bepis))
+                                        T=T, ns=ns, n=n), range(bepis))
     pool.close()
     pool.join()
 
@@ -530,7 +535,7 @@ def get_heatmap_data(n, ped):
             net = nx.gnp_random_graph(n, ped)
             epidist = episim(ntwk=net,
                              epidemics=100,
-                             iterations=200,
+                             iterations=100,
                              dispars=[0.05, 0.04], n=n)
             epidist['V'] = v
             epidist['T'] = T
@@ -538,7 +543,7 @@ def get_heatmap_data(n, ped):
             print("Started behavior net")
             net = nx.gnp_random_graph(n, ped)
             bepidist = bepisim(ntwk=net,
-                               epidemics=100,
+                               epidemics=2,
                                iterations=100,
                                dispars=[0.05, 0.04],
                                u=[v, T], neis=1, n=n)
@@ -547,6 +552,8 @@ def get_heatmap_data(n, ped):
 
             epidist_all = pd.concat([epidist_all, epidist], ignore_index=True)
             bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+ 
+
 
         except Exception as e:
             print(f"Error with ({v},{T}): {e}")
