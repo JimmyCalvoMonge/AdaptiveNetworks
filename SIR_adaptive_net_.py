@@ -382,9 +382,10 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
                        'suscedgecount':['mean', 'min', 'max', 'std'],
 
                        # Network measures
-                       'cluster': ['mean', 'min', 'max', 'std'],
-                       'centrality':['mean', 'min', 'max', 'std'],
-                       'connectivity':['mean', 'min', 'max', 'std']})
+                    #    'cluster': ['mean', 'min', 'max', 'std'],
+                    #    'centrality':['mean', 'min', 'max', 'std'],
+                    #    'connectivity':['mean', 'min', 'max', 'std']
+                       })
     
     bepidist.columns = bepidist.columns.droplevel()
     bepidist.columns = ['day', 
@@ -395,9 +396,9 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
                         'suscedgecount_mean', 'suscedgecount_min', 'suscedgecount_max', 'suscedgecount_std',
 
                         # Network measures
-                        'cluster_mean', 'cluster_min', 'cluster_max', 'cluster_std',
-                        'centrality_mean', 'centrality_min', 'centrality_max', 'centrality_std',
-                        'connectivity_mean', 'connectivity_min', 'connectivity_max', 'connectivity_std'
+                        # 'cluster_mean', 'cluster_min', 'cluster_max', 'cluster_std',
+                        # 'centrality_mean', 'centrality_min', 'centrality_max', 'centrality_std',
+                        # 'connectivity_mean', 'connectivity_min', 'connectivity_max', 'connectivity_std'
                         ]
 
     # Get contact information for each individual at each day. For all simulations.
