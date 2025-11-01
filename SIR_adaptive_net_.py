@@ -16,25 +16,37 @@ import functools
 from matplotlib import pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
-import itertools
+import itertools 
+from datetime import datetime
+import time
 
-n_cores = min(multiprocessing.cpu_count() - 10, 30)
+n_cores = min(abs(multiprocessing.cpu_count() - 2), 30)
 print(f'Using {n_cores} cores')
 
 # Get neighbors at levels (first, second, third level neighbors)
 def get_neighbors(ntw, node, levels):
     if levels > 1:
-        subgraph = nx.ego_graph(ntw, node, radius=levels)
-        return list(subgraph.nodes())
+        neighs = list(ntw.neighbors(node))
+        for i in range(levels - 1):
+            new_neighs = []
+            for node_ in neighs:
+                new_neighs += list(ntw.neighbors(node))
+            neighs += new_neighs
+            neighs = list(set(neighs))
+        return neighs
     else:
         return list(ntw.neighbors(node))
 
 
-def infneighs(ntw, node, ns, ilist):
-    inf = [k for k in range(len(ilist)) if ilist[k] == 1]
+def infneighs(ntw, node, ns, ilist, **kwargs):
+    all_nodes = kwargs.get('all_nodes', False)
     neighlist = get_neighbors(ntw, node, ns)
-    infneigh = [neigh for neigh in neighlist if neigh in inf]
-    return [node, len(infneigh), infneigh]
+    if all_nodes:
+        return [node, len(neighlist), neighlist]
+    else:
+        inf = [k for k in range(len(ilist)) if ilist[k] == 1]
+        infneigh = [neigh for neigh in neighlist if neigh in inf]
+        return [node, len(infneigh), infneigh]
 
 # Single peak function
 def fs(x,y,z):
@@ -183,7 +195,10 @@ def episim(ntwk, epidemics, iterations, dispars, n):
     return epidist
 
 
-def bepidemic(index, net, it, pi, pr, v, T, ns, n):
+def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
+
+    print(f"Network simulation {index}")
+    start = time.time()
 
     bepidemic_ = pd.DataFrame({})
     bepidemic_edge_count = pd.DataFrame({'index': [index]*n, 'node': list(range(n))})
@@ -277,6 +292,24 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n):
         # {Count[s,1],Count[i,1],Count[r,1],EdgeCount[rednet],
         # N@Mean[Length[IncidenceList[rednet,#]]&/@sus]}
 
+        # Infected drop contacts:
+        infected_drop_contacts = kwargs.get('infected_drop_contacts', False)
+        if infected_drop_contacts:
+            try:
+                infs = [k for k in range(n) if i[k] == 1] # Infected nodes
+                infofinfs = [infneighs(net, node, ns, inew, all_nodes=True) for node in infs] # Neighbors of infected nodes
+                infs_ = [k for k in infofinfs if k[1]!=0] # Infected nodes (and their neighbors), when they have neighbors.
+
+                # random sample the infected.
+                infs_sampled = random.sample(infs_, int(len(infs_)*0.33))
+                nodes_to_drop = []
+                # For each of the sampled infected nodes. Sample their neighbors to get edges to drop.
+                for k in infs_sampled:
+                    nodes_to_drop += [(k[0], y) for y in random.sample(k[2], int(len(k[2])*0.5))]
+                rednet.remove_edges_from(nodes_to_drop)
+            except Exception as e:
+                print(f'Error removing edges randomly for infected: {e}')
+
         sus_contacts = {}
         for node in sus:
             if net_contact_dict[node] != 0:
@@ -286,7 +319,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n):
 
         sus_contacts_ratios = np.nanmean(list(sus_contacts.values()))
 
-        degree_centrality = nx.degree_centrality(rednet)
+        # degree_centrality = nx.degree_centrality(rednet) # This is computationally expensive!
 
         bepidemic_ = pd.concat([bepidemic_, pd.DataFrame({
             'day': [t+1],
@@ -295,9 +328,10 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n):
             'r': [sum(rnew)],
             'edgecount': [rednet.number_of_edges()],
             'suscedgecount': sus_contacts_ratios,
-            'cluster':[nx.average_clustering(rednet)],
-            'centrality': [sum(degree_centrality.values())/len(degree_centrality)],
-            'connectivity': [nx.node_connectivity(rednet)]
+            # 'cluster':[nx.average_clustering(rednet)],
+            # 'centrality': [sum(degree_centrality.values())/len(degree_centrality)],
+            # 'connectivity': [nx.node_connectivity(rednet)]
+            # These are computationally expensive!
         })])
 
         bepidemic_edge_count[f'day_{t}'] = [len(list(rednet.neighbors(node))) for node in range(n)]
@@ -308,6 +342,9 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n):
     bepidemic_['edgecount'] = bepidemic_['edgecount']/np.nanmax(bepidemic_['edgecount'])
     bepidemic_['suscedgecount'] = bepidemic_['suscedgecount']/np.nanmax(bepidemic_['suscedgecount'])
     bepidemic_['index'] = index
+
+    end = time.time()
+    print(f"Network simulation {index} took {(end-start)/60} minutes")
 
     return [bepidemic_ , bepidemic_edge_count]
 
@@ -400,12 +437,14 @@ def infected_comparison_fig(epidist, bepidist, fig, v, T, n, **kwargs):
 
     if 'save' in kwargs:
         idx = kwargs.get('idx', 1)
-        plt.savefig(f'./Figures/infected_comparison_{idx}.png')
+        current_date = datetime.now()
+        formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+        plt.savefig(f'./Figures/{formatted_date}_infected_comparison_{idx}.png')
 
     return fig
 
 
-def edge_reduction_comparison_fig(bepidist, fig, v, T, **kwargs):
+def edge_reduction_comparison_fig(bepidist, fig, v, T, n, **kwargs):
 
     mean_all = bepidist['edgecount_mean'].tolist()
     lower_all = bepidist['edgecount_min'].tolist()
@@ -416,17 +455,20 @@ def edge_reduction_comparison_fig(bepidist, fig, v, T, **kwargs):
     upper_sus = bepidist['suscedgecount_max'].tolist()
 
     axarr = fig.add_subplot(1,1,1)
+    max_day = 100
 
-    plt.plot(mean_all[0:50],'-k', label="Network avg. edges reduction")
-    plt.fill_between(list(range(len(mean_all[0:50]))), upper_all[0:50], lower_all[0:50], color="k", alpha=0.2)
-    plt.plot(mean_sus[0:50], linestyle='--', color='b', label="Individuals avg. edges reduction")
-    plt.fill_between(list(range(len(mean_sus[0:50]))), upper_sus[0:50], lower_sus[0:50], color="b", alpha=0.2)
+    plt.plot(mean_all[0:max_day],'-k', label="Network avg. edges reduction")
+    plt.fill_between(list(range(len(mean_all[0:max_day]))), upper_all[0:max_day], lower_all[0:max_day], color="k", alpha=0.2)
+    plt.plot(mean_sus[0:max_day], linestyle='--', color='b', label="Individuals avg. edges reduction")
+    plt.fill_between(list(range(len(mean_sus[0:max_day]))), upper_sus[0:max_day], lower_sus[0:max_day], color="b", alpha=0.2)
     plt.title(f"Global and local behavioral responses (v={v}, T={T})")
     plt.legend(loc="lower right")
 
     if 'save' in kwargs:
         idx = kwargs.get('idx', 1)
-        plt.savefig(f'./Figures/local_global_behavior_comparison_{idx}.png')
+        current_date = datetime.now()
+        formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+        plt.savefig(f'./Figures/{formatted_date}_local_global_behavior_comparison_{idx}.png')
 
     return fig
 
@@ -463,19 +505,23 @@ def infected_edge_reduction_fig(bepidist, fig, v, T, n,**kwargs):
 
     if 'save' in kwargs:
         idx = kwargs.get('idx', 1)
-        plt.savefig(f'./Figures/infected_and_effort_{idx}.png')
+        current_date = datetime.now()
+        formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+        plt.savefig(f'./Figures/{formatted_date}_infected_and_effort_{idx}.png')
 
     return fig
 
 
-def get_heatmap_data(n, ped):
+def get_heatmap_data(n, ped, **kwargs):
 
-    vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
+    vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 15)]
     Ts = list(range(4, 20, 2))
     combs = list(itertools.product(vs, Ts))
 
     epidist_all = pd.DataFrame({})
     bepidist_all = pd.DataFrame({})
+    epidemics = kwargs.get('epidemics', 100)
+    iterations = kwargs.get('iterations', 200)
 
     for comb in combs:
         
@@ -491,8 +537,8 @@ def get_heatmap_data(n, ped):
             print("Started no behavior net")
             net = nx.gnp_random_graph(n, ped)
             epidist = episim(ntwk=net,
-                             epidemics=2,
-                             iterations=200,
+                             epidemics=epidemics,
+                             iterations=iterations,
                              dispars=[0.05, 0.04], n=n)
             epidist['V'] = v
             epidist['T'] = T
@@ -500,8 +546,8 @@ def get_heatmap_data(n, ped):
             print("Started behavior net")
             net = nx.gnp_random_graph(n, ped)
             bepidist = bepisim(ntwk=net,
-                               epidemics=2,
-                               iterations=200,
+                               epidemics=epidemics,
+                               iterations=iterations,
                                dispars=[0.05, 0.04],
                                u=[v, T], neis=1, n=n)
             bepidist['V'] = v
@@ -509,23 +555,29 @@ def get_heatmap_data(n, ped):
 
             epidist_all = pd.concat([epidist_all, epidist], ignore_index=True)
             bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
-
+ 
         except Exception as e:
             print(f"Error with ({v},{T}): {e}")
 
-    epidist_all.to_csv(f'./Data/epidist_new.csv', index=False)
-    bepidist_all.to_csv(f'./Data/bepidist_new.csv', index=False)
+    current_date = datetime.now()
+    formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+    epidist_all.to_csv(f'./Data/{formatted_date}_epidist_heatmap_data.csv', index=False)
+    bepidist_all.to_csv(f'./Data/{formatted_date}_bepidist_heatmap_data.csv', index=False)
 
 
-def get_all_figures(n, ped):
+def get_all_figures(n, ped, **kwargs):
 
-    vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
+    # vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 10)]
     # Ts = list(range(7, 70, 7))
 
     # Example with plots
     T = 7
     # v = 0.05
-    nei = 1
+    vs = [0.05]
+    nei = kwargs.get('nei', 1)
+    val = kwargs.get('val', '')
+    epidemics = kwargs.get('epidemics', 100)
+    iterations = kwargs.get('iterations', 200)
 
     for idx, v in enumerate(vs):
 
@@ -534,17 +586,28 @@ def get_all_figures(n, ped):
         v_name = v
         T_name = T
 
-        idx_use = f'{idx}_neigh_{nei}'
+        idx_use = f'{idx}_neigh_{nei}_{val}'
 
         print("Started no behavior net")
         net = nx.gnp_random_graph(n, ped)
-        epidist = episim(ntwk=net, epidemics=10,
-                         iterations=200, dispars=[0.05, 0.04], n=n)
+        epidist = episim(
+            ntwk=net,
+            epidemics=epidemics,
+            iterations=iterations,
+            dispars=[0.05, 0.04], 
+            n=n)
 
         print("Started behavior net")
         net = nx.gnp_random_graph(n, ped)
-        bepidist = bepisim(ntwk=net, epidemics=10,
-                           iterations=200, dispars=[0.05, 0.04], u=[v, T], neis=nei, n=n)
+        bepidist = bepisim(
+            ntwk=net, 
+            epidemics=epidemics,
+            iterations=iterations, 
+            dispars=[0.05, 0.04], 
+            u=[v, T], 
+            neis=nei,
+            n=n, 
+            **kwargs)
 
         print("Figure 1 ----")
 
@@ -558,7 +621,6 @@ def get_all_figures(n, ped):
         fig = edge_reduction_comparison_fig(bepidist, fig,
                                             v_name, T_name, n, save=True, idx=idx_use)
         
-
         print('Figure 3 ----')
 
         fig = plt.figure()
@@ -965,7 +1027,6 @@ def inspect_heatmap_experiment():
             plt.plot(bepidist['edgecount_mean'][0:nn],'-k', label="Network avg. edges reduction")
             plt.fill_between(range(nn), bepidist['edgecount_min'][0:nn], bepidist['edgecount_max'][0:nn], color="k", alpha=0.2)
             plt.plot(bepidist['suscedgecount_mean'][0:nn], linestyle='--', color='b', label="Individuals avg. edges reduction")
-            # plt.fill_between(range(50), upper_sus[0:50], lower_sus[0:50], color="b", alpha=0.2)
             plt.title(f"Global and local behavioral responses (v={v}, T={T})")
             plt.legend(loc="lower right")
             plt.savefig(f'./Figures/check_data/fig_{v}_{T}.png')
@@ -1058,9 +1119,12 @@ if __name__ == '__main__':
 
     print("Starting Experiments ====>")
 
+    epidemics = 100
+    iterations = 200
+
     # get_all_figures(500, 0.05)
 
-    get_heatmap_data(500, 0.05)
+    # get_heatmap_data(500, 0.05)
 
     # example_with_distributions(500, 0.05)
 
@@ -1077,3 +1141,21 @@ if __name__ == '__main__':
     # inspect_heatmap_experiment()
 
     # cluster_vs_infected()
+
+    # ========== Revisions ========== #
+    # TODO:
+
+    # 0. Improve heatmap with lower planning horizons
+    get_heatmap_data(500, 0.05, epidemics=epidemics, iterations=iterations)
+
+    # 1. Infected drop contacts
+    # 2. Use more than level 1 neighborhood
+    # 3. Create figure with lower planning horizons.
+
+    # 1. Infected drop contacts randomly
+    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=1, epidemics=epidemics, iterations=iterations)
+    get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_yes_drop', nei=1, epidemics=epidemics, iterations=iterations)
+    
+    # 2. Change neighborhood sizes:
+    for i in range(1,20):
+        get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i, epidemics=epidemics, iterations=iterations)
