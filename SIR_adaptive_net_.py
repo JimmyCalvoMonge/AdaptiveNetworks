@@ -539,7 +539,7 @@ def get_heatmap_data(n, ped):
             net = nx.gnp_random_graph(n, ped)
             bepidist = bepisim(ntwk=net,
                                epidemics=100,
-                               iterations=10,
+                               iterations=100,
                                dispars=[0.05, 0.04],
                                u=[v, T], neis=1, n=n)
             bepidist['V'] = v
