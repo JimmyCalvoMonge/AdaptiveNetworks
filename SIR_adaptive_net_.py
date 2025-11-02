@@ -307,6 +307,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
                 for k in infs_sampled:
                     nodes_to_drop += [(k[0], y) for y in random.sample(k[2], int(len(k[2])*0.5))]
                 rednet.remove_edges_from(nodes_to_drop)
+                print('Removed edges for infected')
             except Exception as e:
                 print(f'Error removing edges randomly for infected: {e}')
 
@@ -515,10 +516,10 @@ def infected_edge_reduction_fig(bepidist, fig, v, T, n,**kwargs):
 
 def get_heatmap_data(n, ped, **kwargs):
 
-    vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 15)]
-    Ts = list(range(4, 22, 2))
+    vs = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+    Ts = [2,    4,    6 ,   8,    10,   12,   14,   16,   18,   20 ]
+    # 10*10 = 100 smulations
     combs = list(itertools.product(vs, Ts))
-
     epidist_all = pd.DataFrame({})
     bepidist_all = pd.DataFrame({})
     epidemics = kwargs.get('epidemics', 200)
@@ -1151,17 +1152,19 @@ if __name__ == '__main__':
     # ========== Revisions ========== #
     # TODO:
 
-    # 0. Improve heatmap with lower planning horizons
-    # get_heatmap_data(500, 0.05, epidemics=epidemics, iterations=iterations)
-
     # 1. Infected drop contacts
     # 2. Use more than level 1 neighborhood
     # 3. Create figure with lower planning horizons.
 
     # 1. Infected drop contacts randomly
+    print("Figures where infected do not drop contacts")
     get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=1)
+    print("Figures where infected drop contacts")
     get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_yes_drop', nei=1)
     
     # 2. Change neighborhood sizes:
-    for i in range(1,20):
-        get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i)
+    # for i in range(1,20):
+    #     get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i)
+
+    # 0. Improve heatmap with lower planning horizons
+    # get_heatmap_data(500, 0.05, epidemics=epidemics, iterations=iterations)
