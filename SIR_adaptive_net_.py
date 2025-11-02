@@ -524,7 +524,7 @@ def infected_edge_reduction_fig(bepidist, fig, v, T, n,**kwargs):
     return fig
 
 
-def get_heatmap_data(n, ped, **kwargs):
+def get_heatmap_data(n, ped):
 
     vs = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
     Ts = [2,    4,    6 ,   8,    10,   12,   14,   16,   18,   20 ]
@@ -532,8 +532,15 @@ def get_heatmap_data(n, ped, **kwargs):
     combs = list(itertools.product(vs, Ts))
     epidist_all = pd.DataFrame({})
     bepidist_all = pd.DataFrame({})
-    epidemics = kwargs.get('epidemics', 200)
-    iterations = kwargs.get('iterations', 200)
+    epidemics = 200
+    iterations = 200
+
+    print("Started no behavior net")
+    net = nx.gnp_random_graph(n, ped)
+    epidist_all = episim(ntwk=net,
+                        epidemics=epidemics,
+                        iterations=iterations,
+                        dispars=[0.05, 0.04], n=n)
 
     for comb in combs:
         
@@ -546,15 +553,6 @@ def get_heatmap_data(n, ped, **kwargs):
 
         try:
 
-            print("Started no behavior net")
-            net = nx.gnp_random_graph(n, ped)
-            epidist = episim(ntwk=net,
-                             epidemics=epidemics,
-                             iterations=iterations,
-                             dispars=[0.05, 0.04], n=n)
-            epidist['V'] = v
-            epidist['T'] = T
-
             print("Started behavior net")
             net = nx.gnp_random_graph(n, ped)
             bepidist = bepisim(ntwk=net,
@@ -564,8 +562,6 @@ def get_heatmap_data(n, ped, **kwargs):
                                u=[v, T], neis=1, n=n)
             bepidist['V'] = v
             bepidist['T'] = T
-
-            epidist_all = pd.concat([epidist_all, epidist], ignore_index=True)
             bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
  
         except Exception as e:
@@ -1203,11 +1199,11 @@ if __name__ == '__main__':
     # Add delay:
     # print("Figures with delay")
     # get_all_figures(500, 0.05, infected_drop_contacts=False, use_delay=True, val='use_delay', nei=1)
-    get_delay_results(500, 0.05)
+    # get_delay_results(500, 0.05)
 
     # 2. Change neighborhood sizes:
     # for i in range(1,20):
     #     get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i)
 
     # 0. Improve heatmap with lower planning horizons
-    # get_heatmap_data(500, 0.05, epidemics=epidemics, iterations=iterations)
+    get_heatmap_data(500, 0.05)
