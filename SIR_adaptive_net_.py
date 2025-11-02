@@ -208,6 +208,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
     s = [1 - k for k in i]
     r = [0]*n
     clust_coeff = []
+    i_vectors = []
 
     rednet = net.copy()
 
@@ -224,6 +225,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
     # Infected drop contacts:
     infected_drop_contacts = kwargs.get('infected_drop_contacts', False)
     print(f"Will drop contacts for simulation {index}: {infected_drop_contacts}")
+    use_delay = kwargs.get('use_delay', False)
 
     for t in range(it):
 
@@ -254,6 +256,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
         s = snew
         i = inew
         r = rnew
+        i_vectors.append(inew) # Keep track of infected arrays
 
         # ===== The maximization process =====
         rednet = net.copy() # Define a dummy network: this is the network to play with
@@ -262,7 +265,11 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
         # sus=Flatten@Position[s,1];
         # infofsus=infneighs[net,#,ns,i]&/@sus;
         sus = [k for k in range(n) if s[k] == 1]
-        infofsus = [infneighs(net, node, ns, inew) for node in sus]
+        i_use_for_info = inew
+        if use_delay and len(i_vectors) > 4:
+            i_use_for_info = i_vectors[-4]
+
+        infofsus = [infneighs(net, node, ns, i_use_for_info) for node in sus]
 
         # (*Get only the info of susceptible with  infected neighbours*)
         # susinfs=Table[If[infofsus[[k,2]]!=0,infofsus[[k]]],{k,1,Length@sus}]/.Null->Sequence[];
@@ -1158,10 +1165,14 @@ if __name__ == '__main__':
     # 3. Create figure with lower planning horizons.
 
     # 1. Infected drop contacts randomly
-    print("Figures where infected do not drop contacts")
-    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=1)
+    # print("Figures where infected do not drop contacts")
+    # get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=1)
+    # print("Figures where infected drop contacts")
+    # get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_yes_drop', nei=1)
+
+    # Add delay:
     print("Figures where infected drop contacts")
-    get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_yes_drop', nei=1)
+    get_all_figures(500, 0.05, infected_drop_contacts=False, use_delay=True, val='use_delay', nei=1)
     
     # 2. Change neighborhood sizes:
     # for i in range(1,20):
