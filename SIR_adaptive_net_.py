@@ -505,7 +505,7 @@ def infected_edge_reduction_fig(bepidist, fig, v, T, n,**kwargs):
     plt.legend(loc="lower right")
 
     if 'save' in kwargs:
-        idx = kwargs.get('idx', 1)
+        idx = kwargs.get('idx', f'{v}_{T}')
         current_date = datetime.now()
         formatted_date = current_date.strftime("%Y%m%d%H%M%S")
         plt.savefig(f'./Figures/{formatted_date}_infected_and_effort_{idx}.png')
@@ -516,12 +516,12 @@ def infected_edge_reduction_fig(bepidist, fig, v, T, n,**kwargs):
 def get_heatmap_data(n, ped, **kwargs):
 
     vs = [round(vv, 4) for vv in np.linspace(0.01, 0.1, 15)]
-    Ts = list(range(4, 20, 2))
+    Ts = list(range(4, 22, 2))
     combs = list(itertools.product(vs, Ts))
 
     epidist_all = pd.DataFrame({})
     bepidist_all = pd.DataFrame({})
-    epidemics = kwargs.get('epidemics', 100)
+    epidemics = kwargs.get('epidemics', 200)
     iterations = kwargs.get('iterations', 200)
 
     for comb in combs:
@@ -573,12 +573,11 @@ def get_all_figures(n, ped, **kwargs):
 
     # Example with plots
     T = 7
-    # v = 0.05
     vs = [0.05]
     nei = kwargs.get('nei', 1)
     val = kwargs.get('val', '')
-    epidemics = kwargs.get('epidemics', 100)
-    iterations = kwargs.get('iterations', 200)
+    epidemics = 200
+    iterations = 200
 
     for idx, v in enumerate(vs):
 
@@ -587,7 +586,7 @@ def get_all_figures(n, ped, **kwargs):
         v_name = v
         T_name = T
 
-        idx_use = f'{idx}_neigh_{nei}_{val}'
+        idx_use = f'{idx}_neigh_{nei}_val_{val}_v_{v}_t_{T}'
 
         print("Started no behavior net")
         net = nx.gnp_random_graph(n, ped)
@@ -627,6 +626,12 @@ def get_all_figures(n, ped, **kwargs):
         fig = plt.figure()
         fig = infected_edge_reduction_fig(bepidist, fig, 
                                           v_name, T_name, n, save=True, idx=idx_use)
+        
+        current_date = datetime.now()
+        formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+        epidist.to_csv(f'./Data/{formatted_date}_epidist_{v}_{T}_data.csv', index=False)
+        bepidist.to_csv(f'./Data/{formatted_date}_bepidist_{v}_{T}_figure_data.csv', index=False)
+
 
 # Article example with distributions and subpopulations
 
@@ -1147,16 +1152,16 @@ if __name__ == '__main__':
     # TODO:
 
     # 0. Improve heatmap with lower planning horizons
-    get_heatmap_data(500, 0.05, epidemics=epidemics, iterations=iterations)
+    # get_heatmap_data(500, 0.05, epidemics=epidemics, iterations=iterations)
 
     # 1. Infected drop contacts
     # 2. Use more than level 1 neighborhood
     # 3. Create figure with lower planning horizons.
 
     # 1. Infected drop contacts randomly
-    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=1, epidemics=epidemics, iterations=iterations)
-    get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_yes_drop', nei=1, epidemics=epidemics, iterations=iterations)
+    get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=1)
+    get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_yes_drop', nei=1)
     
     # 2. Change neighborhood sizes:
     for i in range(1,20):
-        get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i, epidemics=epidemics, iterations=iterations)
+        get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i)
