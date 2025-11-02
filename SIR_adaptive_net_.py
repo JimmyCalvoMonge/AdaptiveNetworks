@@ -223,6 +223,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
 
     # Infected drop contacts:
     infected_drop_contacts = kwargs.get('infected_drop_contacts', False)
+    print(f"Will drop contacts for simulation {index}: {infected_drop_contacts}")
 
     for t in range(it):
 
