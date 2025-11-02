@@ -1201,9 +1201,10 @@ if __name__ == '__main__':
     # get_all_figures(500, 0.05, infected_drop_contacts=True, val='infected_yes_drop', nei=1)
 
     # Add delay:
-    print("Figures with delay")
-    get_all_figures(500, 0.05, infected_drop_contacts=False, use_delay=True, val='use_delay', nei=1)
-    
+    # print("Figures with delay")
+    # get_all_figures(500, 0.05, infected_drop_contacts=False, use_delay=True, val='use_delay', nei=1)
+    get_delay_results(500, 0.05)
+
     # 2. Change neighborhood sizes:
     # for i in range(1,20):
     #     get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i)
