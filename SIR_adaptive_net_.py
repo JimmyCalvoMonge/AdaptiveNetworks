@@ -371,7 +371,7 @@ def bepisim(ntwk, epidemics, iterations, dispars, u, neis, n, **kwargs):
     pool = multiprocessing.Pool(n_cores)
     bepidist0 = pool.map(functools.partial(bepidemic, net=net, it=it,
                                         pi=pi, pr=pr, v=v,
-                                        T=T, ns=ns, n=n), range(bepis))
+                                        T=T, ns=ns, n=n, **kwargs), range(bepis))
     pool.close()
     pool.join()
 
