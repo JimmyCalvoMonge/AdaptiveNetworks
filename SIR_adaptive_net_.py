@@ -221,6 +221,9 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
     if not isinstance(T, list):
         T = [T]*n
 
+    # Infected drop contacts:
+    infected_drop_contacts = kwargs.get('infected_drop_contacts', False)
+
     for t in range(it):
 
         A = nx.adjacency_matrix(rednet).todense()
@@ -292,8 +295,6 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
         # {Count[s,1],Count[i,1],Count[r,1],EdgeCount[rednet],
         # N@Mean[Length[IncidenceList[rednet,#]]&/@sus]}
 
-        # Infected drop contacts:
-        infected_drop_contacts = kwargs.get('infected_drop_contacts', False)
         if infected_drop_contacts:
             try:
                 infs = [k for k in range(n) if i[k] == 1] # Infected nodes
