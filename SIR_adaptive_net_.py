@@ -226,6 +226,8 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
     infected_drop_contacts = kwargs.get('infected_drop_contacts', False)
     print(f"Will drop contacts for simulation {index}: {infected_drop_contacts}")
     use_delay = kwargs.get('use_delay', False)
+    delay_days = kwargs.get('delay_days', 1)
+    print(f"Use delay {use_delay} with days {delay_days}")
 
     for t in range(it):
 
@@ -266,8 +268,8 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
         # infofsus=infneighs[net,#,ns,i]&/@sus;
         sus = [k for k in range(n) if s[k] == 1]
         i_use_for_info = inew
-        if use_delay and len(i_vectors) > 3:
-            i_use_for_info = i_vectors[-3]
+        if use_delay and len(i_vectors) > delay_days:
+            i_use_for_info = i_vectors[-delay_days]
 
         infofsus = [infneighs(net, node, ns, i_use_for_info) for node in sus]
 
@@ -640,6 +642,34 @@ def get_all_figures(n, ped, **kwargs):
         formatted_date = current_date.strftime("%Y%m%d%H%M%S")
         epidist.to_csv(f'./Data/{formatted_date}_epidist_{v}_{T}_data.csv', index=False)
         bepidist.to_csv(f'./Data/{formatted_date}_bepidist_{v}_{T}_figure_data.csv', index=False)
+
+
+def get_delay_results(n, ped):
+    delay_days = [1,2,3,4,5,6,7]
+    bepidist_all = pd.DataFrame({})
+    v = 0.05
+    T = 7
+
+    for d in delay_days:
+        try:
+
+            print("Started behavior net")
+            net = nx.gnp_random_graph(n, ped)
+            bepidist = bepisim(ntwk=net,
+                               epidemics=epidemics,
+                               iterations=iterations,
+                               dispars=[0.05, 0.04],
+                               u=[v, T], neis=1, n=n, use_delay=True, delay_days=d)
+            bepidist['d'] = d
+            bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+ 
+        except Exception as e:
+            print(f"Error with ({d}): {e}")
+
+    current_date = datetime.now()
+    formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+    bepidist_all.to_csv(f'./Data/{formatted_date}_bepidist_delay_data.csv', index=False)
+
 
 
 # Article example with distributions and subpopulations
