@@ -266,8 +266,8 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
         # infofsus=infneighs[net,#,ns,i]&/@sus;
         sus = [k for k in range(n) if s[k] == 1]
         i_use_for_info = inew
-        if use_delay and len(i_vectors) > 2:
-            i_use_for_info = i_vectors[-2]
+        if use_delay and len(i_vectors) > 3:
+            i_use_for_info = i_vectors[-3]
 
         infofsus = [infneighs(net, node, ns, i_use_for_info) for node in sus]
 
