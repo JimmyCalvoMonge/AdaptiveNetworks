@@ -303,13 +303,12 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
                 infs_ = [k for k in infofinfs if k[1]!=0] # Infected nodes (and their neighbors), when they have neighbors.
 
                 # random sample the infected.
-                infs_sampled = random.sample(infs_, int(len(infs_)*0.33))
+                infs_sampled = random.sample(infs_, int(len(infs_)*0.5))
                 nodes_to_drop = []
                 # For each of the sampled infected nodes. Sample their neighbors to get edges to drop.
                 for k in infs_sampled:
-                    nodes_to_drop += [(k[0], y) for y in random.sample(k[2], int(len(k[2])*0.5))]
+                    nodes_to_drop += [(k[0], y) for y in random.sample(k[2], int(len(k[2])*0.75))]
                 rednet.remove_edges_from(nodes_to_drop)
-                print('Removed edges for infected')
             except Exception as e:
                 print(f'Error removing edges randomly for infected: {e}')
 
