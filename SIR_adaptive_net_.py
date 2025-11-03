@@ -224,10 +224,13 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
 
     # Infected drop contacts:
     infected_drop_contacts = kwargs.get('infected_drop_contacts', False)
-    print(f"Will drop contacts for simulation {index}: {infected_drop_contacts}")
     use_delay = kwargs.get('use_delay', False)
     delay_days = kwargs.get('delay_days', 1)
-    print(f"Use delay {use_delay} with days {delay_days}")
+    rewiring = kwargs.get('rewiring', False)
+
+    print(f"Will drop contacts for simulation {index}: {infected_drop_contacts}")
+    print(f"Use delay for simulation {index}: {use_delay} with days {delay_days}")
+    print(f"Use rewiring for simulation {index}: {rewiring}")
 
     for t in range(it):
 
@@ -298,6 +301,15 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
             except Exception:
                 print('Error!')
                 pass
+
+        if rewiring:
+            print("Add new connections to other nodes")
+            for edges_list in list_:
+                edge_ = edges_list[0]
+                edges_posibilites = [i for i in range(n) if i not in edges_list[1]] # All other edges / Or other susceptibles.
+                new_connections = random.sample(edges_posibilites, len(edges_list[1]))
+                for new_conn in new_connections:
+                    rednet.add_edge(edge_, new_conn)
 
         # (*Drop edges from the network*)
         # rednet = EdgeDelete[rednet,edgestorem];
@@ -636,8 +648,8 @@ def get_all_figures(n, ped, **kwargs):
         
         current_date = datetime.now()
         formatted_date = current_date.strftime("%Y%m%d%H%M%S")
-        epidist.to_csv(f'./Data/{formatted_date}_epidist_{v}_{T}_data.csv', index=False)
-        bepidist.to_csv(f'./Data/{formatted_date}_bepidist_{v}_{T}_figure_data.csv', index=False)
+        epidist.to_csv(f'./Data/{formatted_date}_epidist_{idx_use}_data.csv', index=False)
+        bepidist.to_csv(f'./Data/{formatted_date}_bepidist_{idx_use}_data.csv', index=False)
 
 
 def get_delay_results(n, ped):
@@ -1201,9 +1213,13 @@ if __name__ == '__main__':
     # get_all_figures(500, 0.05, infected_drop_contacts=False, use_delay=True, val='use_delay', nei=1)
     # get_delay_results(500, 0.05)
 
+    # Add rewiring:
+    print("Figures with rewiring")
+    get_all_figures(500, 0.05, rewiring=True, val='rewiring', nei=1)
+
     # 2. Change neighborhood sizes:
     # for i in range(1,20):
     #     get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i)
 
     # 0. Improve heatmap with lower planning horizons
-    get_heatmap_data(500, 0.05)
+    # get_heatmap_data(500, 0.05)
