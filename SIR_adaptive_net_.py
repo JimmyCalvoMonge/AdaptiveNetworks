@@ -1168,6 +1168,91 @@ def cluster_vs_infected():
     return fig
 
 
+def get_heatmap_for_all_networks():
+
+    bepidist_all = pd.DataFrame()
+    vs = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+    Ts = [3,7,14,22]
+    combs = list(itertools.product(vs, Ts))
+
+    # Erdos-Renyi
+    n = 500
+    ped = 0.05
+    for comb in combs:
+        v = comb[0]
+        T = comb[1]
+        print(f"""
+        Simulation for ({v},{T}) started for Erdos-Renyi network: ====================>
+        """)
+        try:
+            print("Started behavior net")
+            net = nx.gnp_random_graph(n, ped)
+            bepidist = bepisim(ntwk=net,
+                               epidemics=epidemics,
+                               iterations=iterations,
+                               dispars=[0.05, 0.04],
+                               u=[v, T], neis=1, n=n)
+            bepidist['V'] = v
+            bepidist['T'] = T
+            bepidist['network'] = 'Erdos-Renyi'
+            bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+        except Exception as e:
+            print(f"Error with ({v},{T}) at Erdos-Renyi: {e}")
+
+    # Barabasi
+    m = 25
+    for comb in combs:
+        v = comb[0]
+        T = comb[1]
+        print(f"""
+        Simulation for ({v},{T}) started for Barabasi network: ====================>
+        """)
+        try:
+            print("Started behavior net")
+            net = nx.barabasi_albert_graph(n, m)
+            bepidist = bepisim(ntwk=net,
+                               epidemics=epidemics,
+                               iterations=iterations,
+                               dispars=[0.05, 0.04],
+                               u=[v, T], neis=1, n=n)
+            bepidist['V'] = v
+            bepidist['T'] = T
+            bepidist['network'] = 'Barabasi'
+            bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+        except Exception as e:
+            print(f"Error with ({v},{T}) at Barabasi: {e}")
+
+    # Small World
+    k = 20
+    p = 0.05
+    for comb in combs:
+        v = comb[0]
+        T = comb[1]
+        print(f"""
+        Simulation for ({v},{T}) started for Small World network: ====================>
+        """)
+        try:
+            print("Started behavior net")
+            net = nx.watts_strogatz_graph(n=n,
+                                          k=k,
+                                          p=p)
+            bepidist = bepisim(ntwk=net,
+                               epidemics=epidemics,
+                               iterations=iterations,
+                               dispars=[0.05, 0.04],
+                               u=[v, T], neis=1, n=n)
+            bepidist['V'] = v
+            bepidist['T'] = T
+            bepidist['network'] = 'Small World'
+            bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+        except Exception as e:
+            print(f"Error with ({v},{T}) at Small World: {e}")
+
+    current_date = datetime.now()
+    formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+    bepidist_all.to_csv(f'./Data/{formatted_date}_all_networks_bepidist_heatmap_data.csv', index=False)
+
+
 if __name__ == '__main__':
 
     print("Starting Experiments ====>")
@@ -1196,7 +1281,6 @@ if __name__ == '__main__':
     # cluster_vs_infected()
 
     # ========== Revisions ========== #
-    # TODO:
 
     # 1. Infected drop contacts
     # 2. Use more than level 1 neighborhood
@@ -1214,8 +1298,8 @@ if __name__ == '__main__':
     # get_delay_results(500, 0.05)
 
     # Add rewiring:
-    print("Figures with rewiring")
-    get_all_figures(500, 0.05, rewiring=True, val='rewiring', nei=1)
+    # print("Figures with rewiring")
+    # get_all_figures(500, 0.05, rewiring=True, val='rewiring', nei=1)
 
     # 2. Change neighborhood sizes:
     # for i in range(1,20):
@@ -1223,3 +1307,6 @@ if __name__ == '__main__':
 
     # 0. Improve heatmap with lower planning horizons
     # get_heatmap_data(500, 0.05)
+
+    # Simulations for all network topologies:
+    get_heatmap_for_all_networks()
