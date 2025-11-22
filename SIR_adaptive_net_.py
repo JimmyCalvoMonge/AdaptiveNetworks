@@ -197,7 +197,7 @@ def episim(ntwk, epidemics, iterations, dispars, n):
 
 def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
 
-    print(f"Network simulation {index}")
+    # print(f"Network simulation {index}")
     start = time.time()
 
     bepidemic_ = pd.DataFrame({})
