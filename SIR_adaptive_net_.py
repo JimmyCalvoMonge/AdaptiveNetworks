@@ -367,7 +367,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
     bepidemic_['index'] = index
 
     end = time.time()
-    print(f"Network simulation {index} took {(end-start)/60} minutes")
+    # print(f"Network simulation {index} took {(end-start)/60} minutes")
 
     return [bepidemic_ , bepidemic_edge_count]
 
