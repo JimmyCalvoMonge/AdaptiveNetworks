@@ -228,9 +228,9 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
     delay_days = kwargs.get('delay_days', 1)
     rewiring = kwargs.get('rewiring', False)
 
-    print(f"Will drop contacts for simulation {index}: {infected_drop_contacts}")
-    print(f"Use delay for simulation {index}: {use_delay} with days {delay_days}")
-    print(f"Use rewiring for simulation {index}: {rewiring}")
+    # print(f"Will drop contacts for simulation {index}: {infected_drop_contacts}")
+    # print(f"Use delay for simulation {index}: {use_delay} with days {delay_days}")
+    # print(f"Use rewiring for simulation {index}: {rewiring}")
 
     for t in range(it):
 
@@ -303,7 +303,7 @@ def bepidemic(index, net, it, pi, pr, v, T, ns, n, **kwargs):
                 pass
 
         if rewiring:
-            print("Add new connections to other nodes")
+            # print("Add new connections to other nodes")
             for edges_list in list_:
                 edge_ = edges_list[0]
                 edges_posibilites = [i for i in range(n) if i not in edges_list[1]] # All other edges / Or other susceptibles.
