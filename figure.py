@@ -16,21 +16,29 @@ METRIC = 'min_edge_reduction'  # Options: 'peak_prevalence', 'final_size', 'min_
 # Format: {metric: {network: value}}
 UNCERTAINTY_BANDS = {
     'final_size': {
-        'Barabasi': 10/500,
-        'Erdos-Renyi': 10/500,
-        'Small World': 10/500
+        'Barabasi': 7/500,
+        'Erdos-Renyi': 7.5/500,
+        'Small World': 6.9/500
     },
     'peak_prevalence': {
-        'Barabasi': 10/500,
-        'Erdos-Renyi': 10/500,
-        'Small World': 10/500
+        'Barabasi': 15/500,
+        'Erdos-Renyi': 15/500,
+        'Small World': 15/500
     },
     'min_edge_reduction': {
-        'Barabasi': 0.01,
-        'Erdos-Renyi': 0.01,
-        'Small World': 0.01
+        'Barabasi': 0.025,
+        'Erdos-Renyi': 0.025,
+        'Small World': 0.025
     }
 }
+
+# Custom base colors for min_edge_reduction plot (one per network in order: Barabasi, Erdos-Renyi, Small World)
+MIN_EDGE_REDUCTION_COLORS = {
+    'Barabasi': '#2355C2',
+    'Erdos-Renyi': '#438F27',
+    'Small World': '#E36E1B'
+}
+
 # =======================================
 
 # Read the data
@@ -90,7 +98,7 @@ elif METRIC == 'min_edge_reduction':
     # Get uncertainty bands for this metric
     uncertainty_bands = UNCERTAINTY_BANDS['min_edge_reduction']
     
-    y_label = 'Min Edge Reduction'
+    y_label = 'Edge Reduction'
     title = 'Min Edge Reduction vs Sensitivity Parameter by Network'
     output_filename = 'min_edge_reduction_by_sensitivity.png'
     plot_type = 'dual'  # Two lines per network
@@ -102,10 +110,11 @@ else:
 networks = sorted(plot_data['network'].unique())
 
 # Create the plot
-fig, ax = plt.subplots(figsize=(12, 7))
+fig, ax = plt.subplots(figsize=(10,10))
 
 # Base color palette
 base_colors = plt.cm.Set2(np.linspace(0, 1, len(networks)))
+base_colors = ['#2355C2','#438F27','#E36E1B']
 
 if plot_type == 'single':
     # Plot each network as a smooth line with shaded region
@@ -119,11 +128,11 @@ if plot_type == 'single':
         uncertainty = uncertainty_bands.get(network, 0.01)  # Default to 0.01 if network not in config
         
         # Calculate upper and lower bounds (mean ± fixed uncertainty)
-        y_upper = y_mean + uncertainty
+        y_upper = [min(yy + uncertainty, 1) for yy in y_mean]
         y_lower = y_mean - uncertainty
         
         # Plot the mean line (smooth, no markers)
-        ax.plot(x, y_mean, linewidth=2.5, label=network, color=base_colors[i])
+        ax.plot(x, y_mean, linewidth=2.5, label=f'{network} Network', color=base_colors[i])
         
         # Fill the region between mean-uncertainty and mean+uncertainty
         ax.fill_between(x, y_lower, y_upper, alpha=0.3, color=base_colors[i])
@@ -141,7 +150,8 @@ elif plot_type == 'dual':
         uncertainty = uncertainty_bands.get(network, 0.01)
         
         # Create darker and lighter versions of the base color
-        base_rgb = to_rgb(base_colors[i])
+        # Use custom colors for min_edge_reduction
+        base_rgb = to_rgb(MIN_EDGE_REDUCTION_COLORS.get(network, base_colors[i]))
         # Darker version (multiply by 0.7)
         dark_color = tuple(c * 0.7 for c in base_rgb)
         # Lighter version (interpolate with white)
@@ -149,33 +159,40 @@ elif plot_type == 'dual':
         
         # Plot edgecount_mean line (solid, darker)
         ax.plot(x, y_edge, linewidth=2.5, linestyle='-', 
-                label=f'{network} (edge)', color=dark_color)
+                label=f'{network} network avg. edge red.', color=dark_color)
         y_upper_edge = y_edge + uncertainty
         y_lower_edge = y_edge - uncertainty
         ax.fill_between(x, y_lower_edge, y_upper_edge, alpha=0.3, color=dark_color)
         
         # Plot suscedgecount_mean line (dashed, lighter)
         ax.plot(x, y_susc, linewidth=2.5, linestyle='--', 
-                label=f'{network} (susc)', color=light_color)
+                label=f'{network} individuals avg. edge red.', color=light_color)
         y_upper_susc = y_susc + uncertainty
         y_lower_susc = y_susc - uncertainty
         ax.fill_between(x, y_lower_susc, y_upper_susc, alpha=0.3, color=light_color)
+        
 
 # Styling
-ax.set_xlabel('Sensitivity Parameter (v)', fontsize=16, fontweight='bold')
-ax.set_ylabel(y_label, fontsize=16, fontweight='bold')
-ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+ax.set_xlabel('Population Risk Sensitivity', fontsize=24, fontweight='bold')
+ax.set_ylabel(y_label, fontsize=24, fontweight='bold')
+# ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
 
 # Make tick labels bold
 ax.tick_params(axis='both', which='major', labelsize=16, width=2)
 for label in ax.get_xticklabels() + ax.get_yticklabels():
     label.set_fontweight('bold')
+    label.set_fontsize(22)
 
 # Add grid for better readability
 ax.grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
 
 # Legend
-ax.legend(fontsize=16, frameon=True, shadow=True, loc='best')
+ax.legend(fontsize=18, frameon=True, loc='upper center', bbox_to_anchor=(0.5, -0.15),
+              fancybox=True, shadow=True, ncol=2)
+
+# Remove all spines
+for spine in ax.spines.values():
+    spine.set_visible(False)
 
 # Adjust layout to prevent label cutoff
 plt.tight_layout()
