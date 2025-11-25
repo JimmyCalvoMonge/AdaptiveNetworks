@@ -14,11 +14,13 @@ import pandas as pd
 import multiprocessing
 import functools
 from matplotlib import pyplot as plt
+from matplotlib.colors import to_rgb
 import warnings
 warnings.filterwarnings("ignore")
 import itertools 
 from datetime import datetime
 import time
+import os
 
 n_cores = min(abs(multiprocessing.cpu_count() - 2), 30)
 print(f'Using {n_cores} cores')
@@ -1172,7 +1174,7 @@ def get_heatmap_for_all_networks():
 
     bepidist_all = pd.DataFrame()
     vs = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
-    Ts = [3,7,14,22]
+    Ts = [3,5,7,10,14,18,22]
     combs = list(itertools.product(vs, Ts))
 
     # Erdos-Renyi
@@ -1250,15 +1252,248 @@ def get_heatmap_for_all_networks():
 
     current_date = datetime.now()
     formatted_date = current_date.strftime("%Y%m%d%H%M%S")
-    bepidist_all.to_csv(f'./Data/{formatted_date}_all_networks_bepidist_heatmap_data.csv', index=False)
+    file_name = f'./Data/{formatted_date}_all_networks_bepidist_heatmap_data.csv'
+    os.makedirs(os.path.dirname(file_name), exist_ok=True)
+    bepidist_all.to_csv(file_name, index=False)
+    return bepidist_all
+
+   
+def get_figures_disease_dynamics_vs_risk_for_all_networks(bepidist_all, by):
+    # Fixed uncertainty band width for each network and metric
+    # Format: {metric: {network: value}}
+    UNCERTAINTY_BANDS = {
+        'final_size': {
+            'Barabasi': 7/500,
+            'Erdos-Renyi': 7.5/500,
+            'Small World': 6.9/500
+        },
+        'peak_prevalence': {
+            'Barabasi': 15/500,
+            'Erdos-Renyi': 15/500,
+            'Small World': 15/500
+        },
+        'min_edge_reduction': {
+            'Barabasi': 0.025,
+            'Erdos-Renyi': 0.025,
+            'Small World': 0.025
+        }
+    }
+
+    # Custom base colors for min_edge_reduction plot (one per network in order: Barabasi, Erdos-Renyi, Small World)
+    MIN_EDGE_REDUCTION_COLORS = {
+        'Barabasi': '#2355C2',
+        'Erdos-Renyi': '#438F27',
+        'Small World': '#E36E1B'
+    }
+    if by == 'V':
+        filter_val = ('T', 7)
+        by_col = 'sensitivity_parameter'
+        x_label = 'Population Risk Sensitivity'
+    else:
+        filter_val = ('V', 0.05)
+        by_col = 'planning_horizon'
+        x_label = 'Planning Horizon'
+
+    df = bepidist_all[bepidist_all[filter_val[0]] == filter_val[1]].copy()
+    FIGURES = [('peak_prevalence', 'single'), ('final_size', 'single'), ('min_edge_reduction', 'dual')]
+    for fig in FIGURES:
+        METRIC = fig[0]
+        plot_type = fig[1]
+
+        # Compute the metric based on configuration
+        if METRIC == 'peak_prevalence':
+            # Get the peak prevalence (max i_mean) for each combination of V and network
+            plot_data = df.groupby([by, 'network']).agg({
+                'i_mean': 'max',
+                'i_min': 'max',
+                'i_max': 'max'
+            }).reset_index()
+            
+            # plot_data = df.groupby([by, 'network']).apply(get_peak_mean).reset_index()
+            plot_data.columns = [by_col, 'network', 'mean_value', 'min_value', 'max_value']
+            
+            # Divide by 500 to get proportion
+            plot_data['mean_value'] = plot_data['mean_value'] / 500
+            plot_data['min_value'] = plot_data['min_value'] / 500
+            plot_data['max_value'] = plot_data['max_value'] / 500
+            
+            # Get uncertainty bands for this metric
+            uncertainty_bands = UNCERTAINTY_BANDS['peak_prevalence']
+            
+            y_label = 'Peak Prevalence'
+            title = 'Peak Prevalence vs Sensitivity Parameter by Network'
+            output_filename = f'peak_prevalence_by_{by_col}.png'
+            plot_type = 'single'  # Single line per network
+            
+        elif METRIC == 'final_size':
+            # Filter for day 200 and get r_mean for each combination of V and network
+            day_200 = df[df['day'] == 200].copy()
+
+            plot_data = day_200.groupby([by, 'network']).agg({
+                'r_mean': 'mean',
+                'r_min': 'mean',
+                'r_max': 'mean'
+            }).reset_index()
+
+            # plot_data = day_200.groupby(['V', 'network'])['r_mean'].mean().reset_index()
+            plot_data.columns = [by_col, 'network', 'mean_value', 'min_value', 'max_value']
+            
+            # Divide by 500 to get proportion
+            plot_data['mean_value'] = plot_data['mean_value'] / 500
+            plot_data['min_value'] = plot_data['min_value'] / 500
+            plot_data['max_value'] = plot_data['max_value'] / 500
+            
+            # Get uncertainty bands for this metric
+            uncertainty_bands = UNCERTAINTY_BANDS['final_size']
+            
+            y_label = 'Final Size'
+            title = 'Final Size vs Sensitivity Parameter by Network'
+            output_filename = f'final_size_by_{by_col}.png'
+            plot_type = 'single'  # Single line per network
+            
+        elif METRIC == 'min_edge_reduction':
+            # Get minimum edgecount_mean and suscedgecount_mean for each V and network
+            edge_data = df.groupby([by, 'network']).agg({
+                'edgecount_mean': 'min',
+                'edgecount_min': 'min',
+                'edgecount_max': 'min',
+                'suscedgecount_mean': 'min',
+                'suscedgecount_min': 'min',
+                'suscedgecount_max': 'min'
+            }).reset_index()
+            
+            plot_data = edge_data
+            plot_data.columns = [by_col, 'network', 
+                                 'edgecount_min', 'edgecount_min_min', 'edgecount_max_min', 
+                                 'suscedgecount_min','suscedgecount_min_min', 'suscedgecount_max_min'
+                                 ]
+            
+            # Get uncertainty bands for this metric
+            # uncertainty_bands = UNCERTAINTY_BANDS['min_edge_reduction']
+            
+            y_label = 'Edge Reduction'
+            title = 'Min Edge Reduction vs Sensitivity Parameter by Network'
+            output_filename = f'min_edge_reduction_by_{by_col}.png'
+            plot_type = 'dual'  # Two lines per network
+            
+        else:
+            raise ValueError(f"Invalid METRIC: {METRIC}. Choose 'peak_prevalence', 'final_size', or 'min_edge_reduction'")
+
+        # Get unique networks and sort them for consistent ordering
+        networks = sorted(plot_data['network'].unique())
+
+        # Create the plot
+        fig, ax = plt.subplots(figsize=(10,10))
+
+        # Base color palette
+        base_colors = plt.cm.Set2(np.linspace(0, 1, len(networks)))
+        base_colors = ['#2355C2','#438F27','#E36E1B']
+
+        if plot_type == 'single':
+            # Plot each network as a smooth line with shaded region
+            for i, network in enumerate(networks):
+                network_data = plot_data[plot_data['network'] == network].sort_values(by_col)
+                
+                x = network_data[by_col].values
+                y_mean = network_data['mean_value'].values
+                
+                # Get the fixed uncertainty band for this network
+                uncertainty = uncertainty_bands.get(network, 0.01)  # Default to 0.01 if network not in config
+                
+                # Calculate upper and lower bounds (mean ± fixed uncertainty)
+                # y_upper = [min(yy + uncertainty, 1) for yy in y_mean]
+                # y_lower = y_mean - uncertainty
+                y_upper = network_data['max_value'].values
+                y_lower = [y_mean[i] - (y_upper[i] - y_mean[i]) for i in range(len(y_upper))] # network_data['min_value'].values
+                
+                # Plot the mean line (smooth, no markers)
+                ax.plot(x, y_mean, linewidth=2.5, label=f'{network} Network', color=base_colors[i])
+                
+                # Fill the region between mean-uncertainty and mean+uncertainty
+                ax.fill_between(x, y_lower, y_upper, alpha=0.3, color=base_colors[i])
+                
+        elif plot_type == 'dual':
+            # Plot two lines per network (edgecount and suscedgecount)
+            for i, network in enumerate(networks):
+                network_data = plot_data[plot_data['network'] == network].sort_values(by_col)
+                
+                x = network_data[by_col].values
+                y_edge = network_data['edgecount_min'].values
+                y_lower_edge = network_data['edgecount_min_min'].values
+                y_upper_edge = [min(1, y_edge[i] + (y_edge[i] - y_lower_edge[i])) for i in range(len(y_lower_edge))]
+                # y_upper_edge = network_data['edgecount_max_min'].values
+
+                y_susc = network_data['suscedgecount_min'].values
+                y_lower_susc = network_data['suscedgecount_min_min'].values
+                y_upper_susc = [min(1, y_susc[i] + (y_susc[i] - y_lower_susc[i])) for i in range(len(y_lower_susc))]
+                # y_upper_susc = network_data['suscedgecount_max_min'].values
+                
+                # Get the fixed uncertainty band for this network
+                # uncertainty = uncertainty_bands.get(network, 0.01)
+                
+                # Create darker and lighter versions of the base color
+                # Use custom colors for min_edge_reduction
+                base_rgb = to_rgb(MIN_EDGE_REDUCTION_COLORS.get(network, base_colors[i]))
+                # Darker version (multiply by 0.7)
+                dark_color = tuple(c * 0.7 for c in base_rgb)
+                # Lighter version (interpolate with white)
+                light_color = tuple(c * 0.6 + 0.4 for c in base_rgb)
+                
+                # Plot edgecount_mean line (solid, darker)
+                ax.plot(x, y_edge, linewidth=2.5, linestyle='-', 
+                        label=f'{network} network avg. edge red.', color=dark_color)
+                # y_upper_edge = [min(yy + uncertainty, 1) for yy in y_edge]
+                # y_lower_edge = y_edge - uncertainty
+                ax.fill_between(x, y_lower_edge, y_upper_edge, alpha=0.3, color=dark_color)
+                
+                # Plot suscedgecount_mean line (dashed, lighter)
+                ax.plot(x, y_susc, linewidth=2.5, linestyle='--', 
+                        label=f'{network} individuals avg. edge red.', color=light_color)
+                # y_upper_susc = [min(yy + uncertainty, 1) for yy in y_susc]
+                # y_lower_susc = y_susc - uncertainty
+                ax.fill_between(x, y_lower_susc, y_upper_susc, alpha=0.3, color=light_color)
+                
+        # Styling
+        ax.set_xlabel(x_label, fontsize=24, fontweight='bold')
+        ax.set_ylabel(y_label, fontsize=24, fontweight='bold')
+        # ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+
+        # Make tick labels bold
+        ax.tick_params(axis='both', which='major', labelsize=16, width=2)
+        for label in ax.get_xticklabels() + ax.get_yticklabels():
+            label.set_fontweight('bold')
+            label.set_fontsize(22)
+
+        # Add grid for better readability
+        ax.grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
+
+        # Legend
+        ax.legend(fontsize=18, frameon=True, loc='upper center', bbox_to_anchor=(0.5, -0.15),
+                    fancybox=True, shadow=True, ncol=2)
+
+        # Remove all spines
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+
+        # Adjust layout to prevent label cutoff
+        plt.tight_layout()
+
+        # Save the figure
+        output_path = f'./Figures/{output_filename}'
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+        print(f"Figure saved to: {output_path}")
+        print(f"Metric plotted: {METRIC}")
+
+    print("Figures completed!")
 
 
 if __name__ == '__main__':
 
     print("Starting Experiments ====>")
 
-    epidemics = 100
-    iterations = 200
+    epidemics = 300
+    iterations = 250
 
     # get_all_figures(500, 0.05)
 
@@ -1309,4 +1544,9 @@ if __name__ == '__main__':
     # get_heatmap_data(500, 0.05)
 
     # Simulations for all network topologies:
-    get_heatmap_for_all_networks()
+    df = get_heatmap_for_all_networks()
+
+    # Read predetermined results
+    # df = pd.read_csv('./Data/20251122115710_all_networks_bepidist_heatmap_data.csv')
+    get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='V')
+    get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='T')
