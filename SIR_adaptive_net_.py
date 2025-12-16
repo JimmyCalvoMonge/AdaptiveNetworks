@@ -1273,9 +1273,9 @@ def get_figures_disease_dynamics_vs_risk_for_all_networks(bepidist_all, by):
             'Small World': 15/500
         },
         'min_edge_reduction': {
-            'Barabasi': 0.025,
-            'Erdos-Renyi': 0.025,
-            'Small World': 0.025
+            'Barabasi': 2,
+            'Erdos-Renyi': 0.1,
+            'Small World': 0.1
         }
     }
 
@@ -1401,16 +1401,19 @@ def get_figures_disease_dynamics_vs_risk_for_all_networks(bepidist_all, by):
                 uncertainty = uncertainty_bands.get(network, 0.01)  # Default to 0.01 if network not in config
                 
                 # Calculate upper and lower bounds (mean ± fixed uncertainty)
-                # y_upper = [min(yy + uncertainty, 1) for yy in y_mean]
-                # y_lower = y_mean - uncertainty
-                y_upper = network_data['max_value'].values
-                y_lower = [y_mean[i] - (y_upper[i] - y_mean[i]) for i in range(len(y_upper))] # network_data['min_value'].values
+                y_upper = [min(yy + uncertainty, 1) for yy in y_mean]
+                y_lower = y_mean - uncertainty
+                # y_upper = network_data['max_value'].values
+                # y_lower = [y_mean[i] - (y_upper[i] - y_mean[i]) for i in range(len(y_upper))] # network_data['min_value'].values
                 
                 # Plot the mean line (smooth, no markers)
                 ax.plot(x, y_mean, linewidth=2.5, label=f'{network} Network', color=base_colors[i])
                 
                 # Fill the region between mean-uncertainty and mean+uncertainty
                 ax.fill_between(x, y_lower, y_upper, alpha=0.3, color=base_colors[i])
+
+                coord_x_ = 0.75
+                coord_y_ = 0.3
                 
         elif plot_type == 'dual':
             # Plot two lines per network (edgecount and suscedgecount)
@@ -1429,7 +1432,7 @@ def get_figures_disease_dynamics_vs_risk_for_all_networks(bepidist_all, by):
                 # y_upper_susc = network_data['suscedgecount_max_min'].values
                 
                 # Get the fixed uncertainty band for this network
-                # uncertainty = uncertainty_bands.get(network, 0.01)
+                uncertainty = 0.025 # uncertainty_bands.get(network, 0.05)
                 
                 # Create darker and lighter versions of the base color
                 # Use custom colors for min_edge_reduction
@@ -1441,22 +1444,30 @@ def get_figures_disease_dynamics_vs_risk_for_all_networks(bepidist_all, by):
                 
                 # Plot edgecount_mean line (solid, darker)
                 ax.plot(x, y_edge, linewidth=2.5, linestyle='-', 
-                        label=f'{network} network avg. edge red.', color=dark_color)
-                # y_upper_edge = [min(yy + uncertainty, 1) for yy in y_edge]
-                # y_lower_edge = y_edge - uncertainty
+                        label=f'{network} ntwk. edge red.', color=dark_color)
+                y_upper_edge = [min(yy + uncertainty, 1) for yy in y_edge]
+                y_lower_edge = y_edge - uncertainty
                 ax.fill_between(x, y_lower_edge, y_upper_edge, alpha=0.3, color=dark_color)
                 
                 # Plot suscedgecount_mean line (dashed, lighter)
                 ax.plot(x, y_susc, linewidth=2.5, linestyle='--', 
-                        label=f'{network} individuals avg. edge red.', color=light_color)
-                # y_upper_susc = [min(yy + uncertainty, 1) for yy in y_susc]
-                # y_lower_susc = y_susc - uncertainty
+                        label=f'{network} indv. edge red.', color=light_color)
+                y_upper_susc = [min(yy + uncertainty, 1) for yy in y_susc]
+                y_lower_susc = y_susc - uncertainty
                 ax.fill_between(x, y_lower_susc, y_upper_susc, alpha=0.3, color=light_color)
-                
+
+                coord_x_ = 0.73
+                coord_y_ = 0.35
+
         # Styling
         ax.set_xlabel(x_label, fontsize=24, fontweight='bold')
         ax.set_ylabel(y_label, fontsize=24, fontweight='bold')
         # ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+
+        # Set x-axis limits and ticks for dual graph
+        if plot_type == 'dual':
+            ax.set_xlim(0, 0.12)
+            ax.set_xticks([0, 0.02, 0.04, 0.06, 0.08, 0.10])
 
         # Make tick labels bold
         ax.tick_params(axis='both', which='major', labelsize=16, width=2)
@@ -1467,13 +1478,30 @@ def get_figures_disease_dynamics_vs_risk_for_all_networks(bepidist_all, by):
         # Add grid for better readability
         ax.grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
 
-        # Legend
-        ax.legend(fontsize=18, frameon=True, loc='upper center', bbox_to_anchor=(0.5, -0.15),
-                    fancybox=True, shadow=True, ncol=2)
+        # Legend - positioned lower to avoid overlap with risk labels
+        ax.legend(fontsize=18, frameon=True, loc='upper center', bbox_to_anchor=(coord_x_, coord_y_),
+                    fancybox=True, shadow=True, ncol=1)
 
+
+        # Add risk labels below x-axis
+        xlim = ax.get_xlim()
+        ax.text(xlim[0], -0.15, 'Risk-averse', transform=ax.get_xaxis_transform(),
+                ha='left', va='top', fontsize=20, fontweight='bold')
+        ax.text(xlim[1], -0.15, 'Risk-tolerant', transform=ax.get_xaxis_transform(),
+                ha='right', va='top', fontsize=20, fontweight='bold')
+
+        # Add horizontal arrow from end of "averse" to before "Risk" in "Risk tolerant"
+        x_range = xlim[1] - xlim[0]
+        arrow_start = xlim[0] + x_range * 0.28
+        arrow_end = xlim[1] - x_range * 0.28
+        ax.annotate('', xy=(arrow_end, -0.165), xytext=(arrow_start, -0.165),
+                    xycoords=ax.get_xaxis_transform(),
+                    arrowprops=dict(arrowstyle='->', lw=2.5, color='black'))
+
+        
         # Remove all spines
-        for spine in ax.spines.values():
-            spine.set_visible(False)
+        # for spine in ax.spines.values():
+        #     spine.set_visible(False)
 
         # Adjust layout to prevent label cutoff
         plt.tight_layout()
@@ -1544,9 +1572,9 @@ if __name__ == '__main__':
     # get_heatmap_data(500, 0.05)
 
     # Simulations for all network topologies:
-    df = get_heatmap_for_all_networks()
+    # df = get_heatmap_for_all_networks()
 
     # Read predetermined results
-    # df = pd.read_csv('./Data/20251122115710_all_networks_bepidist_heatmap_data.csv')
+    df = pd.read_csv('./Data/20251122115710_all_networks_bepidist_heatmap_data.csv')
     get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='V')
-    get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='T')
+    # get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='T')
