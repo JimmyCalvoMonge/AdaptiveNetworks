@@ -1,0 +1,584 @@
+\documentclass[9pt,twocolumn,twoside]{pnas-new}
+% Use the lineno option to display guide line numbers if required.
+
+\templatetype{pnasresearcharticle} % Choose template
+% {pnasresearcharticle} = Template for a two-column research article
+% {pnasmathematics} %= Template for a one-column mathematics article
+% {pnasinvited} %= Template for a PNAS invited submission
+
+\usepackage{graphicx}
+\usepackage[caption=false]{subfig}
+\usepackage{color,soul}
+
+\newcommand{\red}[1]{{\textcolor{red}{#1}}}
+\newcommand{\blue}[1]{{\textcolor{blue}{#1}}}
+\newcommand{\green}[1]{{\textcolor{green!50!black}{#1}}}
+\usepackage{soul}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%% For comments %%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%For Baltazar comments
+\newcommand{\baltazar}[1]{{\color{magenta} \textsf{[[Wei-Lun: #1]]}}}
+
+%For Fabio Comments
+\newcommand{\fabio}[1]{{\color{orange} \textsf{[[Adrian: #1]]}}}
+
+%For Jimmy comments
+\newcommand{\jimmy}[1]{{\color{red} \textsf{[[Jimmy: #1]]}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{document}
+
+
+\title{Localized risk perception triggers early behavioral adaptations in epidemics on networks}
+
+
+\author[a,1]{Baltazar Espinoza}
+\author[b]{Jimmy Calvo-Monge}
+\author[b,c]{Fabio Sanchez}
+\author[d,1]{Simon A. Levin}
+\author[a,1]{Madhav Marathe}
+
+\affil[a]{Biocomplexity Institute, University of Virginia, Virginia, USA}
+\affil[b]{Escuela de Matemática, Universidad de Costa Rica, San José, Costa Rica}
+\affil[c]{Centro de Investigación en Matemática Pura y Aplicada, Universidad de Costa Rica, San José, Costa Rica}
+\affil[d]{Department of Ecology and Evolutionary Biology, Princeton University, Princeton, NJ 08544, USA.}
+
+
+% Please give the surname of the lead author for the running footer
+\leadauthor{Baltazar Espinoza}
+
+% Please add a significance statement to explain the relevance of your work
+\significancestatement{
+Adaptive processes in complex systems give rise to population-scale dynamics emerging from individual interactions, as the contact structure of a population shapes epidemic progression.
+We propose a modeling framework that explicitly incorporates the feedback between epidemic progression and individuals' decentralized adaptive behavioral responses within an adaptive network setting.
+%
+Our framework captures processes operating across multiple scales, from individuals' behavioral decisions (driven by the expected infection risk and the benefits of social activity) to population-scale patterns emerging from aggregated behavioral responses and epidemic progression.
+Our results show that behavioral responses induced by localized risk perceptions occur prematurely at the population level relative to epidemic dynamics. This insight highlights the public health challenge of identifying effective incentives to elicit timely population-level responses.
+}
+
+\authorcontributions{
+Author contributions: B.E., M.V.M. designed
+research;  B.E., J.C.M., F.S. performed research; all authors analyzed the results, wrote, and edited the paper.
+}
+
+\correspondingauthor{\textsuperscript{1} Contact: E-mail: baltazar.espinoza@virginia.edu, marathe@virginia.edu, slevin@princeton.edu}
+%baltazar.espinoza@virginia.edu}
+
+\keywords{epidemiology $|$ adaptive behavior $|$ epidemic network models $|$ individual behavior}
+
+\begin{abstract} %250 words
+Adaptive processes in complex systems give rise to population-scale dynamics that emerge from individual interactions, as the contact structure of a population shapes epidemic progression.
+However, characterizing the joint evolution of individual behavioral adaptations and disease dynamics within networks remains a significant challenge, since feedback loops across scales influence both individual behavior and epidemic dynamics.
+%
+We propose a modeling framework that explicitly incorporates the feedback between epidemic progression and individuals' decentralized adaptive behavioral responses within an adaptive network setting. We allow the epidemic and population-level behavior dynamics to emerge from heterogeneous decision-making processes that shape individuals' behavioral responses.
+%
+Our framework assumes that individuals adjust their contact structure by temporarily dropping or maintaining connections with neighbors based on current and expected future benefits, infection risks, and possible transitions to alternative health states.
+%
+Our results reveal how the adaptation of local social structures, influenced by risk-benefit trade-offs, affects the dynamics of epidemics and the timing of behavioral responses.
+%
+We show that behavioral responses induced by localized risk perceptions lead to premature responses at the population level, relative to epidemic dynamics.
+Specifically, we find that population-level behavioral effort reaches its maximum before the epidemic peak, whereas individual behavioral efforts is maximized at the peak.
+%
+We empirically explore the causes of the asynchronous behavioral effort across scales and show the robustness of the observed phenomena. Finally, we explore the impact of asynchronous behavioral responses on a digital twin of the social contact network of Manassas, Virginia.
+\end{abstract}
+
+\dates{This manuscript was compiled on \today}
+
+\maketitle
+\thispagestyle{firststyle}
+\ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
+
+%[line number] {par number}
+\firstpage[5]{2}
+
+%\section*{Introduction}
+
+\dropcap{A}daptive processes in complex systems are known to yield population-scale dynamics emerging from individuals' interactions~\cite{Simon03}. In the case of epidemics, accurately modeling the intertwined dynamics between global dynamics and individual processes presents a significant and complex challenge. For example, mean-field models are mathematically tractable and provide valuable epidemiological insights, with the potential to include a certain level of heterogeneities. However, these models often overlook processes modulating transmission across scales. The study of individual incentives and decisions, and their subsequent impact on epidemic dynamics, requires complex modeling mechanisms~\cite{Traulsen23}.
+%
+%An option for capturing the intricacies of local and global processes is the use of networks.
+Modern mathematical models incorporating network structures can address many of the complexities driving transmission processes.
+%
+Network models enable the study of the feedback among individuals' attributes, the underlying structure of social interactions--over which the transmission process evolves--and epidemic dynamics~\cite{Keeling2005, Danon2011, Kiss17}.
+%
+% \subsubsection*{Adaptive network models}
+% There is a rich literature on modeling disease spread into network structures.
+Usually, these models are classified as evolving and adaptive networks~\cite{Guo13}. Evolving networks focus on the impact of changes in network topology on transmission dynamics. In these models, the underlying network's topology is crucial for studying disease transmission.
+%
+In the seminal paper~\cite{albert2000error}, Albert {\it et al.} showed that the intrinsic network topology has profound consequences on error tolerance and survivability, which have critical implications on embedded transmission processes. Likewise, Gates {\it et al.}~\cite{GATES201511} showed that it is possible to induce favorable disease transmission behavior by manipulating the underlying topological nature of the contact networks.
+%
+%Recent studies investigate how the underlying network's characteristics modulate epidemic outcomes~\cite{leventhal2015evolution,rocha2013bursts,vazquez2016rescue}
+%
+In these studies, changes in the network topology are phenomenologically incorporated and linked to the progression of the epidemic. In other words, the impact of the network's topology change is modeled as an exogenous factor that influences the progression of the epidemic~\cite{leventhal2015evolution,rocha2013bursts,vazquez2016rescue}.
+
+On the other hand, in adaptive networks, the network's topology changes in response to disease dynamics. Different adaptive approaches and methodologies to epidemic network modeling have been studied~\cite{Pastor15,Bansal10}.
+%and various  and applications are detailed in \cite{Bansal10}.
+These modeling frameworks exhibit complex transmission dynamics and employ network topology-altering processes. For example, Gross {\it et al.}~\cite{gross2006epidemic} showed that changes on the network's topology produced by a probabilistic-based rewiring process (where susceptible–infectious links are removed and susceptible–susceptible links are formed), can produce complex transmission dynamics. Shaw {\it et al.}~\cite{shaw2010enhanced} further showed that the interaction between rewiring processes and vaccination facilitates disease control in adaptive networks compared to static networks.
+%
+However, rewiring alone is not always sufficient to suppress epidemics~\cite{DONG2015169}. Rewiring mechanisms can be governed by epidemic dynamics or network components; for example, Shivakumar {\it et al.} \cite{Shivakumar12} used a preferred degree approach, in which nodes alter their contacts to fit an expected network degree.
+%
+The processes of rewiring, link switching, or random link activation and deletion are the primary strategies to affect the network structure in most of these frameworks~\cite{Zhu2019,Guo13,RISAUGUSMAN200952,Ball2022,Kiss2012,Ogura2017}.
+
+\green{Referee Response: We have briefly explored rewiring as an alternative strategy for adaptive behavior on networks. Our preliminary results show that -- }
+
+%In any case, the reader can see that most of
+These modern adaptive network models employ phenomenological approaches to incorporate network changes as a surrogate for studying the impact of human behavioral responses during epidemics. % as a surrogate of the disease dynamics.
+Such models disregard the relationship between the individual-scale behavioral incentives and mechanisms,
+%which modulate the large-scale dynamics,
+and the observed large-scale dynamics~\cite{Bansal07, Kao2010}.
+% aggregated behavioral response.
+%
+%. After all, one of the advantages of using an underlying network structure is the availability of individual-level attributes and aggregation to obtain a global epidemic behavior, .
+Furthermore, in many cases, introducing complex rewiring methods can be unrealistic, depending on individuals' attributes. For example, reducing contacts may be more advantageous for the agent than substituting them, or a delay may be required to perform a rewiring process~\cite{Li19} successfully.
+%
+Another critical aspect usually overlooked in these studies %, according to \cite{Maharaj12},
+is the impact of decentralized individuals' contact reduction. In reality, individuals need to engage in contacts to obtain benefits; therefore, the process of changing the network topology should take into account the individuals' contact requirements. For instance, the spatial network model proposed in~\cite{Maharaj12} incorporates socio-economic considerations into the contact-reduction process.
+
+% -=-=-=-=-=-=-= Methodology =-=-=-=-=-=-=-
+
+In this study, we propose a mechanistic methodology that incorporates feedback between epidemic progression and individuals' decentralized adaptive behavioral responses within an adaptive network.
+%
+We consider the population-scale behavioral and epidemiological outcomes as observable consequences of the interaction between epidemic progression and heterogeneous behavioral responses driven by individuals' local perceptions of the infection risk.
+%
+This modeling framework explicitly incorporates individual-level adaptive behavioral processes by modeling temporary changes in network topology driven by the adapting nature of the underlying decision-making processes.
+
+As local interaction conditions change with the progression of the epidemic, individuals choose their privately optimal behavior by balancing the benefits of maintaining social interactions with the risk of infection.
+%
+% =-=-=-=-=  Our model of adaptive network =-=-=-=-=
+%
+%We model contagion processes progressing on an adaptive underlying network driven by individuals' heterogeneous adaptive behavioral responses.
+By incorporating spatial resolution of network structures, we extend the existing framework of adaptive human behavior in epidemics originally formulated for mean-field models of disease transmission~\cite{fenichel2011adaptive, perrings2014merging, morin2013sir, espinoza2021adaptive, espinoza2022heterogeneous,espinoza2024adaptive,espinoza2025impact}. This allows us to study how aggregated behavioral and disease dynamics emerge from individuals' asynchronous behavioral responses as the epidemic propagates through the population.
+%
+The main technical innovations of the proposed modeling framework span two directions:
+($i$) the forward-looking formulation of the decision-making process incorporates individuals' expectations of future benefits, future infection risk, and potential future transitions to alternative health states, based on heterogeneous local conditions;
+%as the underlying mechanism driving the dynamics of the network topology,
+($ii$) the coupling of node-specific {\em Markov decision processes} (MDPs) allows modeling of heterogeneous adaptive behavioral responses.
+%
+In the proposed model of adaptive behavioral responses during epidemics on networks, susceptible nodes optimize their social interactions by temporarily altering their neighborhood structure in response to their private benefits and risk perceptions. At each time step, the node-specific optimal neighborhood structure is determined by adjusting the number of edges of susceptible nodes.
+%
+Our modeling framework is schematically outlined in Figure~\ref{fig:framework}, while the detailed formulation of the behavioral model, based on local network structure optimization problems, is provided in the Methods section.
+
+\green{Referee Response: We clarify that the planning horizon ($\tau$) in our model does not represent foresight or prediction of future epidemic trajectories. Instead, $\tau$ denotes the time window over which individuals evaluate the trade-off between the costs and benefits of social interaction, based on their current local risk perception and social context. This interpretation is consistent with the Homo economicus decision-making approach used in prior behavioral-economic studies~\cite{fenichel2011adaptive,perrings2014merging}, where individuals are assumed to daily evaluate cost-benefit trade-offs between reducing infection risk and maintaining social utility. The planning horizon should be interpreted as a behavioral-cognitive parameter reflecting bounded rationality rather than a forecasting component. This parameter represents the period over which individuals integrate currently available information to evaluate risk-benefit trade-offs, reflecting typical short-term decision-making windows observed in behavioral studies.}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\linewidth]{framework}
+    \caption{
+    {\bf Schematic of the adaptive modeling framework components.}
+    %
+    We couple a \blue{Susceptible (green nodes), Infectious (red nodes), and Recovered (black nodes)} epidemic model with a model of heterogeneous adaptive human behavior driven by local network structure.
+    %
+    Susceptible individuals adjust their number of edges at each time step based on the local infection risk they perceive, which is determined by the number of infected neighbors \blue{$\max_{e_{k,t}^S}\mathbb{E}(n_{k,t}^S)$}. Individuals are assumed to be unaware of both the decisions made by others and the infection risk they pose to others.
+    %
+    These individual adaptations \blue{($e_{1,t}^S,e_{2,t}^S,\cdots,e_{n,t}^S$)} collectively form the population-level behavioral response, which in turn reshapes the epidemic trajectory \blue{and the nodes' health states at subsequent time steps}.
+    \green{Referee Response: The figure illustrates two key components: (1) the epidemic component, denoted by the nodes' health states (Susceptible in green, Infectious in red, Recovered in black), and (2) the adaptive behavior component, shown by edges that can be temporarily removed (gray lines) based on local risk perception. The caption describes the feedback loop between these components: individual behavioral adaptations collectively reshape the population-level behavioral response, which in turn influences the epidemic trajectory and future health states.}
+    }
+    \label{fig:framework}
+\end{figure}
+
+Our approach differs from the previously discussed frameworks in that we do not consider the creation of new edges. Instead, the dynamics of our adaptive network rely on temporarily dropping and maintaining edges, based on the original network topology. The network structure is adjusted at each time step due to the local optimization processes of susceptible nodes.
+%
+Moreover, while diverse approaches utilize the current and past states of the system to guide behavioral decisions \cite{epstein2008coupled,funk2009spread,reluga2010game}, our proposed framework envisions individuals' decisions as dependent on both the current system's state and a projection of the future.
+%
+The node-specific decision process incorporates both the expected future benefits and the risk of infection, which depend on the current infection risk and the potential future transitions to alternative health states. The influence of future expectations on the node-specific decision process is modeled by projecting the system's state over a finite planning horizon.
+%
+The network-based formulation of the behavior-epidemic model enables us to explore both individual-level and population-scale behavioral responses.
+% (the aggregation of the node-specific responses).
+Additionally, we show that the proposed framework can incorporate heterogeneous behavioral profiles and study the aggregated impact of these during epidemics.
+
+
+% The aggregation of the node-specific behavioral responses composes the behavioral response at the population scale.
+
+%
+% Figure 2
+\begin{SCfigure*}
+\centering
+% \includegraphics[scale=0.4]{Figures/FIG2.pdf}
+\includegraphics[scale=0.43]{Figures/figure_sensitivity_1x3panel.pdf}
+% \begin{tabular}{cc}
+% A) Global and local behavioral responses/Disease Prevalence & B) Population dynamics and local behavioral responses  \\
+%   \ &   \includegraphics[scale=0.3]{Figures/peak_prevalence_by_sensitivity.png}
+% \end{tabular}
+\label{fig:tseries-netdyns}
+% \caption{
+%     (Panel~A) Disease dynamics for the static network model (dashed line) and the adaptive behavior model (thick line). The adaptive responses of susceptible nodes, which modulate the network's structure, reduce and delay the epidemic peak. The network's structure during the progression of the epidemic. The mean individual-level behavioral effort reaches its maximum (or minimum number of edges in the adaptive network) at the time the epidemic peak occurs.
+% }
+\end{SCfigure*}
+\newpage
+\textbf{Fig 2. TODO: add caption and description}
+
+\section*{The interplay between epidemics and adaptive behavior on networks in homogeneous populations}
+%
+Since the proposed model is not analytically tractable, we investigate the impact of individual-level behavioral responses on both the epidemic dynamics and the adaptive network structure through numerical experiments.
+%
+We track the {\em population-level behavioral response}, which emerges from the aggregation of individual-level behavioral choices--by computing the total number of edges on the dynamic network at each time step.
+Additionally, we track the {\em individual-level behavioral response} by computing the average number of edges maintained by susceptible nodes at each time step. The detailed formulation of the behavioral response framework is provided in the methods section.
+
+\subsubsection*{Individual- and population-level adaptive behavioral responses occur asynchronously during epidemics}
+%
+We study the intertwined dynamics of epidemics and behavior, assuming that susceptible nodes exhibit homogeneous sensitivity to the perceived risk of infection.
+% and a planning horizon of $\tau=7$ days. %$\nu=0.05$.
+%
+Our focus is on the dynamics of individual- and population-level behavioral efforts as a metric for studying the impact of the contagion process across scales.
+%
+Figure~\ref{fig:tseries-netdyns} shows the mean and the interquartile boundaries of the disease dynamics for both the classic and the adaptive model, along with the corresponding adaptive network dynamics.
+%
+Figure~\ref{fig:tseries-netdyns}A shows that the adaptive model produces a delayed and smaller prevalence peak (thick line), relative to the epidemic dynamics exhibited in the static network model (dashed line).
+Figure~\ref{fig:tseries-netdyns}B illustrates how the adaptive network structure gradually reduces and rebounds in the mean number of edges as the epidemic progresses.
+
+The significant result here is that the pace and intensity of behavioral responses differ significantly across scales (Figure~\ref{fig:tseries-netdyns}A).
+Specifically, the maximum behavioral effort at the population level occurs before the epidemic peak, asynchronously with the maximal individual-level behavioral efforts, which attain their maximum simultaneously with the epidemic peak (Figure~\ref{fig:tseries-netdyns}B).
+% Interestingly, the population-level behavioral response reaches its maximum (the minimum number of edges), before the epidemic peak.
+%
+%Our findings show that the maximal behavioral effort at the population-level occurs asynchronously to the disease prevalence peak.
+% and the maximal individual-level behavioral efforts
+This represents a key difference from the previous results obtained in the analogous mean-field adaptive behavior framework, where the population-level maximal behavioral responses coincide with the epidemic peak~\cite{fenichel2011adaptive,perrings2014merging,espinoza2021adaptive,espinoza2022heterogeneous}.
+%
+% Figure~\ref{fig:tseries-netdyns}A shows the population- and individual-level behavior dynamics during the epidemic. The thick black curve represents the normalized average edge counts on the network (the population-level behavioral effort), and the dashed blue curve stands for the normalized average number of edges susceptible nodes maintain (the individual-level behavioral efforts). Figure~\ref{fig:tseries-netdyns}B shows the disease dynamics on the susceptible population (thick blue curve) and the individual behavioral responses (dashed red curve). The maximal behavioral adaptation made at the susceptible level happens synchronously concerning the epidemic peak, unlike the situation with the maximal behavioral change obtained at the population-level.
+%
+The reasoning behind the asynchronous behavioral dynamics across scales lies in the trade-off between the size of the population that modifies its behavior and the effort required.
+%
+Consequently, the perceived population-level behavioral effort is maximal not during the epidemic peak, when a small proportion of the population is ardently trying to evade infection, but rather when many susceptible nodes make relatively small efforts to avoid infection.
+%
+% the perceived population-level at the epidemic peak is not maximal since the susceptible population is relatively small around this time.
+% A small proportion of the population is trying to evade being infected during the epidemic peak. The perceived population-level behavioral effort is maximal when many susceptible nodes make relatively small efforts to evade infection.
+
+\green{Referee Response: We clarify the distinction between population-level and individual-level behavioral metrics. The global mean degree (population-level behavioral response) represents an aggregate indicator of collective social connectivity emerging from decentralized individual decisions across the entire population. In contrast, the mean degree among susceptibles (individual-level behavioral response) reflects the effective contact potential of those individuals still at risk of infection. The temporal lag between these two quantities captures a fundamental mismatch: the population-level behavioral response peaks when a large number of individuals collectively begin to limit their contacts, whereas the individual-level response peaks when transmission risk becomes highly concentrated among the remaining susceptible population at the epidemic peak. This asynchrony emerges from the interaction between heterogeneous local risk perceptions and the evolving network structure. We emphasize that our study does not attempt to identify optimal responses or policies, as determining optimality requires knowledge of context-specific economic trade-offs between implementing interventions and tolerating disease burden. Rather, our aim is to characterize the epidemiological consequences of behavioral incentives operating at different scales: individual decision-making based on local information versus population-level collective outcomes.}
+
+We found that the asynchronous, distinct behavioral response dynamics across scales are driven by both the number of susceptible nodes that adapt their behavior simultaneously and the asynchronous infection risk faced by susceptible nodes as the epidemic propagates across the network.
+The observed phenomenon that the population-level optimal behavioral response is not attained at the critical time during the epidemic arises from the volume of susceptibles in the stages before the epidemic peak and the stress placed on a diminishing number of susceptible individuals as the disease progresses.
+%
+Our results demonstrate that decentralized adaptive behavioral responses, based exclusively on local information, significantly impact disease dynamics. However, the lack of coordinated efforts inherently limits the population's ability to ameliorate the epidemic burden without centralized efforts.
+%
+We show that when risk-avoidance behavior is driven by local information, the individual-level optimal behavioral choice does not constitute the best response at the population level. In these scenarios, the absence of global information leads individuals to overlook the global situation and consequently the population-level optimal behavioral decisions.
+
+
+\subsubsection*{Individual incentives and the network structure modulate behavioral efforts across scales}
+%
+To assess the robustness of our results, we examine the impact of behavioral variations across different network structures.
+%
+In the proposed model, the observed behavioral response difference across scales and the consequent impact on disease dynamics are directly influenced by the heterogeneous neighborhood structure.
+%
+%adaptive framework.
+%based on daily contacts modulation according to the risk-benefits trade-off computed during a planning horizon.
+%
+%in which individuals possess both the flexibility to modify their daily contacts and a planning horizon.
+%a time frame to plan and project the disease status and make an optimal decision.
+%
+On one side, our behavior model captures individual incentives via two main model parameters:
+$(i)$ the risk acceptance level %utility curvature indicator
+($\nu$), %(which controls the individual's risk perception of the disease and their readiness to alter their initial contacts) and the planning horizon ($\tau$).
+% Increasing the value of $\nu$ leads to utility functions with a higher slope, which translates to individuals being less prone to modify their initial optimal contacts.
+%
+and $(ii)$ and the planning horizon ($\tau$); on the other side, the network connectivity plays a principal role in determining the progression of epidemics.
+%
+%Similarly, increasing the time horizon allows individuals to project the disease's future status with more information and see the bigger picture in their decision-making.
+%
+%For these reasons, it is expected that increasing these parameters will reduce the effect of the adaptive considerations and the severity of the individuals' contact rate change over time.
+% This is evidenced on the left panel in figure \ref{fig:heatmaps_figure}, where the disease peak reduction due to the adaptive framework becomes less important when these two parameters are increased.
+%
+% Figure 3
+\begin{SCfigure*}
+\centering
+\includegraphics[scale=0.5]{Figures/FIG3.pdf}
+% \begin{tabular}{cc}
+% A) Effect of $(\nu, \tau$) values on global-local lag. & B) Effect of network connectivity on global-local lag. \\
+%   \includegraphics[scale=0.5]{Figures/Heatmap_daylag.png} &   \includegraphics[scale=0.31]{Figures/day_lag_prob_edge_creation.png}
+% \end{tabular}
+% \caption{
+% The left panel shows the average day difference between the maximum edge reductions at local and global levels, for different values of $(\nu, \tau)$. For larger values of these parameters, the effort reduction at the local level synchronizes with the response at the global level. Simulations were performed on an Erd\"{o}s–R\'{e}nyi base network with $n=500$ nodes and a probability of edge creation of $p=0.05$. The right panel shows that a similar effect occurs when the network connectivity increases.
+% }
+ \label{fig:heatmaps_figure}
+\end{SCfigure*}
+%
+Figure~\ref{fig:heatmaps_figure}A shows that by increasing individuals' infection risk acceptance or the planning horizon period, the effort made by susceptible individuals to avoid contacts reduces. In these scenarios, the maximum risk avoidance efforts at the global and local scales tend to synchronize.
+%The effect of these parameters is also seen in the phenomenon studied in figure \ref{fig:tseries-netdyns}. By
+% increasing the planning horizon or the utility curvature parameter (meaning a
+%
+%
+%
+%As we saw in figure \ref{fig:tseries-netdyns}, the maximum edge reduction effort made at the individual level (susceptibles) happens sometime after the corresponding effort made at the population-level. This day lag is also affected by the adaptive parameters.
+%
+%With more planning time and/or less sensitivity towards the disease, the maximum reduction efforts at the global and local scales tend to occur on closer dates, thus reducing the day gap between the minima of each curve in \ref{fig:tseries-netdyns}.
+%This day lag difference is summarized for several values of $(\nu, \tau$) in the right panel of figure \ref{fig:heatmaps_figure}.
+%
+%The main conclusion from these simulations is the existence of a region for the values of $(\nu, \tau$) where
+Our numerical experiments show that
+% incorporating locally-informed adaptive behavioral responses induces a significant difference on the expected disease dynamics relative to the network model without an adaptive contact structure. Moreover,
+the sensitivity to infection risk modulates the difference in contact efforts observed across scales in Figure~\ref{fig:tseries-netdyns}.
+
+%As these results have been computed using a neighborhood of one step in computing the probability of infection (see formula \ref{eqn:prob_infection} in the Methods section below), a case could be argued that the adaptive decision could also be based on further levels of neighbors, which could give more options for a fuller adaptive consideration to take place daily. However, using further neighborhood levels to calculate this probability of infection represents a computational problem for which no efficient solution is known (that is, an NP-hard problem), as proved in \cite{SHAPIRO201277}. The high adaptive impact regions in figure \ref{fig:heatmaps_figure}, which occur for small values of $(\nu. \tau)$, are influenced by the choice of neighborhood steps.
+%%%%%%% Moved to SI %%%%%%%%
+
+
+The topology of the underlying network is a crucial factor in determining disease behavior for network epidemic models \cite{Ganesh05,Perez22,Meyers07}.
+%
+% Move it
+%In contrast to classic mean-field models, the proposed adaptive behavior framework explicitly incorporates health-specific contact rates as a mechanism to modulate individuals' infection likelihood.
+%
+% While classic mean-field models depend mostly on the probability of infection to control the disease spread, in the adaptive methodology this is complemented with the contacts factor.
+%
+%
+Specifically, the availability of contacts and how closely connected these contacts are to each other are defined by the network's connectivity.
+%
+Figure~\ref{fig:heatmaps_figure}B shows the average lag between the maximum contact reductions at the individual and population scales, for different connectivity levels of the underlying Erd\"{o}s–R\'{e}nyi network of $n$ nodes.
+
+%
+%This means that the structure of the underlying network becomes an important factor.
+%Our simulations so far have used the random graph structure.
+%are other graph structures that can be used.
+%, and general network connectivity properties.
+Our results are robust to variations in the underlying network model. Particularly, in sparse networks,
+%with not too extreme density properties (for example, too sparse or too connected networks),
+the adaptive behavior model reveals a significant discrepancy between behavioral responses at the individual and population scales.
+We examine the sensitivity of our results using scale-free~\cite{Barabasi99} and small-world~\cite {Strogatz98} underlying network structures in the SI Appendix.
+%can exert a meaningful decision process that impacts the epidemic prevalence.
+
+\section*{The interplay between epidemics and adaptive behavior on networks in heterogeneous populations}
+%
+In this section, we examine the impact of adaptive behavior on populations comprising individuals with heterogeneous risk tolerance, driven, for instance, by distinct socioeconomic conditions.
+%We assume the population is mainly composed by individuals high-risk and low-risk tolerance.
+%
+%We assign each node a planning horizon and a risk sensitivity chosen from an arbitrarily selected bi-modal distribution.
+%
+We incorporate variations in the population's characteristics, assuming bimodal distributions of planning horizons and risk sensitivities.
+%
+We assumed a population composed of two behavioral groups. For instance, a sub-population with a high poverty index, where few people would be economically prepared to plan for long periods, and a sub-population with a low poverty index that may afford the expenses of planning for long periods.
+%
+Figure~\ref{fig:distribution_figure}A and B show the normalized distributions of the planning horizon and risk sensitivities associated with the heterogeneous behavioral profiles in the population.
+Figure~\ref{fig:distribution_figure}C shows that the behavior discrepancy across scales is robust to these populations' heterogeneities.
+Finally, Figure~\ref{fig:distribution_figure}D shows differences in contact behavior across populations. Our results reveal that behavioral heterogeneity only impacts the stringency of the sub-populations' behavioral responses, ultimately modulating the population-level behavioral effort, the average of both sub-population responses.
+
+\green{Referee Response: In the heterogeneous population simulations, we divided the population into two equally sized behavioral groups, each characterized by different mean risk sensitivities. For each group, individual nodes are assigned risk sensitivity parameters sampled from a binomial probability distribution centered around group-specific means. We emphasize that we do not assign predefined behavioral responses directly; instead, we define behavioral response profiles through the risk sensitivity parameter, and the actual behavioral responses emerge endogenously from each individual's optimization process given their local network structure and epidemic conditions. This approach allows us to model how population-level heterogeneity in risk perception—potentially arising from socioeconomic differences, education levels, or cultural factors—shapes aggregate epidemic and behavioral outcomes.}
+
+%For example, suppose our population has a planning horizon and utility curvature parameter distributions such as those in the left panel of figure \ref{fig:distribution_figure}, where there's a first sub-population with a lower planning horizon of around $6$ days and a utility parameter centered around $0.05$, and a second sub-population with a higher planning horizon of approximately $16$ days and a utility curvature parameter centered around $0.08$. We interpret the first sector as being formed by highly sensible individuals with a greater disposition to adapt and modify their contact behavior towards the disease progress, whereas individuals in the second population sector have a lower disposition to modify their behavior.
+Similar to our baseline scenario, our results show the same behavioral phenomenon across scales, where the population is assumed to show homogeneous behavioral profiles.
+%these parameters were uniformly distributed across the entire population (see panel B) of figure \ref{fig:distribution_figure}).
+That is, the asynchronous behavioral efforts observed across scales are robust to variations in the population's structure.
+%main phenomenon of this paper regarding the asynchronous effort at the global and individual levels is also robust toward the distribution of information at the node level.
+
+% Figure 4
+\begin{SCfigure*}
+\centering
+\includegraphics[scale=0.52]{Figures/FIG4.pdf}
+% \begin{tabular}{cc}
+% A) Population's planning horizon distribution & B) Population's risk sensitivity distribution \\
+%   \includegraphics[width=60mm]{Figures/distplotT.pdf} &   \includegraphics[width=60mm]{Figures/distplotV.pdf} \\\\\\
+% C) Global-Local behavior with population distributions & D) Contact difference between sub-populations \\[6pt]
+%  \includegraphics[width=60mm]{Figures/global_local_resp_dist.pdf} &   \includegraphics[width=60mm]{Figures/subpopulations_resp_dist.pdf} \\
+% \end{tabular}
+% \caption{
+% (Panels A-B) Distributions of behavioral parameters for two sub-populations. In yellow, a sub-population with lower planning horizon and utility curvature parameter, representing individuals with higher sensitivity to disease progress. In green, a sub-population with higher parameter values, resulting in lower sensitivity. (Panel C) The global/local behavior effort lag persist even when heterogeneity in adaptive behavior parameters is introduced. (Panel D) Contact dynamics over the epidemic period for the high- and low-sensitivity populations, as well as the total population.
+% %
+% % \red{\\ Please place plot title at the top, increase plot title, axis labels, and legends font size. Use capital letters for references (A), (B), (C), (D). Figure~A include x-axis label: "Population's planning horizon distribution".Figure~B include x-axis label: "Population's risk sensitivity distributions". Figure~C increase x-axis label font size, change legends and increase font size: "Population-level behavioral effort", "Individual-level behavioral effort", "Disease prevalence".Figure~D increase x-axis label font size, change legends: "Population-level behavioral effort", "Highly sensitive population's behavioral effort", "Low sensitive population's behavioral effort".}
+% }
+ \label{fig:distribution_figure}
+\end{SCfigure*}
+
+%Most importantly, panel D) shows the differences in contact behavior for each population, as expected by the distribution of the adaptive parameters.
+%In this example, we can visualize two sectors with different contact responses and risk aversions contributing to the global response (seen as the average of both sub-population responses).
+%This illustration brings forth one of the main advantages of the framework proposed in this article: the possibility of combining local risk perceptions with global disease behavior. We see now that the adaptive framework can incorporate and aggregate the heterogeneous individual responses and risk perceptions within an epidemic.
+
+%To discussion
+The underlying network model can also provide us with a myriad of scenarios whose modeling process can be enhanced by incorporating the behavioral-epidemiological trade-off implemented by the adaptive framework. For example, the disaggregation of contact decision processes by social layers, where agents have different attitudes towards engaging with close and regular neighboring nodes and with sporadic or stranger contacts, can be observed in a multi-layer contact network model~\cite{Network2}. This difference in local risk perceptions between contact layers offers an application of the main adaptive framework. We briefly explore these more complex contact decision dynamics in the supplementary information.
+
+\section*{Discussion}
+
+% Elaborate: The discrepancy between the local risk perception and the reported scenarios would produce adverse effects on people's behavior.
+
+%The unprecedented strength and duration of the ongoing COVID-19 pandemic are known to be partially driven by novel variants arising from different affected regions worldwide. Regional infection processes produce suitable conditions for novel variants to emerge.
+%
+The containment of epidemics is intrinsically tied to our capacity to control localized outbreaks and modulate how these aggregate through already established patterns of mobility. However, in the last instance, disease containment depends upon individuals' behavioral decisions governing social interactions, whose aggregation drives the population-level contagion process. For this reason, it is critical to understand the epidemiological consequences of coupling epidemic network dynamics and decision processes driven by individual-level trade-offs.
+
+The behavioral-epidemiological framework proposed in this study allows us to study the impact of individual-level decision dynamics on the aggregated epidemiological landscape. Specifically, we examine the effects of individual incentives (risk aversion and economic considerations) on the network's topology evolution and, ultimately, on the progression of epidemics.
+This mechanistic framework avoids contact adaptation methods that are not intrinsically linked to disease progression; instead, it models decision-making using a novel approach in which socio-economic and epidemiological factors play a key role in adjusting the network structure during epidemics. Moreover, the proposed adaptive framework enables the consideration of heterogeneous populations with specific individual-level behavioral profiles, offering a powerful tool to reflect better the diverse attitudes towards the progression of epidemics among the affected population.
+
+Beyond the novel framework, our main result is the asynchronous nature of the behavioral stress observed at the population and individual levels. We found that locally based adaptive behavior results in an early global maximum effort.
+The key insight from our results is that individual-level maximal behavioral efforts do not achieve the global maximum; instead, it is driven by a large population performing medium-level risk-avoidance efforts.
+In contrast, during the peak of the epidemic, the global behavioral effort is carried out by the remaining few susceptible individuals, who face a high risk of infection.
+% which leads them to dramatically reduce their contacts to avoid infection.
+Our modeling framework allows us to show that the global disease dynamics are modulated by the coupling between the epidemic progression over a dynamic underlying network (driven by behavioral responses and incorporated via edge regulation), and the individual-level behavioral dynamics (driven by disease progression and neighborhood structures, incorporated via risk perception and planning horizons).
+%
+%the real weight placed on decision agents within an epidemic network model and validate that this stress is higher for the susceptible individuals at the peak of the disease.
+
+Further numerical explorations in the SI appendix
+%show that increasing the population's risk sensitivity can lead to significant reductions of the epidemic burden. In counterpart, increasing planning horizons or decreasing sensitivity tend to relax individual-level behavioral responses, collapsing the behavior model to the classic static network frameworks.
+%
+show that our results are robust to variations in the population's risk sensitivity and network structure, which may arise from factors such as socioeconomic characteristics, beliefs, education, and demographics.
+Specifically, our baseline implementation utilizes the health status of immediate neighbors as a reference for risk perception and contact adaptation. In future work, we aim to study the impact of behavioral responses driven by disease information collected over varying neighborhood levels.
+
+\green{Referee Response: We acknowledge that our baseline behavioral formulation assumes instantaneous local awareness as an idealized reference case. In reality, individuals do not observe local epidemic conditions perfectly in real time, and communication, reporting, and perception processes introduce lags in behavioral adjustment. To assess the impact of information delays, we have conducted additional numerical experiments (described in the Methods and shown in Figures S17-S18 of the Supplementary Information) in which behavioral responses are delayed by 3 and 7 days relative to changes in local prevalence. Our results show that information delays can substantially alter both behavioral dynamics and epidemic trajectories. In particular, delayed information can generate behavior-epidemic waves that may amplify or prolong outbreak dynamics depending on the magnitude of the delay. Although a comprehensive analysis of information delays falls outside the scope of the current manuscript, we view this as an important avenue for future investigation, particularly in the context of real-time surveillance systems and public health communication strategies.}
+
+%Not only risk perception and planning horizons can impact the effectiveness of the adaptive process to generate a relevant impact on the global disease behavior, but also the underlying network topological properties.
+%In general, it is necessary that individuals have sufficient contacts available to perform a meaningful contact decision process.
+
+% Our model could serve as a basis for studying populations with heterogeneous risk aversion distributions, in which contact decisions vary individual-wise due to socio-economical factors weighing each decision agent. The adaptive framework provides a path to incorporate this information into the network topology transformation process, thus using a more faithful approach to mirror real-world population distribution heterogeneity. The applications of the local contact epi-economic adaptive decision method are broad, and the model provides a valuable mathematical tool to explore many complex epidemic scenarios, from the effect of sub-populations with unique risk perceptions to the responses to contacts in different social layers.
+
+%%%%NEW%%%%%%
+Finally, our findings reveal a crucial insight into the dynamics of adaptive behavior in epidemic networks. Specifically, our results highlight the public health challenge of identifying suitable individual-level incentives to prompt timely responses at the population level and thereby contain epidemics.
+%
+While centralized mandates can foster collective behavioral responses, appropriate incentives align individual decision-making with the social optimum~\cite{Traulsen23,crabtree2024influential}.
+% We found that while individual-level behavioral responses peak at the height of the epidemic, the overall population-level behavioral response peaks earlier.
+%
+Our results suggest that early and widespread moderate behavioral changes are effective at mitigating the epidemic. However, providing the right incentive to induce appropriate behavioral responses would be challenging.
+%This framework demonstrates robustness across different risk aversion distributions.
+These findings underscore the potential for targeted behavioral interventions to significantly influence disease dynamics, offering a powerful tool for public health strategies in managing infectious diseases.
+
+\green{Referee Response: We clarify that the policy discussion in our manuscript is intended
+to be conceptual rather than prescriptive. Moreover, we have revised the \textit{Discussion}
+to explicitly state that the proposed behavioral framework captures bounded rationality and that
+our results should be interpreted as identifying qualitative mechanisms.}
+
+% \subsubsection*{Data availability} Source code has been deposited in GitHub (\href{https://github.com/JimmyCalvoMonge/AdaptiveNetworks}{https://github.com/JimmyCalvoMonge/AdaptiveNetworks}). The code was implemented in both \texttt{Mathematica} and \texttt{Python} (in the latter, using the library \texttt{networkx}).
+
+\section*{Methods}
+
+Our modeling framework assumes that economic productivity depends exclusively on social interaction across edges, over which the disease is transmitted. We model a contagion process on an undirected network, where the network's topology changes over time due to nodes' behavioral adaptations at each time step.
+%
+Behavioral responses are modeled via a set of Markov Decision Processes (MDPs), where the node-specific optimization process depends on both $(i)$ the number of direct neighbors each susceptible node has in the baseline network structure, and $(ii)$ the locally perceived disease prevalence, the number of infectious neighbors in the $n$-step neighborhood.
+%
+We model node-specific decision-making processes by allowing susceptible nodes to remove infectious edges from their neighborhoods randomly. The number of contagious edges to drop is determined by an optimization process that privately balances the risk of infection with the expected economic benefits from social interactions.
+%
+The node-specific decision process at each time step uses a projection of the current neighborhood's state during the planning horizon. Optimal decision problems are solved by assuming that the neighbors' health classes at time $t$ remain constant over the planning horizon.
+
+\subsection*{Homogeneous adaptive behavior}
+%
+Our baseline experiments assume the epidemic starts with a single infectious node, randomly selected from an Erd\"{o}s–R\'{e}nyi graph~\cite{Erdos1960}, composed of $N=500$ nodes, with average nodes' degree $\phi=25$.
+
+Moreover, we assume that all nodes exhibit a homogeneous sensitivity to infection risk ($\nu=0.05$) and assign each susceptible node a time-invariant planning horizon ($\tau$). Susceptible nodes are assumed to use a constant projection of the system's state over the planning horizon to compute their expected utilities.
+
+\green{Referee Response: The planning horizon ($\tau$) is a behavioral-cognitive parameter that should not be interpreted as representing foresight or rational optimization over long time scales. Instead, it represents a bounded behavioral window during which individuals integrate recent and anticipated near-term information when making contact decisions. Empirical studies in behavioral epidemiology and economics show that individuals typically adjust social activity based on short-term expectations of infection risk, influenced by factors such as news cycles, workplace planning, and household-level risk perception. Our modeling framework captures this behavioral timescale through $\tau$, providing a mechanistic way to explore how the temporal reach of risk perception influences collective outcomes. In our revised simulations, we have limited the planning horizon to values consistent with typical infectious periods (at most 20 days) to ensure biological realism. The forward-looking projections in our model assume fixed local conditions (health states of neighbors) during the planning horizon, which reflects the bounded information available to decentralized decision-makers who cannot perfectly predict future epidemic trajectories.}
+
+Our framework can generally be extended to account for the risk of infection in the $ n$-step neighborhood. Here, we explore where risk is assessed in the $1$-step neighborhood. Furthermore, our framework would incorporate non-linear projections of the future system's state over the planning horizon.
+
+\subsection*{Disease transmission model}
+
+The population of interest is determined by a network structure $M$ over which the contagion process occurs. Nodes are assumed to exhibit the health status of Susceptible ($S$), Infected ($I$), or recovered ($R$). We assume the disease is transmitted via the network edges, where $\beta\in [0,1]$ is the transmission probability from an infected $I$ to a susceptible node $S$ along a single edge at each time step.
+
+% The per-edge transmission probability $(\beta)$ and the number of infected neighbors determine the overall infection probability for a susceptible node at a single time step. In general, the transmission probability of a typical susceptible node is given by
+
+% \begin{equation}\label{eqn:prob_infection}
+%    P^{SI}= 1-(1-\beta)^{n_{inf}}
+% \end{equation}
+
+% where $n_{inf}:=$ number of infected neighbours. On the other hand, infected nodes are assumed to recover with probability $\gamma\in[0,1]$ at each time step.
+
+\subsection*{Modeling adaptive human behavior}
+
+We model the behavioral responses of susceptible nodes by dropping edges towards infectious neighbors. At each time step, a susceptible node chooses the number of edges to drop based on the balance between the risk of infection and the benefit of maintaining social interactions.
+
+The edges to drop are randomly chosen among those towards infectious neighbors. We assume that different behavioral responses occur among nodes in distinct health classes, but nodes with similar health statuses follow the same behavioral principles. The node-specific behavioral responses are driven by the health class-specific utility and the node's infection risk at each time step.
+
+The {\em adaptive network structure} produced by the nodes' behavioral responses influences the path of the epidemic and hence future transmission risks. Each node is assumed to be aware of its neighbors' health status (the neighborhood disease prevalence), which is used to infer infection risks and to project the net benefits of social interactions over the planning horizon.
+
+\green{Referee Response: The projection of the future system's state in our model is computed from a decentralized perspective: each node's optimization framework assumes that the health status of neighbors at future time steps $V_{t+j}$ (for $j>0$) is not known with certainty. Therefore, the computations of expected utilities are performed using the node's last available information at time $t$, specifically $V_t$. This assumption reflects the bounded rationality and limited information available to individual decision-makers, who cannot perfectly predict how their neighbors' health states will evolve during the planning horizon. The node makes decisions based on a projection that holds the current local epidemic state fixed over the planning horizon, representing a form of myopic but forward-looking behavior that balances immediate and near-term expected outcomes.}
+
+The projection of the future system's state assumes that the node distribution across health classes and their respective current social structures (network structures) remain constant over the planning horizon. The risk of infection for a susceptible node $n_kS$ depends on its edges $e_k$ and the infected neighbors it has. Removing these edges reduces the node's infection risk but also constitutes a cost. Thus, behavioral adaptation balances feedback between the epidemiological and socio-economic systems.
+
+Each node tends to maximize its expected utility while maintaining social interactions, subject to the dynamics of the epidemic. We determine the node-specific optimal behavioral response at each time step by finding the number of edges that maximize its expected utility $V_t(n_k)$ in each of the potential future health states $h\in \{S,I,R\}$, over a given planning horizon, $\tau_k$.
+
+The expected utility $V_t(n_k)$ comprises the potential benefit obtained by making the optimal choices at each future time step during the planning horizon. The node-specific expected utility comprises the immediate net benefits of social interaction (which depend on the node's and its neighbors' health status) and the expected net benefits of future social interactions (which rely on the potential future health states and the corresponding transition probabilities).
+
+Notice that while the node-specific local prevalence depends on the network structure, the potential future health states and the transition probabilities depend on the disease progression model.
+
+% The node-specific utility function
+
+Let the node $n_k$ get utility of maintaining $e$ edges at time $t$ ($e_{k,t}$). Utility is described by a concave single-peaked utility function $u_{k,t}=u(e_{k,t})$. Each node obtains a positive marginal net benefit of increasing edges up to $e_k^*$, the node-specific maximum number of edges, determined by the baseline network structure.
+
+Following the work by \cite{morin2013sir}, we assume the node $n_k$ utility function of the particular form $u_{k,t}=\left(b e_{k,t}^{h}-(e_{k,t}^{h})^ 2\right)^{\nu}$, where $b=2 e_k^*$ so that $e_k^*$ produce the maximum immediate utility, $\nu$ is the utility function shape parameter, and $e_{k,t}^{h}$ is the number of edges of a node $k$ with health status $h$ at time $t$.
+
+\green{Referee Response: We clarify the notation in the utility function. The superscript $h$ in $u_{k,t}=u(e_{k,t}^h)$ refers to the health state of the focal node $n_k$ (where $h \in \{S,I,R\}$), not the health states of its contacts. The utility function captures how the focal node's own health status affects the benefits it derives from maintaining a given number of edges $e_{k,t}^h$. For instance, infected nodes are assumed to receive no utility during their infectious period, reflecting reduced capacity or willingness to engage in productive social interactions while ill.}
+
+We assume that each node receives a similar per-edge utility, regardless of its health status, except that infected nodes receive no utility during their infectious period. We formalize the node-specific optimization problem as a system of Bellman's equations, which are numerically solved at each time step using dynamic programming.
+
+\subsection*{Susceptible nodes adaptive behavior}
+
+At each time step, each susceptible node chooses the optimal number of edges that maximizes its expected utility over the planning horizon $[t,t+\tau]$.
+
+The optimal number of edges at time $t$ is computed by weighing the current and expected future benefits of social interactions against the risk of infection and potential transitions between health states.
+
+We model the set of optimization problems as dynamic programming problems, whose solutions generate node-specific, privately optimal neighborhood structures \cite{fenichel2011adaptive,perrings2014merging,morin2013sir}.
+
+The dynamic programming problem by which susceptible nodes $n_k^S$ assess their optimal neighborhood structure at time $t$ (the optimal number of edges $e_{k,t}^*$ with which to engage daily) is mathematically formalized by Bellman's equation
+\begin{align} \label{eqn:bellman_snodes}
+&V_{t}(n_{k,t}^S) = \nonumber \\ &\max_{e_{k,t}^S}\biggl\{u(S,e_{k,t}^S)+\delta[(1-P^I)V_{t+1}(n_{k,t+1}^S)+P^I V_{t+1}(n_{k,t+1}^I) ] \biggr\}
+\end{align}
+
+where $V_{t}(n_{k,t}^S)$ is the expected utility of the susceptible node $n_{k}$, at time $t$. Here we define $V_{t+1}(n_{k,t}^S)$ (resp. $V_{t+1}(n_{k,t}^I)$) as the expected utility while being susceptible (resp. infected) at time $t+1$, and
+\begin{equation}
+    P^I=1-(1-\beta)^{e_{k,t}},
+\end{equation}
+is the node-specific probability of infection at time $t$, if the node has $e_{k,t}$ edges connecting it to infected neighbors at time $t$.
+
+Equation (\ref{eqn:bellman_snodes}) formalizes the maximization problem of susceptible nodes, accounting for the immediate utility $u(S,e_{k,t}^S)$, plus the expected future utility discounted at a rate $\delta$. The expected future utility of susceptible nodes accounts for the expected utility of remaining susceptible at time $t+1$ with probability $1-P^I$, and the expected utility of becoming infected at time $t+1$ with probability $P^I$. The optimization process yields an optimal decision $e_{k,t}^*$ for the number of edges each susceptible individual should select, at time $t$. Each day, the nodes will, therefore, remove edges to infected neighbors to maintain the optimal number of contacts derived from the optimization process. The corresponding formula for $V_{t}(n_{k,t}^I)$ is provided in the appendix for completeness, although infected individuals do not undergo a decision-making process, as we assume infected nodes have no incentive to reduce their social activity level by dropping edges.
+
+\green{Referee Response: We acknowledge that infected individuals often reduce their contacts in reality due to illness severity, symptoms, ethical concerns (prosocial behavior), or public health mandates. In our baseline formulation, we assumed that infected nodes do not actively optimize their contact decisions—that is, they receive no utility while infectious and therefore do not solve a decision-making problem. This assumption was made to isolate and clearly demonstrate the effect of decentralized susceptible adaptation on network structure and epidemic dynamics. However, we recognize the importance of modeling infected individuals' behavioral responses. In the Supplementary Information (Section "Infectiousness Responsiveness," Figure S16), we have incorporated an extended analysis that explores the impact of adaptive behavior when infected individuals also reduce their social interactions, either due to symptom severity or prosocial motivations. This extension shows how incorporating infected nodes' contact reduction can further modulate epidemic trajectories and highlights the potential importance of prosocial behavior in disease control. Future work could explore more nuanced models that account for heterogeneous infected behavior, including differential responses based on symptom severity or social norms.}
+
+% \subsection*{Infected and recovered nodes behavior}
+% Moved to SI
+
+% To solve the optimization problem for susceptible nodes \eqref{eqn:bellman_snodes}, it is required to know the expected utility of infected nodes.
+
+% We assume infected nodes have no incentive to reduce their social activity level by dropping edges.
+% The edge reduction is produced by susceptible nodes dropping the edges towards infectious ones.
+% The expected utility computed by a susceptible node while potentially becoming infectious in the future accounts for all connected edges at time $t$. In this regard, the expected utility does not incorporate the potential behavioral decisions of other susceptible nodes, which would drop the edge towards the node while infectious.
+
+% Finally, we let recovered nodes maintain the neighborhood structure that maximizes the net benefits of social interactions. The expected utility of infected nodes is given by Bellman's equation \eqref{eqn:bellman_inodes}
+
+% \begin{align} \label{eqn:bellman_inodes}
+% & V_t(n_{k,t}^I) = \quad   \nonumber \\
+% & u(I,e_{k,t}^I)+ \delta\biggl[(1-P^R)V_{t+1}(n_{k,t+1}^I)\,+\,P^R V_{t+1}(n_{k,t+1}^R)\biggr],
+% \end{align}
+
+% where $P^R=\gamma$ is the probability of recovery at each time step.
+
+% The expected utility of infected individuals accounts for the immediate utility of being infected and the discounted future expected utility. The infected expected future utility accounts for the expected utility of remaining infected at time $t+1$ with probability $1-P^R$ and the expected utility of recovery at time $t+1$ with probability $P^R$.
+
+% % Notice that the expected utility for infected nodes represents a static problem and can be explicitly solved
+% % %
+% % \begin{align*}
+% %     V_t(n_{k,t}^I)=u(I,C^{I_C*}) \displaystyle\sum_{j=1}^\tau \delta^j (1-P^R)^j + \\ u(R,C^{R*}) \displaystyle\sum_{j=1}^\tau \delta^j\left( 1-(1-P^R)^j \right)
+% % \end{align*}
+
+% Finally, to solve \eqref{eqn:bellman_inodes}, it is required to know the expected utility of recovered nodes. Since our disease progression model assumes permanent immunity of recovered individuals, we assume there is no incentive for recovered individuals to seek strategic behavior. Thus, we let recovered nodes maintain the daily neighborhood structure that maximizes the net benefits of social interactions.
+% given by the equation \eqref{eqn:bellman_rnodes}
+
+% \begin{equation} \label{eqn:bellman_rnodes}
+% V_t(n_{k,t}^R)=u(R,e_{k,t}^R)+\delta[ V_{t+1}(n_{k,t+1}^R)].
+% \end{equation}
+
+
+
+\acknow{
+This work was partially supported by
+% IHBEM: UVA-BI and Simon's
+the NSF partially supported this work through DMS Award Number:2327710 and DMS Award Number:2327711,
+%
+% DTRA
+the Defense Threat Reduction Agency (DTRA) contract HDTRA120F0017,
+%
+the National Science Foundation (NSF) through the Expeditions in Computing Grant CCF-1918656,
+%
+and the Army Research Office through Grant Number W911NF2410126.
+%
+J.C.M and F.S. extend their gratitude to the Research Center in Pure and Applied Mathematics and the Department of Mathematics at the University of Costa Rica for their support.
+}
+
+\showacknow{} % Display the acknowledgments section
+
+\newpage
+
+\bibsplit[18]
+%Use \bibsplit to split the references from the body of the text. Value "[2]" represents the number of reference in the left column (Note: Please avoid single column figures & tables on this page.)
+
+% Bibliography
+\bibliography{behavior_bib.bib}
+
+\end{document}

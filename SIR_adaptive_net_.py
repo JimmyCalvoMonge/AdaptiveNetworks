@@ -57,6 +57,54 @@ def fs(x,y,z):
 # The maxer code runs the optimization process for each vertex 
 def vertxmaxer(ntwk, nodeid, dispars, u, neis):
 
+    """
+    (* Single peak function *) 
+    fs[x_,y_,z_]:=(x z-z2) y (* The maxer code runs the optimization process for each vertex *) 
+    vertxmaxer[ntwk_,nodeid_,dispars_,u_,neis_]:=Module[{
+    ntw=ntwk, (* network used *) 
+    node=nodeid[[1]],
+    maxed=nodeid[[2]],(* the node for which the maximizer is running and the information about inf neghbours *) 
+    β=dispars[[1]],
+    γ=dispars[[2]],(* disease parameters *) 
+    T=u,(* time horizon *) 
+    ns=neis (* Neighboorhood size to get the local prevalence *)},
+    (* maxer[u_,v_,w_]:= *) 
+    ν=0.05;
+    b=2*maxed;
+    (* maximum possible#of edges for the utility function,the optimal utility is assumed at half of this *) 
+    δ=0.99986;(* discount factor *) 
+    (* Vector storing the optimal s utility *) 
+    EUS=Table[0,{t,1,T+1}];
+    (* The last step in s assumes to use all edges *) 
+    EUS[[-1]]=fs[b,ν,maxed];
+    (* Vector storaging the optimal i utility *) 
+    EUI=Table[0,{t,1,T+1}];
+    (* Vector storaging the optimal i utility *) 
+    EUR=Table[0,{t,1,T+1}];(* The last step in r assumes to use all edges *) 
+    (* EUR[[-1]]=fs[b,ν,maxed]; *) 
+    (* Vector storing the optimal#of edges for the susceptible node during the planning horizon *) 
+    nedgest=Table[0,{i,1,T+1}];
+    nedgest[[-1]]=maxed;
+    (* Pt is the probability of disease transmission along an edge during a single time step *) 
+    Pt=β;
+    Pir=γ;(* Optimization procedure *) 
+    For[t=T,t >= 1,t --,(* Horizon times,this goes backwards *) 
+    (* individual7;s utility starts at zero *) 
+    maxu=0;(* (* Reset the list of neighbors,to start the new optimization *) 
+    newnodeneighs=nodeneighs;*) 
+    (* Evaluating all the contact rates for susceptible individuals,all possible variable states *) 
+    Do[Psi=1-(1-Pt) edgesd;
+    (* Evaluating the expected utilities *) 
+    (* Utility gained by being currently susceptible *) 
+    EUS[[t]]=fs[b,ν,edgesd]+δ((1-Psi) EUS[[t+1]]+Psi EUI[[t+1]]);
+    EUI[[t]]=(0) fs[b,ν,maxed]+δ((1-Pir) EUI[[t+1]]+Pir EUR[[t+1]]);
+    EUR[[t]]=fs[b,ν,maxed]+δ EUR[[t+1]];
+    (* Compare the new utility with the previous one,if it7;s bigger,then adapt the behavior *) 
+    If[EUS[[t]]>maxu,nedgest[[t]]=edgesd;maxu=EUS[[t]]];,
+    {edgesd,maxed,0,-1}]];
+    Return[nedgest]]
+    """
+
     ntw = ntwk # network used 
     node = nodeid[0] # the node for which the maximizer is running and the information about inf neghbours
     maxed = nodeid[1]
@@ -97,7 +145,7 @@ def vertxmaxer(ntwk, nodeid, dispars, u, neis):
         maxu = 0
 
         # Evaluating all the contact rates for susceptible individuals, all possible variable states
-        for edgesd in range(maxed, 0, -1):
+        for edgesd in range(maxed, -1, -1):
 
             Psi = 1 - (1 - Pt)**edgesd
 
@@ -1523,7 +1571,7 @@ if __name__ == '__main__':
     epidemics = 300
     iterations = 250
 
-    # get_all_figures(500, 0.05)
+    get_all_figures(500, 0.05)
 
     # get_heatmap_data(500, 0.05)
 
@@ -1575,6 +1623,6 @@ if __name__ == '__main__':
     # df = get_heatmap_for_all_networks()
 
     # Read predetermined results
-    df = pd.read_csv('./Data/20251122115710_all_networks_bepidist_heatmap_data.csv')
-    get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='V')
+    #df = pd.read_csv('./Data/20251122115710_all_networks_bepidist_heatmap_data.csv')
+    #get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='V')
     # get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='T')

@@ -1,0 +1,441 @@
+\documentclass{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor,url}
+\usepackage{float}
+\usepackage{natbib}
+
+\usepackage{tgtermes}
+\usepackage{amsmath,amssymb,amsthm,textcomp}
+\usepackage{enumerate}
+\usepackage{multicol}
+\usepackage{tikz}
+
+\usepackage{geometry}
+\geometry{total={310mm,297mm},
+left=35mm,right=35mm,%
+bindingoffset=0mm, top=25mm,bottom=20mm}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5\baselineskip}
+
+\newcommand{\blue}[1]{{\textcolor{blue}{#1}}}
+\newcommand{\red}[1]{{\textcolor{red}{#1}}}
+\newcommand{\allblue}[1]{\color{blue}{#1}\color{black}}
+\newcommand{\allred}[1]{\color{red}{#1}\color{black}}
+
+\begin{document}
+%\doublespacing
+
+%\maketitle
+
+\begin{flushleft}
+
+Dear editorial board\\[10ex]
+
+\end{flushleft}
+
+\noindent We thank you and the reviewers for the helpful comments on our manuscript. We are pleased to submit the revised original research article ``Localized risk perception triggers early behavioral adaptations in epidemics on networks'',  by Baltazar Espinoza, Jimmy Calvo-Monge, Fabio Sanchez, Simon Levin, and Madhav Marathe, for your consideration and potential publication in the Proceedings of the National Academy of Sciences journal.\vspace{0.3cm}
+
+\noindent We carefully reviewed each reviewer's comment and made the necessary edits to the manuscript. The comments and suggestions made by the reviewers addressed key aspects of our study, we feel that our manuscript is much improved now and we thank the reviewers for their helpful comments.\vspace{0.3cm}
+
+% \noindent Our revised manuscript highlights --.
+
+% \noindent This manuscript has not been published and is not under review elsewhere. All authors have approved the final manuscript and agree to submission to this journal.
+
+
+\begin{flushleft}
+Thank you for your consideration.\\[10ex]
+Sincerely, \\[10ex]
+Baltazar Espinoza, Ph.D.\\
+Biocomplexity Institute and Initiative\\
+Network Systems Science and Advanced Computing Division,\\ University of Virginia
+\end{flushleft}
+
+%\newpage
+
+% We have addressed each point and made changes to the main document in blue. The reviewer's comments are addressed below.
+% \vspace{0.5cm}
+
+% \blue{
+% To do list (Jimmy)
+% \begin{itemize}
+%     \item rev 1 comment gral - Add some lines about the reaction essence of the model rather than anticipate infection risk. Do simulations with different planning horizons.
+%     \item rev 1 comment 1 - Do simulation with delay 
+%     \item rev 1 comment 4 - Do simulations with reduced infectious contact rates due to, for instance, severity symptoms, prosociality.
+%     \item rev 1 comment 5 - try rewiring
+%     %
+%     \item rev 2 comment gral - Do simulations changing the behavioral profile ($\nu$) and explore the impact on final and peak sizes, and peak times.
+%     \item rev 2 comment 1 - Do two scatter plots: 1) risk sensitivity ($\nu$) vs final size, 2) planning horizon for a selected risk sensitivity vs peak size. Change figure 2 to 2x2 format. Different markers for each network topology. Figure 54 of this paper \url{https://www.sciencedirect.com/science/article/pii/S0167268125000344#fig5}
+%     \item rev 2 comment 3f - Reduce the planning horizon to at most 20 days and remake figure 5 with smaller grid jumps.
+%     \item rev 2 minor comment 1 - remove figure 2b, merge 2a and 3a. Final figure is a 1x2 with merge 2a and 3a and 3b.
+%     \item rev 2  minor comment 6 - check this: Manassas network behavior is not coming back after the epidemic.
+% \end{itemize}
+% }
+
+% \allred{
+% To do list (Jimmy) ---- Comments
+% \begin{itemize}
+%     \item rev 2 minor comment 1 - remove figure 2b, merge 2a and 3a. Final figure is a 1x2 with merge 2a and 3a and 3b. \textbf{DONE}
+%     \item rev 1 comment 4 - Do simulations with reduced infectious contact rates due to, for instance, severity symptoms, prosociality. \textbf{DONE -Check proposal in Section Infected responsiveness of SI-revision1- I need to review this and discuss results}
+%     \item rev 1 comment 1 - Do simulation with delay  \textbf{DONE. -Check proposal in Section Information Delay Effect of SI-revision1- I need to review this and discuss results}
+%     \item rev 2 comment 3f - Reduce the planning horizon to at most 20 days and remake figure 5 with smaller grid jumps. \textbf{DONE Check figure 3A}
+%     \item rev 2 comment gral - Do simulations changing the behavioral profile (v) and explore the impact on final and peak sizes, and peak times. rev 2 comment 1 - Do two scatter plots: 1) risk sensitivity (V) vs final size, 2) planning horizon for a selected risk sensitivity vs peak size.  \textbf{DONE -Check proposal in Section Further Numerical Analysis of SI-revision1- please review and add comments}
+%     \blue{Remove panel B. Add two panels with sims for the different network structures we used (3 curves): Barabasi, Small-world, Erdos-Renyi and add the corresponding labels. The metrics are ``prevalence peak size''. Remove fig S20.}
+    
+%     \item Change figure 2 to 2x2 format. Different markers for each network topology. Figure 54 of this paper https://www.sciencedirect.com/science/
+% article/pii/S0167268125000344\#fig5  \textbf{TODO}
+% \item rev 1 comment gral - Add some lines about the reaction essence of the model rather than anticipate
+% infection risk. Do simulations with different planning horizons. \textbf{TODO, this could be added in section Further Numerical Analysis of SI-revision1 ?} An idea: A longer planning horizon allows the individual to contemplate disease recovery into their planning scheme. When planning horizon is longer, the individuals tend have lower contact reductions, deviate less from their optimal contact rates, they are more risky. A shorter planning horizon doesn't include these scenarios and is focused on immediate reward making individuals alter their contacts more prematurely. Larger planning horizons make the contact reduction to be smaller, hence the model lookig more like the classic model. Peak disease increases because less contacts are being dropped.
+% \item rev 1 comment 5 - try rewiring \textbf{TODO}
+% \item rev 2 minor comment 6 - check this: Manassas network behavior is not coming back after the
+% epidemic. \textbf{TODO}
+% \end{itemize}
+% }
+
+% \blue{{\bf TODO 2}
+% \begin{itemize}
+%     \item Update SI fig. 20: each panel with sims for the different network structures we used (3 curves each): Barabasi, Small-world, Erdos-Renyi and add the corresponding labels. The metrics are ``prevalence peak size''. \url{https://www.sciencedirect.com/science/article/pii/S0167268125000344#fig5}
+%     \item All captions to placed at the bottom of the panel.
+%     \item Update figure 2, with three panels: x-axis we move $\nu$ for all panels, panel 1) tracks ``prevalence peak size'' ($I_{max}$), panel 2) tracks "final size" ($R_{\infty}$), panel 3) tracks min of both local and global behavioral responses ($\min\{ \text{ individuals avg. edge reduction} \}$ and $\min\{ \text{ network avg. edge reduction} \}$). Each panel shows scatter plots for each network topology: Barabasi, Small-world, Erdos-Renyi.
+%     \item figure 1 all edges with the same color, and do a walkthrough of the figure describing mechanism in the caption
+%     \item Redo simulations with Manassas network
+% \end{itemize}
+% }
+
+\bigskip
+\section*{Reviewer 1}
+In "Localized risk perception triggers early behavioral adaptations in epidemics on networks," the authors build an interesting network epidemic model in which adaptive behavior (based on local risk perceptions with a future planning horizon) can temporarily drop edges in the network. They find asynchronous dynamics between the epidemic and the local behavior. This well-written paper is on an important topic as adaptive behavior during epidemics remains an under-explored aspect of ID modeling.
+
+However, the paper is ultimately unconvincing. 
+\bf{
+The key results appear to be built directly into the assumptions, and the assumptions are not justified empirically or qualitatively.
+}
+%
+\bf{
+The result in the title, that localized risk perception triggers early behavioral adaptations, is a natural result of assuming that people search their local space and perfectly map out future epidemic projections and react to those future risks now.
+} 
+Mathematically, you are building in a premature negative feedback and then underscoring this as a key result.
+
+\medskip
+\allblue{Response: 
+We appreciate the reviewer’s concern that the observed early behavioral adaptation might be as a direct consequence of the model’s assumption of a forward-looking planning horizon.
+%
+We believe there is a potential semantic problem and ambiguity with the concept of ``early behavioral adaptations''.
+%on the role of the planning horizon in the adaptive behavior model.
+%
+The behavioral response model we use is formulated based on the Homo economicus decision-making approach~\cite{parada2023weighting,fenichel2011adaptive,perrings2014merging}. That is, individuals are assumed to daily evaluate cost–benefit trade-offs between reducing infection risk and maintaining social utility
+
+
+%we use does not include any component that allows individuals to formulate future epidemic projections or to adjust their behavior based on anticipated future risks.
+%
+In the revised manuscript, we have clarified that the planning horizon ($\tau$) does not represent foresight or prediction of future epidemic trajectories. Instead, $\tau$ denotes the time window over which individuals evaluate the trade-off between the costs and benefits of social interaction, based on their current local risk perception and social context.
+%
+In other words, it is the period over which individuals integrate currently available information to evaluate the cost–benefit trade-off between reducing infection risk and maintaining social utility, based on their currently experienced local prevalence and social context—reflecting a .
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%This could be a reasonable thing we can do%%%%%%%%
+% To support this point, we added a new set of simulations (now described in the \textit{Methods} and shown in Fig.~\red{-----}) that show the impact of varying $\tau$ from myopic driven behavior ($\tau = 0$ days) to hyperopic driven behavior ($\tau = 14$ days).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \red{We need to make a figure that explores this: local vs. global contact reductions across different planning horizons.}
+% Our results show that asynchronous timing between individual- and population-level behavioral responses persists even under short (myopic) planning horizons, indicating that premature population-level adaptation emerges from the aggregation of heterogeneous local decisions on dynamic networks rather than from an imposed anticipatory assumption.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+We have expanded the \textit{Discussion} to clarify that $\tau$ should be interpreted as a behavioral–cognitive parameter, rather than a forecasting component. This interpretation is consistent with prior behavioral studies (e.g.,~\cite{fenichel2011adaptive,perrings2014merging}), 
+%Arthur et al., 2021), 
+which shows that individuals typically respond to short-term perceived risk–benefit trade-offs rather than forming explicit predictions of future epidemic trajectories.
+%
+We hope that these additions clarify that the key result of our study, that localized risk perception leads to early population-level behavioral response, is an emergent property of decentralized adaptation, not a built-in model artifact.
+%
+}
+
+%We already have Fenichel cited.
+% @article{Fenichel2011,
+%   author    = {Eli P. Fenichel and Carlos Castillo-Chavez and M. G. Ceddia 
+%                and Gerardo Chowell and Paula A. G. Parra and G. J. Hickling 
+%                and G. Holloway and R. Horan and B. Morin and C. Perrings 
+%                and M. Springborn and L. Velazquez and C. Villalobos},
+%   title     = {Adaptive human behavior in epidemiological models},
+%   journal   = {Proceedings of the National Academy of Sciences},
+%   year      = {2011},
+%   volume    = {108},
+%   number    = {15},
+%   pages     = {6306--6311},
+%   doi       = {10.1073/pnas.1011250108}
+% }
+
+% @article{Arthur2021,
+%   author    = {R. F. Arthur and L. J. Hébert-Dufresne and B. M. Althouse 
+%                and S. V. Scarpino},
+%   title     = {Adaptive social contact rates induce complex dynamics during epidemics},
+%   journal   = {PLoS Computational Biology},
+%   year      = {2021},
+%   volume    = {17},
+%   number    = {2},
+%   pages     = {e1008639},
+%   doi       = {10.1371/journal.pcbi.1008639}
+% }
+
+\paragraph{Major comments}
+\begin{enumerate}
+    \item Adaptive behavior has elsewhere been considered to be delayed behind the epidemic as information takes time to spread either through centralized or decentralized means (see e.g. Arthur et al. 2021: "Adaptive social contact rates induce complex dynamics during epidemics"). In the network models that use social contagion (Refs [34-35] in the paper), awareness (risk) takes time to propagate. Assuming instant response to future risk will of course generate a premature response.
+
+    \blue{\\Response: 
+    We thank the reviewer for highlighting the critical distinction between instantaneous behavioral response and the more realistic case in which information and awareness propagate with delay through social and institutional channels. We agree that individuals do not observe local epidemic conditions perfectly in real time, and that communication, reporting, and perception processes introduce lags in behavioral adjustment. 
+    %
+    In the revised manuscript, we now state explicitly that the baseline behavioral formulation assumes instantaneous local awareness as an idealized reference case. To assess the impact of information delays, we have added a new set of numerical experiments (described in the \textit{Methods} and shown in Fig.~S17–S18), in which behavioral responses are delayed by 3 and 7 days relative to changes in local prevalence.
+    %
+    Our results show that information delays would substantially alter the resulting behavioral dynamics and epidemic trajectories. In particular, delayed information can generate behavior–epidemic waves, amplifying or prolonging outbreak dynamics depending on the magnitude of the delay. Although this analysis falls outside the scope of the current manuscript, we view it as an important avenue for future investigation.
+    }
+
+    \item There is no attempt to empirically or qualitatively justify the use of the planning horizon. Is this how individuals react to epidemics? Is there empirical evidence for this or can you walk us through why this is a compelling way to mechanistically introduce adaptive behavior? I believe the future planning horizon component of the utility function to be the most influential aspect of this model on its results, but the assumptions are not examined nor are they relaxed in the sensitivity analysis. There is also little description of how the planning horizon is formulated in favor of describing the utility function.
+    
+    \blue{\\Response: 
+    This comment relates to our response to the reviewer's general comment, in which we clarified that the planning horizon is a behavioral–cognitive parameter used to determine the optimal behavioral response, rather than a tool for epidemic foresight. The planning horizon allows us to mechanistically represent how individuals weigh expected risk–benefit trade-offs, and how these decisions shape collective outcomes.
+    %
+    In the revised manuscript, we have expanded the {\it Methods} and {\it Discussion} sections to clearly explain the role of the planning horizon in the behavioral model.
+    }
+    % Intuitively explain the role of the planning horizon. 
+    % % Read about reinforcement learning and optimization.
+    % Describe the planning horizon in terms of the disease progression period (SEIR). Like ''het beh resp''
+    %}
+    %\red{\\(Fabio) We appreciate the reviewer’s insightful observation regarding the need to better justify and contextualize the use of the planning horizon ($\tau$) in our behavioral formulation. In the revised manuscript, we have expanded the conceptual motivation and provided new sensitivity analyses to address this point (can we add this?). The planning horizon is not intended to imply perfect foresight or rational optimization over long time scales, but rather represents a bounded behavioral window during which individuals integrate recent and anticipated near-term information when making contact decisions. Empirical studies in behavioral epidemiology and economics (e.g., Fenichel et al., 2011; Reluga, 2010; Funk et al., 2009) show that individuals typically adjust social activity based on short-term expectations of infection risk, influenced by news cycles, workplace planning, and household-level risk perception. Our modeling framework captures this behavioral timescale as $\tau$, providing a mechanistic way to explore how the temporal reach of risk perception influences collective outcomes.}
+
+% @article{Reluga2010,
+%   author    = {Timothy C. Reluga},
+%   title     = {Game theory of social distancing in response to an epidemic},
+%   journal   = {PLoS Computational Biology},
+%   year      = {2010},
+%   volume    = {6},
+%   number    = {5},
+%   pages     = {e1000793},
+%   doi       = {10.1371/journal.pcbi.1000793}
+% }
+
+% @article{Funk2009,
+%   author    = {Sebastian Funk and Erez Gilad and Chris Watkins and 
+%                Vincent A. A. Jansen},
+%   title     = {The spread of awareness and its impact on epidemic outbreaks},
+%   journal   = {Proceedings of the National Academy of Sciences},
+%   year      = {2009},
+%   volume    = {106},
+%   number    = {16},
+%   pages     = {6872--6877},
+%   doi       = {10.1073/pnas.0810762106}
+% }
+    
+    \item This issue propagates to the discussion in which policy implications are discussed. Without a solid understanding of how behavior adapts to epidemics described in the introduction and mathematically formulated in the methods, it's hard to interpret what this means for policy. For example, ``Providing the right incentive to induce appropriate behavioral responses would be challenging." Without an understanding of how these agents are thinking, it's hard to interpret policy to intervene on that process.
+
+    %``The right incentive is context dependent: believes, economic.'' The utility is an abstract concept. Improve redaction and explain better the concept of incentives.
+    \blue{\\Response:
+    In the revised version, we have clarified that the policy discussion is intended to be conceptual rather than prescriptive. Moreover, we have revised the \textit{Discussion} to explicitly state that the proposed behavioral framework captures bounded rationality and that our results should be interpreted as identifying qualitative mechanisms.
+    
+    Specifically, the sentence regarding policy challenges (``Providing the right incentive to induce appropriate behavioral responses would be challenging") has been rephrased to highlight that, in practice, the model underscores the importance of designing incentive structures or communication strategies that better align individual-level decision-making timescales with collective public health goals. We hope that these clarifications make explicit the conceptual boundaries of our model and how its qualitative insights can inform, but not prescribe, policy.
+    }
+
+    % \red{\\(Fabio) We appreciate this important observation regarding the interpretation of our policy-related statements. In the revised version, we have clarified that the policy discussion is intended to be conceptual rather than prescriptive. Our model provides a mechanistic exploration of how decentralized, locally informed behavioral adjustments interact with epidemic dynamics on networks, rather than a detailed cognitive or psychological model of decision-making. 
+    % %%%I still have to incorporate these changes, once we revise and talk I can write the changes in the revised version%%%%%
+    % Accordingly, we have revised the \textit{Discussion} to explicitly state that the framework captures bounded rationality and short-term adaptive responses rather than fully rational planning or empirically calibrated decision processes. We now emphasize that our results should be interpreted as identifying qualitative mechanisms, namely, that decentralized behavior operating on local information can lead to asynchronous and suboptimal population-level responses, rather than as direct predictions of real human behavior. 
+    % %
+    % The sentence regarding policy challenges (``Providing the right incentive to induce appropriate behavioral responses would be challenging") has been rephrased to highlight that, in practice, the model underscores the importance of designing incentive structures or communication strategies that better align individual-level decision-making timescales with collective public health goals. These clarifications make explicit the conceptual boundaries of our model and how its qualitative insights can inform, but not prescribe, policy.}
+
+    \item Are we sure the infected don't change their contact patterns? They may be too sick to go out or may feel ethically they should stay away from contacts. How does this assumption drive the result that "During the peak of the epidemic, the global behavioral effort is carried out by the few remaining susceptible individuals."
+    
+    \blue{\\Response:
+    We agree that infected individuals often reduce contacts due to symptoms, ethical concerns, or mandates. In our baseline formulation, we assumed that infected nodes do not actively optimize their contacts ({\it i.e.}, they receive no utility while infectious and therefore do not solve a decision problem), which isolates the effect of decentralized \emph{susceptible} adaptation on network structure.
+    We have incorporated the section titled ``infectiousness responsiveness'' and Fig.~S16 in the SI Appendix to explore the impact of adaptive behavior when infected individuals reduce their social interactions.
+    % Infected individuals also change their contact patterns, some may be pro-social. 
+    % Infected individuals also would reduce their contacts (prosocial individuals). 
+    % Discuss about the severity of symptoms and cost of illness. For example, COVID.
+    % This framework could address the notion of core contacts which could remain active when symptoms are severe.
+    }
+
+    %\red{\\(Fabio) We agree that infected individuals often reduce contacts due to symptoms, ethical concerns, or mandates, and we appreciate the opportunity to clarify how this affects our results. Our baseline formulation assumed that infected nodes do not actively optimize (they receive no utility while infectious and therefore do not solve a decision problem), which isolates the effect of decentralized \emph{susceptible} adaptation on network structure.}
+    
+    \item I have no complaint of the election to use a topologically-consistent rewiring strategy. It would be interesting to see a scenario analysis relaxing this assumption and using other strategies.
+    
+    \blue{\\Response:
+    We briefly explored this strategy for adaptive behavior on networks. Our preliminary result shows that --
+    }
+\end{enumerate}
+
+\paragraph{Minor comments}
+\begin{enumerate}
+    \item Typo in manuscript, page 7: "Equation Eq. (1)"  
+
+    \blue{\\Response:
+    This has been fixed in the manuscript.
+    }
+        
+    \item Typo in supporting information, page 2: "an stochastic..." 
+
+    \blue{\\Response:
+    This has been fixed in the manuscript.
+    }
+    
+    \item Missing equation reference in supporting information, page 3: "Eq. (??)" 
+
+    \blue{\\Response:
+    This has been fixed in the manuscript.
+    }
+    
+    \item Typo in supporting information, page 9: "Not only, the use of multilayered..." 
+
+     \blue{\\Response:
+    This has been fixed in the manuscript.
+    }
+    
+\end{enumerate}
+
+%\blue{\\Response: We have corrected the mentioned typos.}
+
+\vspace{0.5cm}
+
+\section*{Reviewer 2}
+This manuscript introduces a network-based model that integrates epidemic transmission dynamics with individual decision-making around precautionary behavior (breaking contacts).  
+The authors use the model to explore how behavioral choices shape epidemic outcomes, focusing on 
+{\bf
+(1) comparing the timing of minima in two behavioral response metrics—average degree overall versus average degree among susceptibles
+}
+—and (2) how the behavioral model parameters influence the lag between these minima.
+
+The model assumes an Erdős–Rényi random network with Poisson degree distribution (with additional network structures examined in the Appendix). At each time step, individuals may sever contacts based on a utility function that balances the social benefits of maintaining contacts against the epidemiological risks of exposure. Decision-making occurs under the assumption that the network structure and epidemiological states remain fixed during a
+multi-day planning horizon, with individuals estimating infection risk and maximizing expected utility accordingly.
+
+The model produces behavioral dynamics in which (1) the average degree among susceptibles reaches a minimum that coincides with the epidemic peak, 
+{\bf 
+(2) the overall average degree reaches a minimum well before that point,
+}
+and (3) individual-level behavioral responses reduce both the epidemic peak and overall incidence. The authors interpret these results as evidence that behavioral responses driven by localized risk perceptions ``produce premature population-level behavioral response, relative to epidemic dynamics."
+
+\subsection*{Overall opinion}
+This is a creative and well-constructed model with real potential to shed light on how individual risk tolerance and decision-making paradigms shape epidemic dynamics. It also offers a framework for examining how policies and health communication strategies can encourage precautionary behavior that benefits both individuals and society. 
+
+That said, I am not convinced by the significance or interpretation of the paper’s primary results—the lag between overall average degree and average degree among susceptibles. 
+{\bf 
+The overall average degree does not map cleanly onto the force of infection or the epidemic trajectory, and a behavioral response during the growth phase, rather than exactly at the peak, is not necessarily suboptimal.
+}
+% \red{\\(Fabio) We appreciate the reviewer’s thoughtful feedback and the opportunity to clarify the interpretation of our main result. We agree that the global mean degree does not directly represent the instantaneous force of infection; rather, it provides a population-level indicator of the \emph{aggregate behavioral state}, the collective social connectivity emerging from decentralized individual decisions. In contrast, the mean degree among susceptibles reflects the \emph{effective contact potential} of those still at risk. The lag between these quantities, therefore, captures a mismatch between when the majority of individuals begin to limit contacts and when transmission risk is concentrated among the remaining susceptibles. 
+%     %%%%%%Not yet done%%%%%%%
+%     We have revised the \textit{Results} and \textit{Discussion} to emphasize this conceptual distinction.}
+
+The study could be strengthened by highlighting how behavioral responses shape epidemic outcomes—such as the timing and magnitude of the peak or the overall burden—and by drawing clearer links to observed behaviors and pressing policy questions.
+    
+
+\paragraph{Major issues}
+
+\begin{enumerate}
+    \item {\bf Focus on lag between population-level and individual-level responses.}
+    The distinction the authors draw between “population-level” (average edges overall) and “individual-level” (average edges among susceptibles) responses is not especially informative for understanding epidemic dynamics. From an epidemiological perspective, only contacts involving susceptibles affect transmission; contacts among infected or recovered individuals, or between them, do not. In this sense, decision-making based on local prevalence is efficient—recovered individuals face no risk, so reducing their contacts is unnecessary.
+
+    The proposed local decision model may indeed produce a suboptimal population-level response, but the lag between the two minima is not convincing evidence of this. What makes the behavior potentially inefficient is that susceptible individuals respond only after infections have already spread to their immediate network. This reactive, rather than anticipatory, strategy produces a “too little, too late” dynamic. Whether such local decision-making leads to suboptimal outcomes at the population level depends on the behavioral response function and parameter values. The current analysis—focused on the lag between population-level and individual-level averages—does not capture these broader epidemiological consequences.
+
+    To that end, 
+    {\bf 
+    I believe the analysis would be strengthened by examining how behavioral assumptions shape epidemic outcomes—such as the timing and magnitude of the peak and the cumulative incidence.
+    }
+    For example, Figure 4 would be more informative if it showed 
+    {\bf 
+    how varying behavioral parameters affect the epidemic curve, and the supplementary analyses on network structure could likewise highlight how both behavioral responses and epidemic trajectories vary across topologies.
+    It would also be valuable to track heterogeneity in response—for instance, which degree classes reduce contacts, by how much, and how the variance in edge reduction among susceptibles evolves over time.
+    }
+    These analyses would provide deeper insight into the link between individual decision-making and epidemic dynamics, and would connect the model more directly to pressing public health challenges.
+
+%%%NEED MORE HERE%%%%%%%
+    \red{\\(Fabio) We appreciate this valuable suggestion and have revised the manuscript to make these connections explicit. In the updated \textit{Results}, we now quantify how behavioral responses modulate the epidemic trajectory by comparing simulations with and without adaptive behavior.}
+% Explore the impact of adaptive behavior on the final size and peak size for different behavioral profiles (sensitivity). The lower the peak size the longer the epidemic and the greater the final epidemic size. 
+\blue{\\Response:
+We agree that the global mean degree does not directly represent the instantaneous force of infection; rather, it provides a population-level indicator of the \emph{aggregate behavioral state}, the collective social connectivity emerging from decentralized individual decisions.
+In contrast, the mean degree among susceptibles reflects the \emph{effective contact potential} of those still at risk. The lag between these quantities, therefore, captures a mismatch between when the majority of individuals begin to limit contacts and when transmission risk is concentrated among the remaining susceptibles.
+Finally, in this study, we do not attempt to identify optimal response or policies. Determining optimality necessitates knowledge of the economic trade-offs between implementing interventions and tolerating higher disease levels, and these trade-offs vary significantly across contexts and societies. Rather, we aim to study the epidemiological consequences of individual- vs community-level behavioral incentives.
+{\bf TODO: We have revised the \textit{Results} and \textit{Discussion} to emphasize this conceptual distinction.}
+}
+\blue{\\Response:
+    Don't understand the ``not specially informative for understanding epidemics''? Need to explain that we consider susceptible change their contact structures and both scales population-level and individual-level: the mean degree among susceptibles reflects the \emph{effective contact potential} of those still at risk over the whole population. (rephrase this)
+    %
+    Simulations with n-step neighborhoods will show that the model could be anticipatory and not only reactive.
+}
+
+    
+    \item {\bf Empirical motivation for study focus, model structure and parameter values.}
+    While this line of research is both relevant and promising, 
+    {\bf 
+    the article does not fully explain the core questions and public health challenges it aims to address. The introduction jumps quickly into prior theoretical work on the interplay between behavior and disease spread, without describing the real-world phenomena or scientific gaps that motivate such studies.
+    }
+    The COVID-19 pandemic, for example, revealed complex behavioral dynamics—masking, distancing, and voluntary isolation—for which we still lack a clear understanding of their drivers and how they interact with epidemic spread. Connecting the model more explicitly to such phenomena would strengthen both its motivation and impact.
+
+    The model structure also needs more grounding, especially the choice of utility function and optimization procedure. Are the functional forms and parameter values based on empirical studies or behavioral theory? For example, is it reasonable to assume that individuals know the disease state of their contacts or the value of the transmission rate ($\beta$)? Without clearer justification, it is hard to assess whether these assumptions capture actual decision-making dynamics or how the model results should be interpreted in a public health context.
+
+\allblue{\\Response:
+
+}
+
+    \item {\bf Clarity of Methods and Equations.}
+    The methods section would benefit from clearer explanations and more intuition behind the equations. In particular
+
+    \begin{enumerate}
+        \item Figure 1: I found this figure difficult to interpret. The caption should define all symbols and equations and clearly explain what the red and gray lines represent in the lower graph.
+        \allblue{\\Response:
+        We have edited the figure to clarify the epidemic component denoted by the nodes' health states, and the adaptive behavior component denoted by removed edges. We also edited the caption to describe the loop between these components.
+        }
+
+        \item Utility function: In the Methods, the utility function is first defined as a function of $k$ (node index) and t (time), but is later used as a function of h (infection state) and e (number of active edges). At line 734, it is unclear whether h refers to the health state of the focal node ($n_k$) or to the health states of its contacts. The text at line 737 implies the latter, but subsequent mentions suggest the former. In Table S1, the e term in the utility function should be defined explicitly.
+        \blue{\\Response:
+        We have edited the manuscript accordingly.
+        }
+
+        \item Forward-looking utility: In the Methods, $V_t$ appears to use the true epidemiological status of a node’s contacts, but $V_{t+j}$ (for $j>0$) assumes that their status remains unchanged since $t$, rather than updating to the true state (if I am interpreting correctly). This should be clarified in both the text and the notation.
+        \blue{\\Response:
+        We have edited the manuscript to clarify that: from a decentralized perspective the optimization framework assumes that the health status of a node at time $V_{t+j}$ is not known, then the computations of the expected utilities are done using the node's last information available $V_t$.
+        }
+
+        \item Population division: Please explain how the population is divided and how behaviors are assigned in the analysis presented in Figure 5.
+        \red{Confirmar tamaño de subpoblaciones (50-50?), cual fue la distribucion de probabilidad para asignar sensitividades y sus respectivas medias.}
+        \blue{
+        As specified in Figure's 4 caption, the population is divided into two equally sized behavioral groups that show different mean risk sensitivities. For each group, assigned risk sensitivities according using a Binomial probability distribution with mean x1, x2.
+        %
+        We do not assign predefined behavioral responses, instead we define behavioral response profiles determined by risk sensitivity.
+        }
+
+        \item Mean-field model: In the Appendix, provide a description of the mean-field model analyzed in Figure S10.
+        \blue{
+        Specify the mean-field adaptive behavior model SIR.
+        }
+
+        \item Planning horizon: The text implies that individuals assume the epidemiological states of their contacts remain constant during the planning horizon. Yet Figure 4 explores horizons up to 35 days, which seems inconsistent with realistic infectious periods.
+        \blue{
+        We changed the planning horizon length to make them consistent with infectious periods. The forward-looking projections do not assume changes in the individuals' health states (fixed conditions).
+        }
+    \end{enumerate}
+    
+\end{enumerate}
+
+\paragraph{Minor issues}
+
+\begin{enumerate}
+    \item Analytical approximation: The paper notes that some results are not analytically tractable, but it would be worth considering whether approximations are possible in the Erdős–Rényi case. For example, could the effective degree of a susceptible node at each time step be estimated? Even a rough approximation would add insight and could help validate the simulation results.
+    \blue{\\Response:
+    }
+
+    \item Figures 2 and 3: These could be consolidated to streamline presentation. In particular, panels 2A and 3A could be combined into a single figure to facilitate direct visual comparison. This would reduce redundancy while making results easier to interpret.
+    \blue{\\Response:
+    }
+
+    \item Suboptimality claim: The paper makes claims about suboptimality of the local response relative to a hypothetical global decision-making process, but this is not directly tested with the model. This claim should be clarified and possibly substantiated with analysis—what global decision model is the basis for comparison, and what evidence is there that it would produce better outcomes in terms of epidemiological burden and/or utility? For example, this study explicitly compares local and global decision models: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0225576
+    \red{Revisar en donde hicimos un claim de optimality y remover.}
+    \blue{\\Response:
+    }
+
+    \item Figures S3 and S4: These are difficult to compare side by side. Consider reformatting so that timing can be directly compared across the two figures.
+
+    \item Manassas network: Why does the individual edge reduction flatline for this network, unlike in the other networks analyzed? You might consider describing the shape of its degree distribution and including this network in Table S2.
+
+    \item Limitations: The discussion should address limitations of the model, especially the behavioral assumptions. What do we know, and what do we still not know, about how people make precautionary decisions? The COVID-19 pandemic generated surveys and studies on compliance with distancing, masking, and other interventions that could be used to help contextualize the assumptions and findings of this study.
+\end{enumerate}
+
+\bibliographystyle{unsrt}
+\bibliography{behavior_bib}
+\end{document}
