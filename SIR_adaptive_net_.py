@@ -1573,7 +1573,7 @@ if __name__ == '__main__':
 
     get_all_figures(500, 0.05)
 
-    # get_heatmap_data(500, 0.05)
+    get_heatmap_data(500, 0.05)
 
     # example_with_distributions(500, 0.05)
 
@@ -1620,9 +1620,9 @@ if __name__ == '__main__':
     # get_heatmap_data(500, 0.05)
 
     # Simulations for all network topologies:
-    # df = get_heatmap_for_all_networks()
+    df = get_heatmap_for_all_networks()
 
     # Read predetermined results
     #df = pd.read_csv('./Data/20251122115710_all_networks_bepidist_heatmap_data.csv')
-    # get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='V')
+    get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='V')
     # get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='T')
