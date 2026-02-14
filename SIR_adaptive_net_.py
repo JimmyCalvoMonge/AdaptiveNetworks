@@ -1571,7 +1571,7 @@ if __name__ == '__main__':
     epidemics = 300
     iterations = 250
 
-    get_all_figures(500, 0.05)
+    # get_all_figures(500, 0.05)
 
     # get_heatmap_data(500, 0.05)
 
@@ -1617,7 +1617,7 @@ if __name__ == '__main__':
     #     get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i)
 
     # 0. Improve heatmap with lower planning horizons
-    # get_heatmap_data(500, 0.05)
+    get_heatmap_data(500, 0.05)
 
     # Simulations for all network topologies:
     # df = get_heatmap_for_all_networks()
