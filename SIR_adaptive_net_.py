@@ -153,7 +153,7 @@ def vertxmaxer(ntwk, nodeid, dispars, u, neis):
             # Utility gained by being currently susceptible
             EUS[t] = fs(b, nu, edgesd) + delta*( (1-Psi)*EUS[t+1] + Psi*EUI[t+1] )
 
-            EUI[t] = 0*fs(b, nu, maxed) + delta*( (1-Pir)*EUI[t+1] + Pir*EUR[t+1] )
+            EUI[t] = fs(b, nu, maxed) + delta*( (1-Pir)*EUI[t+1] + Pir*EUR[t+1] )
 
             EUR[t] = fs(b, nu, maxed) + delta*EUR[t+1]
 
@@ -1571,7 +1571,7 @@ if __name__ == '__main__':
     epidemics = 300
     iterations = 250
 
-    # get_all_figures(500, 0.05)
+    get_all_figures(500, 0.05)
 
     # get_heatmap_data(500, 0.05)
 
@@ -1617,12 +1617,12 @@ if __name__ == '__main__':
     #     get_all_figures(500, 0.05, infected_drop_contacts=False, val='infected_no_drop', nei=i)
 
     # 0. Improve heatmap with lower planning horizons
-    get_heatmap_data(500, 0.05)
+    # get_heatmap_data(500, 0.05)
 
     # Simulations for all network topologies:
     # df = get_heatmap_for_all_networks()
 
     # Read predetermined results
     #df = pd.read_csv('./Data/20251122115710_all_networks_bepidist_heatmap_data.csv')
-    #get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='V')
+    # get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='V')
     # get_figures_disease_dynamics_vs_risk_for_all_networks(df, by='T')
