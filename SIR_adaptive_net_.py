@@ -153,7 +153,7 @@ def vertxmaxer(ntwk, nodeid, dispars, u, neis):
             # Utility gained by being currently susceptible
             EUS[t] = fs(b, nu, edgesd) + delta*( (1-Psi)*EUS[t+1] + Psi*EUI[t+1] )
 
-            EUI[t] = fs(b, nu, maxed) + delta*( (1-Pir)*EUI[t+1] + Pir*EUR[t+1] )
+            EUI[t] = 0*fs(b, nu, maxed) + delta*( (1-Pir)*EUI[t+1] + Pir*EUR[t+1] )
 
             EUR[t] = fs(b, nu, maxed) + delta*EUR[t+1]
 
