@@ -1571,9 +1571,9 @@ if __name__ == '__main__':
     epidemics = 300
     iterations = 250
 
-    get_all_figures(500, 0.05)
+    # get_all_figures(500, 0.05)
 
-    get_heatmap_data(500, 0.05)
+    # get_heatmap_data(500, 0.05)
 
     # example_with_distributions(500, 0.05)
 
