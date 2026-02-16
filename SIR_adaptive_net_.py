@@ -1225,6 +1225,9 @@ def get_heatmap_for_all_networks():
     Ts = [3,5,7,10,14,18,22]
     combs = list(itertools.product(vs, Ts))
 
+    current_date = datetime.now()
+    formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+
     # Erdos-Renyi
     n = 500
     ped = 0.05
@@ -1249,6 +1252,10 @@ def get_heatmap_for_all_networks():
         except Exception as e:
             print(f"Error with ({v},{T}) at Erdos-Renyi: {e}")
 
+    file_name = f'./Data/{formatted_date}_erdos_bepidist_heatmap_data.csv'
+    os.makedirs(os.path.dirname(file_name), exist_ok=True)
+    bepidist_all[bepidist_all['network'] == 'Erdos-Renyi'].to_csv(file_name, index=False)
+
     # Barabasi
     m = 25
     for comb in combs:
@@ -1271,6 +1278,10 @@ def get_heatmap_for_all_networks():
             bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
         except Exception as e:
             print(f"Error with ({v},{T}) at Barabasi: {e}")
+
+    file_name = f'./Data/{formatted_date}_barabasi_bepidist_heatmap_data.csv'
+    os.makedirs(os.path.dirname(file_name), exist_ok=True)
+    bepidist_all[bepidist_all['network'] == 'Barabasi'].to_csv(file_name, index=False)
 
     # Small World
     k = 20
@@ -1298,8 +1309,11 @@ def get_heatmap_for_all_networks():
         except Exception as e:
             print(f"Error with ({v},{T}) at Small World: {e}")
 
-    current_date = datetime.now()
-    formatted_date = current_date.strftime("%Y%m%d%H%M%S")
+    file_name = f'./Data/{formatted_date}_sm_bepidist_heatmap_data.csv'
+    os.makedirs(os.path.dirname(file_name), exist_ok=True)
+    bepidist_all[bepidist_all['network'] == 'Small World'].to_csv(file_name, index=False)
+
+    
     file_name = f'./Data/{formatted_date}_all_networks_bepidist_heatmap_data.csv'
     os.makedirs(os.path.dirname(file_name), exist_ok=True)
     bepidist_all.to_csv(file_name, index=False)
