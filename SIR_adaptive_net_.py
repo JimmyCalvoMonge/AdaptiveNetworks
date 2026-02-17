@@ -1231,30 +1231,30 @@ def get_heatmap_for_all_networks():
     # Erdos-Renyi
     n = 500
     ped = 0.05
-    for comb in combs:
-        v = comb[0]
-        T = comb[1]
-        print(f"""
-        Simulation for ({v},{T}) started for Erdos-Renyi network: ====================>
-        """)
-        try:
-            print("Started behavior net")
-            net = nx.gnp_random_graph(n, ped)
-            bepidist = bepisim(ntwk=net,
-                               epidemics=epidemics,
-                               iterations=iterations,
-                               dispars=[0.05, 0.04],
-                               u=[v, T], neis=1, n=n)
-            bepidist['V'] = v
-            bepidist['T'] = T
-            bepidist['network'] = 'Erdos-Renyi'
-            bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
-        except Exception as e:
-            print(f"Error with ({v},{T}) at Erdos-Renyi: {e}")
+    # for comb in combs:
+    #     v = comb[0]
+    #     T = comb[1]
+    #     print(f"""
+    #     Simulation for ({v},{T}) started for Erdos-Renyi network: ====================>
+    #     """)
+    #     try:
+    #         print("Started behavior net")
+    #         net = nx.gnp_random_graph(n, ped)
+    #         bepidist = bepisim(ntwk=net,
+    #                            epidemics=epidemics,
+    #                            iterations=iterations,
+    #                            dispars=[0.05, 0.04],
+    #                            u=[v, T], neis=1, n=n)
+    #         bepidist['V'] = v
+    #         bepidist['T'] = T
+    #         bepidist['network'] = 'Erdos-Renyi'
+    #         bepidist_all = pd.concat([bepidist_all, bepidist], ignore_index=True)
+    #     except Exception as e:
+    #         print(f"Error with ({v},{T}) at Erdos-Renyi: {e}")
 
-    file_name = f'./Data/{formatted_date}_erdos_bepidist_heatmap_data.csv'
-    os.makedirs(os.path.dirname(file_name), exist_ok=True)
-    bepidist_all[bepidist_all['network'] == 'Erdos-Renyi'].to_csv(file_name, index=False)
+    # file_name = f'./Data/{formatted_date}_erdos_bepidist_heatmap_data.csv'
+    # os.makedirs(os.path.dirname(file_name), exist_ok=True)
+    # bepidist_all[bepidist_all['network'] == 'Erdos-Renyi'].to_csv(file_name, index=False)
 
     # Barabasi
     m = 25
