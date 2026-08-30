@@ -32,9 +32,11 @@ def get_neighbors(ntw, node, levels):
         for i in range(levels - 1):
             new_neighs = []
             for node_ in neighs:
-                new_neighs += list(ntw.neighbors(node))
+                new_neighs += list(ntw.neighbors(node_))
             neighs += new_neighs
-            neighs = list(set(neighs))
+            # The node itself is a neighbor of its own neighbors: drop it so that
+            # the n-step neighborhood keeps the same meaning as the 1-step one.
+            neighs = list(set(neighs) - {node})
         return neighs
     else:
         return list(ntw.neighbors(node))
