@@ -13,8 +13,9 @@ and adds the coupling between them: constrained nodes accumulate *exposure* wher
 unconstrained nodes accumulate *fatigue*, which predicts that the burden ordering
 between the two groups may invert between epidemic waves.
 
-The full proposal is maintained separately as a document. This folder holds the
-directions that were considered and set aside.
+The full proposal is maintained separately:
+**[Profiles, Not Parameters](https://claude.ai/artifact/KEpWJdRHQ7uaKfRCEtzqrS)**.
+This folder holds the directions that were considered and set aside.
 
 ## Shelved
 

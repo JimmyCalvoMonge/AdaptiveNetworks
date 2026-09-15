@@ -7,7 +7,9 @@ compiled September 2026. Roughly 100 works spanning 1998–2026.
 - [`compilation.md`](compilation.md) — the works, grouped into fourteen families
 - [`gaps.md`](gaps.md) — eight gaps the survey reveals
 
-A browsable version of the same material is maintained as a document.
+A browsable version of the same material, with the taxonomy tables and the
+action-by-generator grid rendered, is maintained separately:
+**[The Behavior-Network Atlas](https://claude.ai/artifact/WNM1t8P6HaET2bYV7LfJbJ)**.
 
 ## Scope
 
